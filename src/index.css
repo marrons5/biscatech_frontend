@@ -1,0 +1,155 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ==========================================
+     TIPOGRAFIA PRINCIPAL
+  ========================================== */
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --heading: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 16px/145% var(--sans);
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* ==========================================
+     SISTEMA DE CORES (LIGHT MODE)
+  ========================================== */
+  --background: #F5F7FB; /* Fundo principal da aplicação */
+  --foreground: #091B3D; /* Cor principal de texto (Alto Contraste) */
+
+  --card: #ffffff; /* Superfícies e cartões */
+  --card-foreground: #091B3D;
+
+  --popover: #ffffff; /* Elementos flutuantes (Modais/Menus) */
+  --popover-foreground: #091B3D;
+
+  --primary: #4A72BC; /* Cor primária de marca (Ações Principais) */
+  --primary-foreground: #ffffff; /* Contraste de texto para elementos primários */
+
+  --secondary: #e6ebf5; /* Fundo de elementos e ações secundárias */
+  --secondary-foreground: #091B3D;
+
+  --muted: #e6ebf5;
+  --muted-foreground: #47546E; /* Cor intermédia para subtítulos e texto de apoio */
+
+  --accent: #e6ebf5; /* Estados de hover e destaque subtil */
+  --accent-foreground: #091B3D;
+
+  --destructive: #ef4444; /* Indicador de ações destrutivas ou erros */
+  --destructive-foreground: #ffffff;
+
+  --border: #848D9E; /* Cor padrão para bordas e delimitadores visuais */
+  --input: #848D9E;
+  --ring: #4A72BC; /* Cor de foco (Outline/Ring) para acessibilidade */
+
+  --radius: 0.75rem; /* Arredondamento padrão de componentes da interface */
+
+  /* ==========================================
+     SISTEMA DE CORES (SIDEBAR)
+  ========================================== */
+  --sidebar-background: #ffffff;
+  --sidebar-foreground: #47546E;
+  --sidebar-primary: #4A72BC;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F5F7FB;
+  --sidebar-accent-foreground: #091B3D;
+  --sidebar-border: #848D9E;
+  --sidebar-ring: #4A72BC;
+}
+
+/* ==========================================
+   SISTEMA DE CORES (DARK MODE)
+========================================== */
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #091B3D; /* Fundo principal adaptado para modo noturno */
+    /* --foreground: #F5F7FB; Texto claro de alto contraste */
+
+    /* --card: #0c234a; Elevação visual de cartões no modo noturno
+    --card-foreground: #F5F7FB;
+
+    --popover: #0c234a;
+    --popover-foreground: #F5F7FB;
+
+    /* --primary: #4A72BC; Manutenção da cor primária de marca
+    --primary-foreground: #ffffff;
+
+    --secondary: #47546E; /* Elementos secundários adaptados ao fundo escuro */
+    /* --secondary-foreground: #F5F7FB; */
+
+    /* --muted: #1a2c50; */
+    /* --muted-foreground: #848D9E; Ajuste de contraste para texto de apoio */
+
+    /* --accent: #1a2c50;
+    --accent-foreground: #F5F7FB; */
+
+    /* --border: #47546E; Bordas de baixo contraste para coerência visual */
+    /* --input: #47546E; */
+    /* --ring: #4A72BC; */
+
+    /* Adaptação da Sidebar para o Dark Mode */
+    /* --sidebar-background: #091B3D;
+    --sidebar-foreground: #848D9E;
+    --sidebar-primary: #4A72BC;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #1a2c50;
+    --sidebar-accent-foreground: #F5F7FB;
+    --sidebar-border: #47546E; */
+    /* --sidebar-ring: #4A72BC; */
+  /* } */
+/* } */
+
+/* ==========================================
+   CONFIGURAÇÃO DO TAILWIND V4
+========================================== */
+@theme inline {
+  --font-sans: var(--sans);
+  --font-heading: var(--heading);
+  --font-mono: var(--mono);
+  
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    /* Aplicação da tipografia principal (sans-serif) em toda a aplicação */
+    @apply font-sans; 
+  }
+}
