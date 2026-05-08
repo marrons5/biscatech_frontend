@@ -43,8 +43,8 @@
   --accent: #e6ebf5; /* Estados de hover e destaque subtil */
   --accent-foreground: #091B3D;
 
-  --destructive: #ef4444; /* Indicador de ações destrutivas ou erros */
-  --destructive-foreground: #ffffff;
+  --destructive: #D63031; /* Indicador de ações destrutivas ou erros */
+  --destructive-foreground: #D630311A;
 
   --border: #848D9E; /* Cor padrão para bordas e delimitadores visuais */
   --input: #848D9E;

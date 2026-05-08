@@ -7,7 +7,6 @@ import {
   WarningCircleIcon,
   CalendarBlankIcon,
   CurrencyCircleDollarIcon,
-  CurrencyDollarIcon
 } from "@phosphor-icons/react";
 
 // import { BottomNav } from "@/components/custom/BottomNav";

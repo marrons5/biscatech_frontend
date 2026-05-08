@@ -5,10 +5,10 @@ import { Home, Login, Register, ForgotPassword } from '@/pages/public';
 function PublicRoutes() {
   return (
     <>
-        <Route path='/login' element={<Home/>}/>
-        <Route path='/login' element={<Login/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/forgot-password' element={<ForgotPassword/>}/>
+        <Route path='/home' element={<Home/>}/>
+        <Route path='/auth/login' element={<Login/>}/>
+        <Route path='/auth/register' element={<Register/>}/>
+        <Route path='/auth/forgot-password' element={<ForgotPassword/>}/>
     </>
   )
 }
