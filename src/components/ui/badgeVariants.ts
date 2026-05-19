@@ -7,12 +7,14 @@ export const badgeVariants = cva(
       variant: {
         default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
         
-        primary: "bg-primary/25 text-primary [a]:hover:bg-primary/55 ",
-        green: "bg-success/25 text-success [a]:hover:bg-success/55",
-        orange: "bg-warning/25 text-warning [a]:hover:bg-warning/55",
-        red: "bg-destructive/25 text-destructive [a]:hover:bg-destructive/55",
-        grey: "bg-[#F4F4F5] text-[#7171z7A] [a]:hover:bg-[#F4F4F5]/80",
+        blue: "bg-primary/15 text-primary [a]:hover:bg-primary/55 border-primary/25",
+        green: "bg-success/15 text-success [a]:hover:bg-success/55 border-success/25",
+        orange: "bg-warning/15 text-warning [a]:hover:bg-warning/55 border-warning/25",
+        red: "bg-destructive/15 text-destructive [a]:hover:bg-destructive/55 border-destructive/25",
+        grey: "bg-neutral/15 text-neutral [a]:hover:bg-neutral/55 border-neutral/25",
+
         dark: "bg-dark text-white [a]:hover:bg-dark/10 [a]:hover:text-dark",
+        light: "bg-background text-foreground",
 
         secondary:
           "bg-[#F4F4F5] text-[#09090B] rounded-[9999px] [a]:hover:bg-[#F4F4F5]/80",

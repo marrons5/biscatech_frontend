@@ -38,7 +38,8 @@
   --dark: #091B3D;
   --warning: #E0A41F;
   --success: #2E8B57;
-  --destructive: #C94F4F; /* Indicador de ações destrutivas ou erros */
+  --destructive: #C94F4F;
+  --neutral: #848D9E;
 
   --secondary: #e6ebf5; 
   --secondary-foreground: #091B3D;
@@ -129,6 +130,7 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-dark: var(--dark);
+  --color-neutral: var(--neutral);
   --color-warning: var(--warning);
   --color-success: var(--success);
   --color-destructive: var(--destructive);

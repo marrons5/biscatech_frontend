@@ -5,12 +5,8 @@ import {
   UserIcon, 
   ClipboardTextIcon, 
   WalletIcon, 
-  SignOutIcon, 
-  WrenchIcon,
-  EngineIcon,
+  SignOutIcon,
   GearIcon,
-  GearSixIcon,
-  GearFineIcon
 } from "@phosphor-icons/react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -70,7 +66,7 @@ export const AppSidebar = () => {
   const navigate = useNavigate();
   
   const items = mockUser.role === "pro" ? proItems : clientItems;
-
+  
   const handleLogout = () => {
     navigate("/", { replace: true });
   };
@@ -102,7 +98,7 @@ export const AppSidebar = () => {
                           cn(
                             "flex items-center gap-3 text-sm font-medium transition-all rounded-md px-3 py-2",
                             isActive
-                              ? "bg-primary/10 text-primary font-bold" // Aqui brilha o teu Azul Safira
+                              ? "bg-primary/10 text-primary font-bold"
                               : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           )
                         }
@@ -121,7 +117,6 @@ export const AppSidebar = () => {
         <SidebarFooter className="p-3">
           {!collapsed && (
             <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 mb-2 shadow-sm">
-              {/* Removido o bg-gradient-hero alucinado da IA, colocado o bg-primary sólido */}
               <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0 shadow-sm">
                 {mockUser.initials}
               </div>

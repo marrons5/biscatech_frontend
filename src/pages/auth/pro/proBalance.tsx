@@ -1,11 +1,8 @@
-import { WalletIcon, TrendUpIcon, ChartBarIcon } from "@phosphor-icons/react";
+import { WalletIcon, ChartBarIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
+import { ChartAreaAxes} from "@/components/custom/areaChart";
 // import { PageHeader } from "@/components/nema/PageHeader";
 
-const months = [
-  { d: "Jan", v: 180 }, { d: "Fev", v: 220 }, { d: "Mar", v: 195 },
-  { d: "Abr", v: 287 }, { d: "Mai", v: 245 },
-];
 const cats = [
   { d: "Canalização", v: 65 },
   { d: "Inst. Sanitária", v: 30 },
@@ -35,18 +32,7 @@ const ProBalance = () => {
         <div className="grid grid-cols-10 gap-6">
           {/* Left 7/10 */}
           <div className="col-span-10 lg:col-span-7 space-y-6">
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h3 className="font-extrabold text-lg">Ganhos Mensais</h3>
-                  <p className="text-xs text-muted-foreground">Janeiro – Maio (Kz, milhares)</p>
-                </div>
-                <span className="inline-flex items-center gap-1 text-xs font-bold text-success bg-success/10 px-2.5 py-1 rounded-full">
-                  <TrendUpIcon size={14} weight="bold" /> +18% vs. abril
-                </span>
-              </div>
-              <Bars data={months} />
-            </section>
+            <ChartAreaAxes/>
 
             <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
               <div className="flex items-center justify-between mb-5">
