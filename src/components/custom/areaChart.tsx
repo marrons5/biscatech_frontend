@@ -59,11 +59,15 @@ export function ChartAreaAxes() {
           <AreaChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 0,
-              right: 12,
-            }}
           >
+
+            <defs>
+              <linearGradient id="areaColor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--primary)" stopOpacity={.75} />
+                <stop offset="100%" stopColor="var(--primary)" stopOpacity={.25} />
+              </linearGradient>
+            </defs>
+
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -83,7 +87,7 @@ export function ChartAreaAxes() {
             <Area
               dataKey="earnings"
               type="natural"
-              fill="var(--primary)"
+              fill="url(#areaColor)"
               fillOpacity={0.4}
               stroke="var(--primary)"
               stackId="a"

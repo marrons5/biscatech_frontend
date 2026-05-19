@@ -1,6 +1,7 @@
 import { WalletIcon, ChartBarIcon } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { ChartAreaAxes} from "@/components/custom/areaChart";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components";
 // import { PageHeader } from "@/components/nema/PageHeader";
 
 const cats = [
@@ -44,31 +45,36 @@ const ProBalance = () => {
           </div>
 
           {/* Right 3/10 */}
-          <aside className="col-span-10 lg:col-span-3 space-y-6">
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Saldo Atual</p>
+          <section className="col-span-10 lg:col-span-3 space-y-6">
+            <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+              <CardHeader>
+                <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Saldo Atual</CardTitle>
+              </CardHeader>
+              <CardContent>
+                
+              </CardContent>
               <p className="text-4xl font-extrabold text-primary mt-2">42.000 Kz</p>
               <p className="text-xs text-muted-foreground mt-1">Disponível para levantamento</p>
               <Button size="lg" className="w-full mt-5">
                 <WalletIcon size={18} weight="bold" /> Levantar Fundo
               </Button>
-            </section>
+            </Card>
 
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Por Levantar</p>
               <p className="text-2xl font-extrabold text-slate-500 mt-2">5.000 Kz</p>
               <p className="text-xs text-muted-foreground mt-1">Trabalhos em andamento</p>
-            </section>
+            </Card>
 
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
+            <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
               <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Resumo do Mês</p>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between"><span className="text-muted-foreground">Trabalhos</span><span className="font-bold">23</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Total bruto</span><span className="font-bold">287.000 Kz</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">Comissão</span><span className="font-bold">- 28.700 Kz</span></div>
               </div>
-            </section>
-          </aside>
+            </Card>
+          </section>
         </div>
       </main>
     </div>
