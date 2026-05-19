@@ -1,8 +1,6 @@
 import React, { useMemo } from 'react'
 import { Card, CardHeader, CardTitle, CardContent, CardFooter} from '@/components';
 
-function ProHistory() {
-
 const servicesProvided = [
   {
     clientName: "Maria Eduarda",
@@ -54,6 +52,8 @@ const servicesProvided = [
   },
 ];
 
+function ProHistory() {
+
   const servicesHistory = useMemo(
     () => servicesProvided.map((service, index) => {
       return(
@@ -98,7 +98,7 @@ const servicesProvided = [
           </CardFooter>
         </Card>
       )
-    }), [servicesProvided]
+    }), []
   )
 
   return (
