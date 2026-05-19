@@ -22,19 +22,25 @@
   /* ==========================================
      SISTEMA DE CORES (LIGHT MODE)
   ========================================== */
-  --background: #F5F7FB; /* Fundo principal da aplicação */
-  --foreground: #091B3D; /* Cor principal de texto (Alto Contraste) */
+  --background: #F5F7FB; 
+  --foreground: #091B3D;
 
-  --card: #ffffff; /* Superfícies e cartões */
+  --card: #ffffff;
   --card-foreground: #091B3D;
 
   --popover: #ffffff; /* Elementos flutuantes (Modais/Menus) */
   --popover-foreground: #091B3D;
 
   --primary: #4A72BC; /* Cor primária de marca (Ações Principais) */
+  --primary-gradient: linear-gradient(135deg, #091B3D 0%, #4A72BC 60%, #769AD6 100%);
   --primary-foreground: #ffffff; /* Contraste de texto para elementos primários */
+  
+  --dark: #091B3D;
+  --warning: #E0A41F;
+  --success: #2E8B57;
+  --destructive: #C94F4F; /* Indicador de ações destrutivas ou erros */
 
-  --secondary: #e6ebf5; /* Fundo de elementos e ações secundárias */
+  --secondary: #e6ebf5; 
   --secondary-foreground: #091B3D;
 
   --muted: #e6ebf5;
@@ -42,9 +48,6 @@
 
   --accent: #e6ebf5; /* Estados de hover e destaque subtil */
   --accent-foreground: #091B3D;
-
-  --destructive: #D63031; /* Indicador de ações destrutivas ou erros */
-  --destructive-foreground: #D630311A;
 
   --border: #848D9E; /* Cor padrão para bordas e delimitadores visuais */
   --input: #848D9E;
@@ -121,9 +124,13 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
+  --background-image-primary-gradient: var(--primary-gradient);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+  --color-dark: var(--dark);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-muted: var(--muted);
