@@ -12,7 +12,6 @@ import {
   EnvelopeIcon,
   PlusIcon,
   UserIcon,
-  WrenchIcon,
 } from "@phosphor-icons/react";
 // import { PageHeader } from "@/components/nema/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -147,7 +146,7 @@ const ClientSettings = () => {
               </div>
             </Card>
 
-            <Card className="rounded-2xl bg-card border row-span-2 border-border/60 shadow-sm p-5 *:p-0">
+            <Card className="rounded-2xl bg-card border row-span-1 border-border/60 shadow-sm p-5 *:p-0">
                 <CardHeader>
                     <CardTitle>Dados de Contacto</CardTitle>
                 </CardHeader>

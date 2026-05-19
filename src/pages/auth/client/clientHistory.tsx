@@ -9,9 +9,13 @@ import {
   CircleNotchIcon, 
   ArrowRightIcon, 
   ChartBarIcon,
+  EyeClosedIcon,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/components";
+import type React from "react";
+
+// type Icon = React.ReactNode;
 
 type JobStatus = "pending" | "in_progress" | "completed" | "cancelled";
 
@@ -52,11 +56,29 @@ const StatusBadge = ({ status }: { status: JobStatus }) => {
 };
 
 const stats = [
-  { label: "Aceites",   value: 5, tone: "text-primary" },
-  { label: "Ignoradas", value: 0, tone: "text-muted-foreground" },
-  { label: "Canceladas",value: 1, tone: "text-destructive" },
-  { label: "Concluídas",value: 4, tone: "text-success" },
+  { key:"accepted", label: "Aceites", value: 5 },
+  { key: "concluded", label: "Concluídas", value: 4 },
+  { key: "cancelled", label: "Canceladas", value: 1 },
+  { key: "ignored", label: "Ignoradas", value: 0 },
 ];
+
+type BadgeVariant = "grey" | "red" | "blue" | "green" ;
+
+type StatusBadge = {
+  icon: React.ReactNode;
+  variant: BadgeVariant;
+}
+
+const selectBadgeVariant = ( key:string ) : StatusBadge | undefined => {
+  switch(key){
+    case "ignored": return {icon: <EyeClosedIcon className="size-4"/>, variant: "grey"};
+    case "cancelled": return {icon: <XCircleIcon className="size-4"/>, variant: "red"};
+    case "accepted": return {icon: <ClockIcon className="size-4"/>, variant: "blue"};
+    case "concluded": return {icon: <CheckCircleIcon className="size-4"/>, variant: "green"};
+
+    default: break;
+  }
+}
 
 const ClientHistory = () => {
   const active = jobs.find((j) => j.status === "in_progress");
@@ -106,7 +128,7 @@ const ClientHistory = () => {
               <Card className="rounded-2xl bg-primary-gradient row-span-1 shadow-sm p-5">
                 <CardHeader className="flex items-center gap-1">
                   <span className="size-2 rounded-full bg-primary-foreground animate-pulse"/>
-                  <CardTitle className="text-primary-foreground">Pedido ativo</CardTitle>
+                  <CardTitle className="text-primary-foreground text-lg font-bold">Pedido ativo</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <h3 className="text-primary-foreground font-bold mt-3">{active.service}</h3>
@@ -119,17 +141,23 @@ const ClientHistory = () => {
             )}
 
             <Card className="rounded-2xl bg-card border row-span-2 border-border/60 shadow-sm p-5">
-              <CardHeader className="flex items-center gap-2 mb-4">
+              <CardHeader className="flex items-center gap-2 p-0">
                 <ChartBarIcon weight="duotone" className="h-5 w-5 text-primary" />
-                <CardTitle className="font-bold text-foreground">Resumo</CardTitle>
+                <CardTitle className="text-foreground text-base font-bold">Resumo</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {stats.map((s) => (
-                  <div key={s.label} className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
-                    <span className="text-sm text-muted-foreground">{s.label}</span>
-                    <span className={cn("text-lg font-extrabold", s.tone)}>{s.value}</span>
-                  </div>
-                ))}
+              <CardContent className="p-0 flex flex-col gap-2">
+                {stats.map((s) => {
+                  const statusBadge = selectBadgeVariant(s.key)
+                  return(
+                    <Badge variant={statusBadge?.variant} key={s.label} className="flex items-center justify-between py-5 w-full">
+                      <div className="flex items-center gap-2">
+                        {statusBadge?.icon}
+                        <span className="text-sm">{s.label}</span>
+                      </div>
+                      <span className="text-lg font-extrabold">{s.value}</span>
+                    </Badge>
+                  )
+                })}
               </CardContent>
             </Card>
           </section>

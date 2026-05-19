@@ -1,6 +1,5 @@
 import background from "@/assets/images/tool.png";
-import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components";
-import { Tabs, TabsTrigger, TabsContent, TabsList } from "@/components";
+import { Card, CardHeader, CardContent, CardFooter} from "@/components";
 import { FieldGroup, Field, FieldLabel, FieldError, FieldDescription, FieldTitle } from "@/components";
 import { Input, Button } from "@/components"; // Não te esqueças de importar o Button!
 import { Controller, useForm } from "react-hook-form";
@@ -111,7 +110,7 @@ function Register() {
                             className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                           />
                           {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error?.message || "Erro"]} className="text-red-500 text-xs font-medium mt-1" />
+                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
                           )}
                         </Field>
                       )}
@@ -136,7 +135,7 @@ function Register() {
                               className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                             />
                             {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error?.message || "Erro"]} className="text-red-500 text-xs font-medium mt-1" />
+                              <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
                             )}
                           </Field>
                         )}
@@ -159,7 +158,7 @@ function Register() {
                               className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                             />
                             {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error?.message || "Erro"]} className="text-red-500 text-xs font-medium mt-1" />
+                              <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
                             )}
                           </Field>
                         )}
@@ -184,7 +183,7 @@ function Register() {
                             className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                           />
                           {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error?.message || "Erro"]} className="text-red-500 text-xs font-medium mt-1" />
+                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
                           )}
                         </Field>
                       )}
@@ -208,7 +207,7 @@ function Register() {
                             className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                           />
                           {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error?.message || "Erro"]} className="text-red-500 text-xs font-medium mt-1" />
+                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
                           )}
                         </Field>
                       )}
