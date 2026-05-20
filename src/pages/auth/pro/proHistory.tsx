@@ -2,9 +2,7 @@ import React, { useMemo } from 'react'
 import { HeartIcon, StarIcon } from '@phosphor-icons/react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter} from '@/components';
 
-function ProHistory() {
-
-  const servicesProvided = [
+const servicesProvided = [
   {
     clientName: "Maria Eduarda",
     location: "Maianga, Luanda",
@@ -55,6 +53,8 @@ function ProHistory() {
   },
   ];
 
+function ProHistory() {
+
   const servicesHistory = useMemo(
     () => servicesProvided.map((service, index) => {
       return(
@@ -99,7 +99,7 @@ function ProHistory() {
           </CardFooter>
         </Card>
       )
-    }), [servicesProvided]
+    }), []
   )
 
   return (
