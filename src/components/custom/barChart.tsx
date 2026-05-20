@@ -21,13 +21,11 @@ import {
 export const description = "A bar chart with a label"
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-]
+  { serviceType: "Reparação", completedServices: 142 },
+  { serviceType: "Manutenção", completedServices: 89 },
+  { serviceType: "Instalação", completedServices: 56 },
+  { serviceType: "Emergência", completedServices: 34 },
+];
 
 const chartConfig = {
   desktop: {
@@ -64,7 +62,7 @@ export function ChartBarLabel() {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8}>
+            <Bar dataKey="serviceType" fill="var(--primary)" radius={8}>
               <LabelList
                 position="top"
                 offset={12}
