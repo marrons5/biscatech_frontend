@@ -6,11 +6,11 @@ import { Outlet } from 'react-router-dom';
 function PrivateAppLayout() {
   return (
     <React.Fragment>
-        <section className='bg-black w-full'>
+        <section className='bg-background w-full'>
             <SidebarProvider>
                 <AppSidebar/>
-                <main className='flex w-full'>
-                    {/* <AppHeader /> */}
+                <main className='flex flex-col gap-5 w-full'>
+                    <AppHeader />
                     <Outlet />
                 </main>
             </SidebarProvider>

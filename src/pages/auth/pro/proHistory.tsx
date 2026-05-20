@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { HeartIcon, StarIcon } from '@phosphor-icons/react';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter} from '@/components';
 
 const servicesProvided = [
@@ -50,7 +51,7 @@ const servicesProvided = [
     rating: 5,
     imageUrl: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=150&auto=format&fit=crop",
   },
-];
+  ];
 
 function ProHistory() {
 
@@ -103,11 +104,73 @@ function ProHistory() {
 
   return (
     <React.Fragment>
-      <section className='bg-white p-20 w-full h-full'>
-        <div className='flex flex-col gap-7.5 w-full'>
+      <main className='grid grid-cols-10 gap-10 px-10 w-full h-full'>
+        <section className='flex flex-col col-span-7 gap-7.5 w-'>
           {servicesHistory}
-        </div>
-      </section>
+        </section>
+
+        <section className='flex flex-col col-span-3 gap-5'>
+          <Card className="bg-primary-gradient rounded-2xl shadow-sm p-5 *:p-0">
+            <CardHeader>
+              <CardTitle className='text-primary-foreground text-xl font-bold'>Avaliação Geral</CardTitle>
+            </CardHeader>
+            <CardContent className='flex flex-col gap-5 justify-center items-center'>
+              <div className='ring ring-primary-foreground rounded-full w-50 aspect-square flex flex-col justify-center items-center'>
+                <span className="text-white text-5xl font-extrabold text-primary">4.9</span>
+                <div className="flex items-center justify-center gap-1">
+                  {[1,2,3,4,5].map((i) => (
+                    <StarIcon key={i} size={28} weight="fill" className="text-yellow-400" />
+                  ))}
+                </div>
+                <span className="text-white text-xs text-muted-foreground mt-1">142 avaliações</span>
+              </div>
+
+              <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 w-full">
+                <CardHeader>
+                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Desempenho</CardTitle>
+                </CardHeader>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="text-muted-foreground">Taxa de Conclusão</span>
+                      <span className="font-extrabold">98%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-full bg-success rounded-full" style={{ width: "98%" }} />
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1.5">
+                      <span className="text-muted-foreground">Tempo Resp. Médio</span>
+                      <span className="font-extrabold">15 min</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-slate-100 overflow-hidden">
+                      <div className="h-full bg-primary rounded-full" style={{ width: "85%" }} />
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 w-full *:p-0">
+                <CardHeader className="text-xs font-bold tracking-wider text-foreground">
+                  <CardTitle>Fidelização</CardTitle> 
+                </CardHeader>
+                <CardContent className='flex items-center gap-4'>
+                  <div className="flex shrink-0 items-center justify-center w-12 aspect-square rounded-full bg-primary/15 text-primary">
+                    <HeartIcon weight="fill" className="h-6 w-6" /> 
+                  </div>
+                  
+                  <div className="flex items-baseline gap-1.5">
+                    <span className='text-foreground text-sm'><span className="text-foreground font-extrabold">24 clientes</span> desejam trabalhar consigo mais vezes.</span>
+                  </div>
+                </CardContent>
+              </Card>
+
+            </CardContent>
+          </Card>
+
+        </section>
+      </main>
     </React.Fragment>
   )
 }

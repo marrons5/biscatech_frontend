@@ -5,7 +5,8 @@ import {
   UserIcon, 
   ClipboardTextIcon, 
   WalletIcon, 
-  SignOutIcon 
+  SignOutIcon,
+  GearIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,37 +20,45 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem,
-  // useSidebar,
+  SidebarMenuItem
 } from "@/components/ui/sidebar";
 
 import { useSidebar } from "../ui";
 // import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
-// As rotas em inglês que definimos juntos!
 const clientItems = [
   { to: "/client/dashboard", label: "Início", icon: HouseIcon },
-  { to: "/client/requests", label: "Pedidos", icon: BriefcaseIcon },
-  { to: "/client/reviews", label: "Avaliações", icon: StarIcon },
-  { to: "/client/profile", label: "Perfil", icon: UserIcon },
+  { to: "/client/history", label: "Pedidos", icon: BriefcaseIcon },
+  { to: "/client/settings", label: "Definições", icon: GearIcon },
 ];
 
 const proItems = [
-  { to: "/pro", label: "Agenda", icon: ClipboardTextIcon },
+  { to: "/pro/dashboard", label: "Agenda", icon: ClipboardTextIcon },
   { to: "/pro/history", label: "Histórico", icon: BriefcaseIcon },
   { to: "/pro/balance", label: "Ganhos", icon: WalletIcon },
   { to: "/pro/evaluations", label: "Avaliações", icon: StarIcon },
   { to: "/pro/profile", label: "Perfil", icon: UserIcon },
 ];
 
-// O nosso utilizador falso para a apresentação
 const mockUser = {
   name: "João Mateus",
   initials: "JM",
   phone: "+244 923 000 000",
-  role: "cliente", // Testa mudar para "pro" e vê a magia!
+  role: "cliente",
 };
+
+
+
+// type ClientSidebarList = {
+//   listItem:
+// }
+
+// type SidebarItem = {
+//   listItem: string;
+//   to: string;
+//   // icon: IconUserKey;
+// }
 
 export const AppSidebar = () => {
   const { state } = useSidebar();
@@ -57,7 +66,7 @@ export const AppSidebar = () => {
   const navigate = useNavigate();
   
   const items = mockUser.role === "pro" ? proItems : clientItems;
-
+  
   const handleLogout = () => {
     navigate("/", { replace: true });
   };
@@ -82,7 +91,6 @@ export const AppSidebar = () => {
                 {items.map((item) => (
                   <SidebarMenuItem key={item.to}>
                     <SidebarMenuButton asChild tooltip={item.label}>
-                      {/* NavLink nativo do react-router-dom com os estilos condicionados */}
                       <NavLink
                         to={item.to}
                         end={item.to === "/client/dashboard" || item.to === "/pro"}
@@ -90,7 +98,7 @@ export const AppSidebar = () => {
                           cn(
                             "flex items-center gap-3 text-sm font-medium transition-all rounded-md px-3 py-2",
                             isActive
-                              ? "bg-primary/10 text-primary font-bold" // Aqui brilha o teu Azul Safira
+                              ? "bg-primary/10 text-primary font-bold"
                               : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           )
                         }
@@ -109,7 +117,6 @@ export const AppSidebar = () => {
         <SidebarFooter className="p-3">
           {!collapsed && (
             <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 mb-2 shadow-sm">
-              {/* Removido o bg-gradient-hero alucinado da IA, colocado o bg-primary sólido */}
               <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0 shadow-sm">
                 {mockUser.initials}
               </div>
