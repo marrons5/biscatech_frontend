@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  User as UserIcon,
+  UserIcon,
   Wrench,
   ArrowRight,
   GoogleLogo,
@@ -58,7 +58,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
-      <aside className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
+      <section className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
         <div className="relative z-10 flex flex-col w-full">
@@ -80,7 +80,7 @@ const Register = () => {
             © Nema 2026 · Luanda, Angola
           </p>
         </div>
-      </aside>
+      </section>
 
       <section className="flex items-center justify-center px-6 py-12 lg:px-12">
         <div className="w-full max-w-md">
@@ -120,7 +120,7 @@ const Register = () => {
               type="button"
               variant="outline"
               size="lg"
-              className="w-full mt-5 gap-2.5 rounded-4xl border-2  py-5 bg-zinc-400/10 cursor-pointer">
+              className="w-full mt-5 gap-2.5 rounded-4xl border-2  py-5 bg-background cursor-pointer">
               <GoogleLogo size={20} weight="bold" /> Continuar com Google
             </Button>
 
@@ -141,7 +141,7 @@ const Register = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="O teu nome"
-                  className="h-11 border-2  py-5 rounded-2xl bg-zinc-400/10"
+                  className="h-11 border-2  py-5 rounded-2xl bg-background"
                 />
               </div>
               <div className="space-y-1.5">
@@ -153,7 +153,7 @@ const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@exemplo.com"
-                  className="h-11 border-2  py-5 rounded-2xl bg-zinc-400/10"
+                  className="h-11 border-2  py-5 rounded-2xl bg-background"
                 />
               </div>
               <div className="space-y-1.5">
@@ -170,7 +170,7 @@ const Register = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="923 456 789"
-                    className="h-11 pl-20 border-2  py-5 rounded-2xl bg-zinc-400/10"
+                    className="h-11 pl-20 border-2  py-5 rounded-2xl bg-background"
                   />
                 </div>
               </div>
@@ -184,7 +184,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Mínimo 6 caracteres"
-                  className="h-11 border-2  py-5 rounded-2xl bg-zinc-400/10"
+                  className="h-11 border-2  py-5 rounded-2xl bg-background"
                 />
               </div>
 
@@ -214,7 +214,6 @@ const Register = () => {
 
               <Button
                 type="submit"
-                variant="hero"
                 size="lg"
                 disabled={loading}
                 className="w-full text-white rounded-4xl text-lg p-6 cursor-pointer">
@@ -231,7 +230,7 @@ const Register = () => {
             <p className="text-center text-sm text-muted-foreground mt-6">
               Já tens conta?{" "}
               <Link
-                to="/login"
+                to="/auth/login"
                 className="font-bold text-primary hover:underline">
                 Entrar
               </Link>
