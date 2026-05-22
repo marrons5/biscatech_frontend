@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useState } from "react";
 import {
   WrenchIcon,
   MapPinIcon,
@@ -31,11 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/";
 import { cn } from "@/lib/utils";
 
 type BadgeVariant = "blue" | "green" | "orange" | "red";
-type GradientVariant =
-  | "primary-gradient"
-  | "success-gradient"
-  | "warning-gradient"
-  | "destructive-gradient";
+type GradientVariant = "primary-gradient" | "success-gradient" | "warning-gradient" | "destructive-gradient";
 type ColorsVariant = "primary" | "success" | "warning" | "destructive";
 
 type CardTheme = {
@@ -151,12 +146,8 @@ const serviceRequestsData = [
 ];
 
 function ProDashboard() {
-  const navigate = useNavigate();
   const [available, setAvailable] = useState(true);
-
   const [serviceTypeTabs, setServiceTypeTabs] = useState(serviceRequestsData);
-
-  // const [tabsState, setTabsState] = useState<"todos" | "reparo" | "instalação" | "manutenção" | "emergência">("todos")
 
   const filteredServiceTypes = useCallback((serviceType: string) => {
     if (serviceType === "todos") return setServiceTypeTabs(serviceRequestsData);

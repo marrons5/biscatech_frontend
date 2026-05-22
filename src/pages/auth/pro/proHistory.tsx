@@ -60,18 +60,9 @@ function ProHistory() {
       return(
         <Card className='rounded-lg w-full' key={index}>
           <CardHeader>
-            <div className='flex items-center gap-5'>
-              <div className='border rounded-lg size-10 aspect-square'>
-                <img 
-                src={service.imageUrl} 
-                alt=""
-                className='size-full bg-cover bg-center rounded-lg'
-                />
-              </div>
               <CardTitle>{service.title}</CardTitle>
-            </div>
           </CardHeader>
-          <CardContent className='flex justify-between items-center [&_span:first-child]:font-medium [&_span:first-child]:text-slate-900 [&_span:first-child]:mr-1 [&_span:last-child]:text-slate-500 text-sm'>
+          <CardContent className='flex justify-between items-center [&_span:first-child]:font-medium [&_span:first-child]:text-foreground [&_span:first-child]:mr-1 [&_span:last-child]:text-muted-foreground text-sm'>
               <div className="flex flex-col gap-1">
                 <div><span>Cliente:</span> <span>{service.clientName}</span></div>
                 <div><span>Localização:</span> <span>{service.location}</span></div>

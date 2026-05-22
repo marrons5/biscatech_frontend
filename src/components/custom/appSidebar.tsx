@@ -77,7 +77,7 @@ export const AppSidebar = () => {
         <SidebarHeader className="px-3 py-4">
           <div className={cn("flex items-center", collapsed && "justify-center")}>
             {/* <Logo showText={!collapsed} /> */}
-            NEMMA
+            BiscaTech
           </div>
         </SidebarHeader>
 

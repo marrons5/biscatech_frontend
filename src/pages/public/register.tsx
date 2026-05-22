@@ -70,7 +70,7 @@ const Register = () => {
               className="opacity-90 -ml-6 drop-shadow-2xl text-white"
             />
             <h2 className="text-5xl font-extrabold text-white leading-tight mt-6 max-w-md">
-              Resolve qualquer biscate. Em minutos.
+              Resolve qualquer biscato. Em minutos.
             </h2>
             <p className="text-base opacity-90 mt-4 max-w-md text-white">
               A plataforma que conecta-te aos melhores profissionais de Luanda.

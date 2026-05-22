@@ -164,12 +164,16 @@
   --color-dark: var(--dark);
   --color-neutral: var(--neutral);
   --background-image-neutral-gradient: var(--neutral-gradient);
+
   --color-warning: var(--warning);
   --background-image-warning-gradient: var(--warning-gradient);
+
   --color-success: var(--success);
   --background-image-success-gradient: var(--success-gradient);
+
   --color-destructive: var(--destructive);
   --background-image-destructive-gradient: var(--destructive-gradient);
+
   --color-destructive-foreground: var(--destructive-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
@@ -197,13 +201,4 @@
     /* Aplicação da tipografia principal (sans-serif) em toda a aplicação */
     @apply font-sans; 
   }
-}
-
-.bg-image1 {
-  background-color: var(--primary);
-  background-blend-mode: luminosity;
-  background-image: url("./assets/images/tool.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }

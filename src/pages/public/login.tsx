@@ -38,7 +38,7 @@ const Login = () => {
           <div className="my-auto">
             <WrenchIcon size={280} weight="duotone" className="opacity-90 -ml-6 drop-shadow-2xl" />
             <h2 className="text-5xl font-extrabold leading-tight mt-6 max-w-md">
-              Resolve qualquer biscate. Em minutos.
+              Resolve qualquer biscato. Em minutos.
             </h2>
             <p className="text-base opacity-90 mt-4 max-w-md">
               A plataforma que conecta-te aos melhores profissionais de Luanda.
@@ -52,9 +52,11 @@ const Login = () => {
       <section className="flex items-center justify-center px-6 py-12 lg:px-12">
         <div className="w-full max-w-md">
           {/* <div className="lg:hidden mb-8 flex justify-center"><Logo /></div> */}
-          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-8 lg:p-10">
-            <h1 className="text-3xl font-extrabold tracking-tight">Entrar</h1>
-            <p className="text-sm text-muted-foreground mt-2">Bem-vindo de volta à Nema.</p>
+          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl flex flex-col gap-10 p-8 lg:p-10">
+            <div>
+              <h1 className="text-3xl font-extrabold tracking-tight">Entrar</h1>
+              <p className="text-sm text-muted-foreground mt-2">Bem-vindo de volta à Nema.</p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
@@ -73,14 +75,14 @@ const Login = () => {
                   </button>
                 </div>
               </div>
-              <Button type="submit" size="lg" disabled={loading} className="w-full">
+              <Button type="submit" size="lg" disabled={loading} className="rounded-2xl w-full">
                 {loading ? "A entrar…" : <>Entrar <ArrowRightIcon size={18} weight="bold" /></>}
               </Button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground mt-8">
               Ainda não tens conta?{" "}
-              <Link to="/registro" className="font-bold text-primary hover:underline">Criar conta</Link>
+              <Link to="/auth/register" className="font-bold text-primary hover:underline">Criar conta</Link>
             </p>
           </div>
         </div>
