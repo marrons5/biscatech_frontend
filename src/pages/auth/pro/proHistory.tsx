@@ -100,7 +100,7 @@ function ProHistory() {
         </Card>
       )
     }), []
-  )
+  );
 
   return (
     <React.Fragment>

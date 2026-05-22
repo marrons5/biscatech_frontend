@@ -58,7 +58,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
-      <aside className="relative hidden lg:flex bg-gradient-hero text-primary-foreground overflow-hidden p-12">
+      <aside className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
         <div className="relative z-10 flex flex-col w-full">

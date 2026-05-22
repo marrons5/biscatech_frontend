@@ -9,6 +9,7 @@ import {
   BePro,
   Verify,
 } from "@/pages/public";
+import { ServicesCatalog } from "@/pages/public/servicesCatalog";
 
 function PublicRoutes() {
   return (
@@ -23,6 +24,8 @@ function PublicRoutes() {
      { /*<Route path="/auth/register" element={<Register />} />*/}
       <Route path="/registro" element={<Register />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+      <Route path="services-catalog" element={<ServicesCatalog />} />
+
     </>
   );
 }
