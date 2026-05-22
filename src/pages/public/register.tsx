@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  User as UserIcon,
+  UserIcon,
   Wrench,
   ArrowRight,
   GoogleLogo,
@@ -96,7 +96,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
-      <aside className="relative hidden lg:flex bg-gradient-hero text-primary-foreground overflow-hidden p-12">
+      <section className="relative hidden lg:flex bg-blue-400 text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
 
@@ -123,7 +123,7 @@ const Register = () => {
             © Nema 2026 · Luanda, Angola
           </p>
         </div>
-      </aside>
+      </section>
 
       <section className="flex items-center justify-center px-6 py-12 lg:px-12">
         <div className="w-full max-w-md">
@@ -338,7 +338,6 @@ const Register = () => {
 
               <Button
                 type="submit"
-                variant="hero"
                 size="lg"
                 disabled={loading}
                 className="w-full text-white rounded-4xl text-lg p-6 cursor-pointer">
@@ -355,7 +354,7 @@ const Register = () => {
             <p className="text-center text-sm text-muted-foreground mt-6">
               Já tens conta?{" "}
               <Link
-                to="/login"
+                to="/auth/login"
                 className="font-bold text-primary hover:underline">
                 Entrar
               </Link>

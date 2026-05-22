@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight, GoogleLogo, Eye, EyeSlash } from "@phosphor-icons/react";
 import { Logo } from "@/components/custom/logo";
 import { Button } from "@/components/ui/button";
@@ -24,18 +24,15 @@ const loginSchema = z.object({
 type LoginForm = z.infer<typeof loginSchema>;
 
 const Login = () => {
-  
   const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
   });
 
-
-
   function handleSubmit(data: LoginForm) {
-    setLoading(true)
-    console.log(data)
+    setLoading(true);
+    console.log(data);
   }
 
   return (
@@ -170,7 +167,7 @@ const Login = () => {
           <p className="text-center text-sm text-muted-foreground mt-8">
             Ainda não tens conta?{" "}
             <Link
-              to="/registro"
+              to="/auth/register"
               className="font-bold text-primary hover:underline">
               Criar conta
             </Link>

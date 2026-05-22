@@ -58,7 +58,7 @@ export function AppHeader() {
               <h2 className="text-muted-foreground text-lg">Então brada, algum pânico?</h2>
             </div>
 
-            <div className="flex items-center gap-2.5 ring ring-foreground/20 rounded-full bg-primary-foreground shadow-sm p-2">
+            <div className="bg-primary-foreground rounded-full ring-1 ring-[#091B3D]/20 shadow-md flex items-center gap-2.5 p-2">
               <Button className="bg-primary-gradient text-primary-foreground border-none hidden sm:inline-flex items-center gap-1.5 px-3 h-10 rounded-full text-xs font-semibold hover:bg-background transition-colors">
                 <MapPinIcon className="size-4" />
                 <span className="">Luanda</span>
@@ -146,7 +146,7 @@ export function AppHeader() {
 
                       <div>
                         <div className="bg-background flex justify-center items-center p-5 aspect-square rounded-full shadow-sm">
-                          <span className="text-dark text-3xl font-bold">
+                          <span className="text-foreground text-3xl font-bold">
                             {mockUser.initials}
                           </span>
                         </div>

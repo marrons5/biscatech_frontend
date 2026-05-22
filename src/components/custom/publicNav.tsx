@@ -43,7 +43,7 @@ export const PublicNav = () => {
             <Link to="/login">Entrar</Link>
           </Button>
           <Button asChild className="bg-blue-950 text-white p-5 rounded-4xl">
-            <Link to="/registro">Criar conta</Link>
+            <Link to="/auth/register">Criar conta</Link>
           </Button>
         </div>
       </div>

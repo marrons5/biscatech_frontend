@@ -3,7 +3,7 @@ import { Route } from 'react-router-dom';
 import { PrivateAppLayout } from '@/layout/privateAppLayout';
 
 //import { ClientDashboard, ClientCatalog, ClientEvaluations, ClientRequests, ClientHistory } from '@/pages/auth/client';
-import { ProDashboard, ProBalance, ProProfile, ProHistory } from '@/pages/auth/pro';
+import { ProDashboard, ProBalance, ProHistory } from '@/pages/auth/pro';
 import { RequireAuth } from '@/components/custom/requireAuth';
 import { AppShell } from '@/components/custom/appShell';
 import { Rate } from '@/pages/auth/client/rate';
@@ -13,6 +13,9 @@ import { RequestStatus } from '@/pages/auth/client/requestStatus';
 import { Orders } from '@/pages/auth/client/orders';
 import { Profile } from '@/pages/auth/client/profile';
 import { Avaliacoes } from '@/pages/auth/client/avaliacoes';
+import { ClientHistory } from '@/pages/auth/client/clientHistory';
+import { ClientSettings } from '@/pages/auth/client/clientSettings';
+import { ClientHome } from '@/pages/auth/client/clientHome';
 function AuthRoutes() {
   return (
     <React.Fragment>
@@ -33,6 +36,9 @@ function AuthRoutes() {
           }
         />
         */}
+        <Route path="/client/history" element={<ClientHistory/>}/>
+        <Route path="/client/settings" element={<ClientSettings/>}/>
+        <Route path="/client/dashboard" element={<ClientHome/>}/>
 
         <Route
           path="/app/pedidos"
@@ -100,7 +106,6 @@ function AuthRoutes() {
         <Route path="/pro/dashboard" element={<ProDashboard />} />
         <Route path="/pro/balance" element={<ProBalance />} />
         {/*<Route path="/pro/evaluations" element={<ProEvaluations />} />*/}
-        <Route path="/pro/profile" element={<ProProfile />} />
         <Route path="/pro/history" element={<ProHistory />} />
       </Route>
     </React.Fragment>
