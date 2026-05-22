@@ -18,6 +18,7 @@ const cats = [
   { d: "Inst. Sanitária", v: 30 },
   { d: "Reparações", v: 18 },
 ];
+
 const Bars = ({ data, suffix = "k" }: { data: { d: string; v: number }[]; suffix?: string }) => {
   const max = Math.max(...data.map((x) => x.v));
   return (
@@ -32,10 +33,11 @@ const Bars = ({ data, suffix = "k" }: { data: { d: string; v: number }[]; suffix
     </div>
   );
 };
+
 function ProBalance() {
   return (
     <React.Fragment>
-      return (
+     
       <div className="min-h-screen bg-slate-50 pb-12">
         <main className="container max-w-7xl px-6 lg:px-8 pt-8">
           <PageHeader title="Financeiro" subtitle="Acompanha os teus ganhos" />
