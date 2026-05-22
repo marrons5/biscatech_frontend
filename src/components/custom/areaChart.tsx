@@ -1,13 +1,9 @@
-"use client"
-
-import { TrendUpIcon } from "@phosphor-icons/react"
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -37,7 +33,7 @@ const chartData = [
 const chartConfig = {
   desktop: {
     label: "Desktop",
-    color: "var(--chart-1)",
+    color: "#4A72BC",
   },
   mobile: {
     label: "Mobile",
@@ -47,7 +43,7 @@ const chartConfig = {
 
 export function ChartAreaAxes() {
   return (
-    <Card className="rounded-2xl">
+    <Card className="rounded-2xl ring-1 ring-[#091B3D]/20 shadow-md">
       <CardHeader>
         <CardTitle>Area Chart - Axes</CardTitle>
         <CardDescription>
@@ -63,8 +59,8 @@ export function ChartAreaAxes() {
 
             <defs>
               <linearGradient id="areaColor" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={.75} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={.25} />
+                <stop offset="0%" stopColor="#4A72BC)" stopOpacity={.75} />
+                <stop offset="100%" stopColor="#4A72BC" stopOpacity={.25} />
               </linearGradient>
             </defs>
 
@@ -89,24 +85,12 @@ export function ChartAreaAxes() {
               type="natural"
               fill="url(#areaColor)"
               fillOpacity={0.4}
-              stroke="var(--primary)"
+              stroke="#4A72BC"
               stackId="a"
             />
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendUpIcon className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

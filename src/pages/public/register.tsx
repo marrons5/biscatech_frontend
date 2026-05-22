@@ -1,241 +1,369 @@
-import background from "@/assets/images/tool.png";
-import { Card, CardHeader, CardContent, CardFooter} from "@/components";
-import { FieldGroup, Field, FieldLabel, FieldError, FieldDescription, FieldTitle } from "@/components";
-import { Input, Button } from "@/components"; // Não te esqueças de importar o Button!
-import { Controller, useForm } from "react-hook-form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  UserIcon,
+  Wrench,
+  ArrowRight,
+  GoogleLogo,
+  Eye,
+  EyeSlash,
+} from "@phosphor-icons/react";
+
+import { Logo } from "@/components/custom/logo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
-import { WrenchIcon } from "@phosphor-icons/react";
-import type React from "react";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components";
 
-const formSchema = z.object({
-  fullName: z.string(),
-  email: z.email("Formato de e-mail inválido."),
-  phone: z.string()
-    .regex(/^\+[1-9]\d{7,14}$/, {message: "Verifique o seu número de telefone (ex: +244923000000)"}),
-  password: z.string()
-    .min(8, "A palavra-passe deve ter pelo menos 8 caracteres.")
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import * as z from "zod";
+
+type Role = "client" | "pro";
+
+const registerSchema = z.object({
+  name: z.string().min(3, "O nome deve conter no mínimo 3 caracteres"),
+
+  email: z.string().email("Verifica o seu email."),
+
+  phone: z
+    .string()
+    .min(9, "Número inválido")
+    .max(9, "Número inválido")
+    .regex(/^[0-9]+$/, "Digite apenas números"),
+
+  password: z
+    .string()
+    .min(8, "A senha deve conter no mínimo 8 caracteres")
     .regex(/[0-9]/, "A senha deve conter um número")
     .regex(/[a-zA-Z]/, "A senha deve conter letras")
     .regex(/[^a-zA-Z0-9]/, "A senha deve conter um caractere especial"),
-  confirmPassword: z.string(),
 
-})
-.refine((data) => data.password === data.confirmPassword, {
-    message: "As senhas não coincidem.",
-    path: ["confirmPassword"],
+  accept: z.boolean().refine((value) => value === true, {
+    message: "Precisas aceitar os termos.",
+  }),
 });
 
-function Register() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      fullName: "",
-      email: "",
-      phone: "",
-      password: "",
-      confirmPassword: ""
-    }
+type RegisterForm = z.infer<typeof registerSchema>;
+
+const Register = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const [role, setRole] = useState<Role>("client");
+  const [showPwd, setShowPwd] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<RegisterForm>({
+    resolver: zodResolver(registerSchema),
+    
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast("Conta criada com sucesso!", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-slate-900 p-4 text-emerald-400">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2"
-      },
-      style: {
-        "--border-radius": "calc(var(--radius) + 4px)"
-      } as React.CSSProperties
-    });
+  function submit(data: RegisterForm) {
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+
+      const initials =
+        data.name
+          .split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((n) => n[0].toUpperCase())
+          .join("") || "U";
+
+      login({
+        name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
+
+        phone: `+244 ${data.phone}`,
+        initials,
+        role,
+      });
+
+      toast("Conta criada!", {
+        description: "Bem-vindo à Nema.",
+      });
+
+      navigate(role === "pro" ? "/pro" : "/app");
+    }, 700);
   }
 
   return (
-    <>
-      <section
-        className="bg-primary bg-cover bg-left bg-no-repeat flex items-center justify-center lg:justify-end p-4 lg:p-12 h-dvh w-dvw "
-        style={{ 
-          backgroundImage: `url(${background})`,
-          backgroundBlendMode: 'luminosity' 
-        }}
-      >
-        <div className="w-full lg:w-2/5 h-full">
-          <Card className="bg-white/95 rounded-[2rem] shadow-2xl border-slate-100 backdrop-blur-sm flex-col justify-center gap-15 p-2 sm:p-4 h-full">
-            <CardHeader>
-                    <div className="flex justify-center items-center gap-2">
-                        <div className="bg-primary rounded-full flex justify-center items-center">
-                            <WrenchIcon className="text-white size-10 p-2"/>
-                        </div>
-                        <h1 className="text-3xl font-black">BiscaTech</h1>
-                    </div>
-            </CardHeader>
-            
-            <CardContent>
+    <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
+      <section className="relative hidden lg:flex bg-blue-400 text-primary-foreground overflow-hidden p-12">
+        <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
 
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  <FieldGroup className="gap-5">
-                    <Field>
-                        
-                      <FieldTitle className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                        Junte-se a Nós
-                      </FieldTitle>
-                        
-                      <FieldDescription className="text-base text-slate-500 font-medium">
-                        Registe-se em nossa plataforma para poder pedir ou prestar um serviço
-                      </FieldDescription>
-                    </Field>
+        <div className="relative z-10 flex flex-col w-full">
+          <Logo />
 
-                    <Controller
-                      name="fullName"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="form-rhf-demo-email" className="text-base text-slate-700 font-medium">
-                            Nome Completo
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="fullName"
-                            type="text"
-                            aria-invalid={fieldState.invalid}
-                            placeholder="João Costa"
-                            className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                          )}
-                        </Field>
-                      )}
-                    />
+          <div className="my-auto">
+            <Wrench
+              size={200}
+              weight="duotone"
+              className="opacity-90 -ml-6 drop-shadow-2xl text-white"
+            />
 
-                    <div className="flex gap-2">
-                      <Controller
-                        name="email"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="form-rhf-demo-email" className="text-base text-slate-700 font-medium">
-                              E-mail
-                            </FieldLabel>
-                            <Input
-                              {...field}
-                              id="form-rhf-demo-email"
-                              type="email"
-                              aria-invalid={fieldState.invalid}
-                              placeholder="exemplo@gmail.com"
-                              autoComplete="email"
-                              className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                            )}
-                          </Field>
-                        )}
-                      />
+            <h2 className="text-5xl font-extrabold text-white leading-tight mt-6 max-w-md">
+              Resolve qualquer biscate. Em minutos.
+            </h2>
 
-                      <Controller
-                        name="phone"
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid}>
-                            <FieldLabel htmlFor="phone" className="text-base text-slate-700 font-medium">
-                              Nº de Telemóvel
-                            </FieldLabel>
-                            <Input
-                              {...field}
-                              id="phone"
-                              type="text"
-                              aria-invalid={fieldState.invalid}
-                              placeholder="+244 912 345 678"
-                              className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                            />
-                            {fieldState.invalid && (
-                              <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                            )}
-                          </Field>
-                        )}
-                      />
-                    </div>
+            <p className="text-base opacity-90 mt-4 max-w-md text-white">
+              A plataforma que conecta-te aos melhores profissionais de Luanda.
+            </p>
+          </div>
 
-                    <Controller
-                      name="password"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="password" className="text-base text-slate-700 font-medium">
-                            Palavra-passe
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="password"
-                            type="password"
-                            aria-invalid={fieldState.invalid}
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                            className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                          )}
-                        </Field>
-                      )}
-                    />
-
-                    <Controller
-                      name="confirmPassword"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="password" className="text-base text-slate-700 font-medium">
-                            Confirmar Palavra-passe
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="confirmPassword"
-                            type="password"
-                            aria-invalid={fieldState.invalid}
-                            placeholder="••••••••"
-                            autoComplete="current-password"
-                            className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                          )}
-                        </Field>
-                      )}
-                    />
-
-                  </FieldGroup>
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 mt-6 rounded-xl text-base font-bold bg-primary hover:bg-primary/90 shadow-md active:scale-[0.98] transition-all"
-                >
-                  Iniciar sessão
-                </Button>
-              </form>
-            </CardContent>
-
-            <CardFooter className="border-muted p-5 justify-center">
-                <p className="text-center text-sm text-slate-500 font-regular">
-                  Não tem conta?{" "}
-                  <Link to="/register" className="font-medium text-primary hover:underline">
-                    Registe-se
-                  </Link>
-                </p>
-            </CardFooter>
-          </Card>
+          <p className="text-xs opacity-70 text-white">
+            © Nema 2026 · Luanda, Angola
+          </p>
         </div>
       </section>
-    </>
+
+      <section className="flex items-center justify-center px-6 py-12 lg:px-12">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden mb-8 flex justify-center">
+            <Logo />
+          </div>
+
+          <div className="bg-white border border-slate-200 shadow-sm rounded-3xl p-8 lg:p-10">
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              Criar conta
+            </h1>
+
+            <p className="text-sm text-muted-foreground mt-2">
+              Como queres usar a Nema?
+            </p>
+
+            {/* Role tabs */}
+            <div className="grid grid-cols-2 gap-2 mt-5 p-1 bg-slate-100 rounded-4xl">
+              {[
+                {
+                  id: "client" as Role,
+                  icon: UserIcon,
+                  label: "Cliente",
+                },
+                {
+                  id: "pro" as Role,
+                  icon: Wrench,
+                  label: "Profissional",
+                },
+              ].map((r) => (
+                <button
+                  key={r.id}
+                  type="button"
+                  onClick={() => setRole(r.id)}
+                  className={cn(
+                    "h-10 rounded-4xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all cursor-pointer",
+                    role === r.id
+                      ? "bg-white text-primary shadow-sm text-blue-400"
+                      : "text-zinc-400",
+                  )}>
+                  <r.icon size={16} weight="bold" />
+                  {r.label}
+                </button>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full mt-5 gap-2.5 rounded-4xl border-2 py-5 bg-zinc-400/10 cursor-pointer">
+              <GoogleLogo size={20} weight="bold" />
+              Continuar com Google
+            </Button>
+
+            <div className="my-5 flex items-center gap-3">
+              <div className="flex-1 h-px bg-slate-200" />
+
+              <span className="text-[11px] text-muted-foreground font-semibold">
+                OU
+              </span>
+
+              <div className="flex-1 h-px bg-slate-200" />
+            </div>
+
+            <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+              <FieldGroup className="space-y-1.5">
+                {/* NAME */}
+                <Controller
+                  name="name"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="name">Nome completo</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="name"
+                        placeholder="O teu nome"
+                        className="h-11 border-2 py-5 rounded-2xl bg-zinc-400/10"
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                {/* EMAIL */}
+                <Controller
+                  name="email"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="email">E-mail</FieldLabel>
+
+                      <Input
+                        {...field}
+                        id="email"
+                        type="email"
+                        placeholder="tu@exemplo.com"
+                        className="h-11 border-2 py-5 rounded-2xl bg-zinc-400/10"
+                      />
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                {/* PHONE */}
+                <Controller
+                  name="phone"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="phone">Telefone</FieldLabel>
+
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">
+                          🇦🇴 +244
+                        </span>
+
+                        <Input
+                          {...field}
+                          id="phone"
+                          type="tel"
+                          inputMode="numeric"
+                          placeholder="923456789"
+                          className="h-11 pl-20 border-2 py-5 rounded-2xl bg-zinc-400/10"
+                        />
+                      </div>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                {/* PASSWORD */}
+                <Controller
+                  name="password"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="password">Palavra-passe</FieldLabel>
+
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          id="password"
+                          type={showPwd ? "text" : "password"}
+                          placeholder="••••••••"
+                          className="h-11 border-2 py-5 rounded-2xl bg-zinc-400/10"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => setShowPwd((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
+                        </button>
+                      </div>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+
+                {/* ACCEPT */}
+                <Controller
+                  name="accept"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <label className="flex items-start gap-2 pt-1 cursor-pointer">
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="mt-0.5 h-4 w-4 rounded border-slate-300 accent-primary"
+                        />
+
+                        <span className="text-xs text-muted-foreground">
+                          Aceito os{" "}
+                          <Link
+                            to="#"
+                            className="font-bold text-primary hover:underline">
+                            termos
+                          </Link>{" "}
+                          e a{" "}
+                          <Link
+                            to="#"
+                            className="font-bold text-primary hover:underline">
+                            política de privacidade
+                          </Link>
+                          .
+                        </span>
+                      </label>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+
+              <Button
+                type="submit"
+                size="lg"
+                disabled={loading}
+                className="w-full text-white rounded-4xl text-lg p-6 cursor-pointer">
+                {loading ? (
+                  "A criar conta…"
+                ) : (
+                  <>
+                    Criar conta <ArrowRight size={18} weight="bold" />
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <p className="text-center text-sm text-muted-foreground mt-6">
+              Já tens conta?{" "}
+              <Link
+                to="/auth/login"
+                className="font-bold text-primary hover:underline">
+                Entrar
+              </Link>
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
   );
-}
+};
 
 export { Register };

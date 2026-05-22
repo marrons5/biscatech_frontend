@@ -10,3 +10,8 @@ export * from "./input";
 export * from "./tooltip";
 export * from "./useSidebar";
 export * from "./drawer";
+
+export * from "./checkbox";
+
+export * from "./dialog";
+
