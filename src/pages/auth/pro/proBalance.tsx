@@ -1,52 +1,10 @@
 import React from "react";
-import { Wallet, TrendingUp, ChartBar, WalletIcon } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { ChartAreaAxes } from "@/components/custom/areaChart";
 import { ChartBarLabel } from "@/components/custom/barChart";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components";
-import { PageHeader } from "@/components/custom/pageHeader";
-// import { PageHeader } from "@/components/nema/PageHeader";
-
-const months = [
-  { d: "Jan", v: 180 },
-  { d: "Fev", v: 220 },
-  { d: "Mar", v: 195 },
-  { d: "Abr", v: 287 },
-  { d: "Mai", v: 245 },
-];
-const cats = [
-  { d: "Canalização", v: 65 },
-  { d: "Inst. Sanitária", v: 30 },
-  { d: "Reparações", v: 18 },
-];
-const Bars = ({
-  data,
-  suffix = "k",
-}: {
-  data: { d: string; v: number }[];
-  suffix?: string;
-}) => {
-  const max = Math.max(...data.map((x) => x.v));
-  return (
-    <div className="flex items-end justify-between gap-3 h-48">
-      {data.map((m) => (
-        <div key={m.d} className="flex-1 flex flex-col items-center gap-2">
-          <span className="text-[10px] font-bold text-muted-foreground">
-            {m.v}
-            {suffix}
-          </span>
-          <div
-            className="w-full rounded-t-lg bg-gradient-to-t from-primary to-primary-glow shadow-sm"
-            style={{ height: `${(m.v / max) * 100}%` }}
-          />
-          <span className="text-xs font-bold text-foreground">{m.d}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
 function ProBalance() {
   return (
     <React.Fragment>

@@ -43,8 +43,8 @@ const BePro = () => {
             Recebe pedidos perto de ti, organiza a tua agenda e ganha mais — sem
             custos fixos.
           </p>
-          <Button asChild variant="default"  className="mt-7">
-            <Link to="/registro">
+          <Button asChild variant="default" className="mt-7">
+            <Link to="/auth/register">
               Começar agora <ArrowRight className="h-5 w-5" />
             </Link>
           </Button>
@@ -70,4 +70,4 @@ const BePro = () => {
   );
 };
 
-export  {BePro};
+export { BePro };

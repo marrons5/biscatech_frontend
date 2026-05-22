@@ -215,7 +215,7 @@ const Profile = () => {
               <div className="h-11 w-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4">
                 <Headset weight="duotone" className="h-6 w-6" />
               </div>
-              <h3 className="font-bold text-foreground">Suporte Nemma</h3>
+              <h3 className="font-bold text-foreground">Suporte BiscaTech</h3>
               <p className="text-sm text-muted-foreground mt-1">
                 Precisa de ajuda? A nossa equipa responde em minutos.
               </p>

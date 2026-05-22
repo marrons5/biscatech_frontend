@@ -82,7 +82,7 @@ const Home = () => {
               <Button
                 asChild
                 className="bg-blue-950 text-white p-5 rounded-4xl">
-                <Link to="/registro">
+                <Link to="/auth/register">
                   Pedir ajuda <ArrowRight className="h-5 w-5" />
                 </Link>
               </Button>
@@ -176,7 +176,7 @@ const Home = () => {
           {services.map((s) => (
             <Link
               key={s.label}
-              to="/registro"
+              to="/auth/register"
               className="group flex flex-col items-center gap-3 p-5 rounded-2xl bg-card border border-border/60 shadow-card hover:border-blue-400 hover:shadow-soft hover:-translate-y-1 transition-all">
               <div className="h-12 w-12 rounded-full  bg-accent flex items-center justify-center bg-blue-400/10 group-hover:bg-blue-400 group-hover:text-white  transition-colors">
                 <s.icon className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
@@ -233,7 +233,7 @@ const Home = () => {
             <Button
               asChild
               className="mt-6 bg-white text-foreground hover:bg-secondary p-6 rounded-4xl">
-              <Link to="/registro">
+              <Link to="/auth/register">
                 Quero ser profissional <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
@@ -246,4 +246,4 @@ const Home = () => {
   );
 };
 
-export  {Home};
+export { Home };
