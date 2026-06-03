@@ -6,8 +6,7 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   MapPinIcon,
-  WrenchIcon,
-  SignOutIcon,
+  WrenchIcon
 } from "@phosphor-icons/react";
 // import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
@@ -53,138 +52,6 @@ const ProSettings = () => {
   return (
     <section className="grid grid-cols-10 gap-10 px-10 w-full h-full">
       <main className="col-span-10 lg:col-span-7 flex flex-col gap-5">
-            {/* <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <h3 className="font-extrabold text-lg mb-1">
-                Definições da Conta
-              </h3>
-              <p className="text-xs text-muted-foreground mb-5">
-                Atualiza o teu acesso à plataforma
-              </p>
-
-              <form
-                onSubmit={accountForm.handleSubmit(() =>
-                  toast("Conta atualizada"),
-                )}
-                className="space-y-4">
-                <FieldGroup>
-                  <Controller
-                    control={accountForm.control}
-                    name="email"
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldLabel>E-mail</FieldLabel>
-
-                        <Input type="email" {...field} />
-
-                        <FieldError>{fieldState.error?.message}</FieldError>
-                      </Field>
-                    )}
-                  />
-
-                  <Controller
-                    control={accountForm.control}
-                    name="password"
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldLabel>Nova Password</FieldLabel>
-
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          {...field}
-                        />
-
-                        <FieldDescription>
-                          Deixa vazio caso não queiras alterar.
-                        </FieldDescription>
-
-                        <FieldError>{fieldState.error?.message}</FieldError>
-                      </Field>
-                    )}
-                  />
-                </FieldGroup>
-
-                <Button type="submit" variant="default">
-                  Guardar alterações
-                </Button>
-              </form>
-            </section>
-
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <h3 className="font-extrabold text-lg mb-1">
-                Definições do Serviço
-              </h3>
-              <p className="text-xs text-muted-foreground mb-5">
-                Define a tua especialidade e tarifa
-              </p>
-
-              <form
-                onSubmit={serviceForm.handleSubmit(() =>
-                  toast("Serviço atualizado"),
-                )}
-                className="space-y-4">
-                <FieldGroup>
-                  <Controller
-                    control={serviceForm.control}
-                    name="specialty"
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldLabel>Especialidade</FieldLabel>
-
-                        <Input {...field} />
-
-                        <FieldError>{fieldState.error?.message}</FieldError>
-                      </Field>
-                    )}
-                  />
-
-                  <Controller
-                    control={serviceForm.control}
-                    name="hourly"
-                    render={({ field, fieldState }) => (
-                      <Field>
-                        <FieldLabel>Preço Hora (Kz)</FieldLabel>
-
-                        <Input
-                          type="number"
-                          value={field.value as number | string}
-                          onChange={(e) => field.onChange(e.target.value)}
-                          onBlur={field.onBlur}
-                          name={field.name}
-                          ref={field.ref}
-                        />
-
-                        <FieldDescription>
-                          Valor cobrado por hora de serviço.
-                        </FieldDescription>
-
-                        <FieldError>{fieldState.error?.message}</FieldError>
-                      </Field>
-                    )}
-                  />
-                </FieldGroup>
-
-                <Button type="submit" variant="default">
-                  Guardar alterações
-                </Button>
-              </form>
-            </section>
-
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <h3 className="font-extrabold text-lg mb-1">Sessão</h3>
-              <p className="text-xs text-muted-foreground mb-5">
-                Termina a tua sessão neste dispositivo
-              </p>
-              <Button
-                variant="outline"
-                className="text-destructive border-destructive/40 hover:bg-destructive/5"
-                onClick={() => {
-                  logout();
-                  navigate("/", { replace: true });
-                }}>
-                <SignOut size={18} weight="bold" /> Terminar Sessão
-              </Button>
-            </section> */}
 
             <Accordion
             type="single"
@@ -268,6 +135,7 @@ const ProSettings = () => {
               </AccordionItem>
             </Accordion>
       </main>
+      
       <aside className="col-span-10 lg:col-span-3 flex flex-col gap-5">
             <section className="relative overflow-hidden rounded-2xl bg-primary-gradient shadow-sm text-primary-foreground p-6 text-center">
               <div className="absolute -top-12 -right-12 h-36 w-36 rounded-full bg-white/15 blur-2xl" />

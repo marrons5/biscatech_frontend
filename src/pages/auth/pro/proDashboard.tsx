@@ -15,19 +15,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
-} from "@/components/ui/";
-// import { BottomNav } from "@/components/custom/BottomNav";
-import { Switch } from "@/components/ui/";
-import { Button } from "@/components/ui/";
+} from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/";
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 type BadgeVariant = "blue" | "green" | "orange" | "red";
@@ -78,7 +77,7 @@ const selectCardTheme = (serviceType: string): CardTheme | undefined => {
         textColorVariant: "text-destructive",
         borderColorVariant: "border-destructive"
       };
-    default: break;
+    default: return undefined;
   }
 };
 
@@ -163,206 +162,198 @@ const tabsOptionsData = [
   { key: "installation", label: "Instalação" },
   { key: "maintenance", label: "Manutenção" },
   { key: "emergency", label: "Emergência" }
-]
-
-
+];
 
 function ProDashboard() {
   const [available, setAvailable] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [serviceTypeTabs, setServiceTypeTabs] = useState(serviceRequestsData);
 
-  const filteredServiceTypes = useCallback((serviceType: string) => {
-    if (serviceType === "todos") return setServiceTypeTabs(serviceRequestsData);
-    setServiceTypeTabs(
-      serviceRequestsData.filter((item) => item.type.label === serviceType),
-    );
+  const filteredServiceTypes = useCallback((serviceTypeKey: string) => {
+    setActiveTab(serviceTypeKey);
+    if (serviceTypeKey === "all") {
+      setServiceTypeTabs(serviceRequestsData);
+    } else {
+      setServiceTypeTabs(
+        serviceRequestsData.filter((item) => item.type.key === serviceTypeKey),
+      );
+    }
   }, []);
 
-const tabsOptions = useMemo (
-  () => tabsOptionsData.map((tab, index) => {
-    return(
+  const tabsOptions = useMemo(() => 
+    tabsOptionsData.map((tab, index) => (
       <TabsTrigger
-      key={index}
-      value={tab.key}
-      className="text-xs font-semibold rounded-lg"
-      onClick={() => filteredServiceTypes("todos")}
+        key={index}
+        value={tab.key}
+        className="text-xs font-semibold rounded-lg"
+        onClick={() => filteredServiceTypes(tab.key)}
       >
         {tab.label}
       </TabsTrigger>
-    );
-  }),
-  [tabsOptionsData]
-);
+    )),
+    [filteredServiceTypes]
+  );
 
-const serviceRequests = useMemo (
-  () => serviceRequestsData.map((serviceRequest, index) => {
-    const cardTheme = selectCardTheme(serviceRequest.type.key);
-    return (
-      <Card
-      key={index}
-      className={`${cardTheme?.backgroundColorVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-      >
+  const serviceRequests = useMemo(() => 
+    serviceTypeTabs.map((serviceRequest, index) => {
+      const cardTheme = selectCardTheme(serviceRequest.type.key);
+      return (
+        <Card
+          key={index}
+          className={`${cardTheme?.backgroundColorVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
+        >
+          <CardHeader className="flex justify-between">
+            <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
+            <Badge
+              variant={cardTheme?.badgeVariant}
+              className="capitalize"
+            >
+              {serviceRequest.type.label}
+            </Badge>
+          </CardHeader>
 
-        <CardHeader className="flex justify-between">
-          <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-          <Badge
-            variant={cardTheme?.badgeVariant}
-            className=" capitalize"
-          >
-            {serviceRequest.type.label}
-          </Badge>
-        </CardHeader>
+          <CardContent className="flex justify-between items-center">
+            <div className="flex flex-col justify-between">
+              <div className="flex items-center gap-1">
+                <MapPinIcon
+                  weight="fill"
+                  className={`${cardTheme?.textColorVariant} size-4`}
+                />
+                <span className="text-sm">
+                  {serviceRequest.location}
+                </span>
+              </div>
+              <div className="flex items-center gap-1">
+                <CalendarBlankIcon
+                  weight="fill"
+                  className={`${cardTheme?.textColorVariant} size-4`}
+                />
+                <span className="text-sm">{serviceRequest.date}</span>
+              </div>
+            </div>
 
-        <CardContent className="flex justify-between items-center">
-          <div className="flex flex-col justify-between">
+            <div>
+              <div className={`${cardTheme?.backgroundGradientVariant} rounded-2xl py-2 px-4`}>
+                <span className="text-primary-foreground text-lg font-bold">
+                  {serviceRequest.proposedValue}
+                </span>          
+              </div>
+            </div>
+          </CardContent>
+
+          <CardFooter className="flex justify-between items-center border-none">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  className={`${cardTheme?.backgroundColorVariant}/15 ${cardTheme?.textColorVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
+                  variant={"outline"}
+                  size="sm"
+                >
+                  Ver detalhes
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
+                <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
+                      {serviceRequest.serviceTitle}
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
+                        <img
+                          src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
+                          alt="Leak 1"
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
+                        <img
+                          src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
+                          alt="Leak 2"
+                          className="object-cover w-full h-full"
+                        />
+                      </div>
+                      <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-background/50">
+                        +1 Foto
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
+                        CS
+                      </div>
+                      <div>
+                        <p className="text-xs font-black text-[#091B3D]">
+                          Carlos Silva
+                        </p>
                         <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
+                          <span className="text-[10px] text-[#848D9E]">
+                            Maianga, Luanda
                           </span>
                         </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-          </div>
+                      </div>
+                    </div>
+                    <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
+                      VERIFICADO
+                    </Badge>
+                  </div>
 
-          <div>
-            <div className={`${cardTheme?.backgroundGradientVariant} rounded-2xl py-2 px-4`}>
-              <span className="text-primary-foreground text-lg font-bold">
-                {serviceRequest.proposedValue}
-              </span>          
-            </div>
-          </div>
-        </CardContent>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
+                      <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
+                        Localização
+                      </span>
+                      <p className="text-xs font-bold text-[#091B3D] truncate">
+                        {serviceRequest.location}
+                      </p>
+                    </div>
+                    <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
+                      <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
+                        Data Desejada
+                      </span>
+                      <p className="text-xs font-bold text-[#091B3D]">
+                        {serviceRequest.date}
+                      </p>
+                    </div>
+                  </div>
 
-        <CardFooter className="flex justify-between items-center border-none">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-              className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-              variant="outline"
-              size="sm"
-              >
-                Ver detalhes
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
+                  <div className="space-y-1.5">
+                    <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
+                      Detalhes do Pedido
+                    </span>
+                    <p className="text-xs text-slate-600 leading-relaxed bg-background/50 p-4 rounded-xl border border-slate-100">
+                      {serviceRequest.serviceDescription}
+                    </p>
+                  </div>
+                </div>
 
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-background/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-background/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-background/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-            </DialogContent>
-          </Dialog>
-          <Button className={`${cardTheme?.backgroundGradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}>Aceitar</Button>
-        </CardFooter>
-      </Card>
-    )
-  }), []
-)
+                <div className="p-6 bg-background/80 border-t border-slate-100 flex gap-3">
+                  <DialogClose asChild>
+                    <Button
+                      variant="outline"
+                      className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
+                    >
+                      Ignorar
+                    </Button>
+                  </DialogClose>
+                  <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
+                    Aceitar Serviço
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button className={`${cardTheme?.backgroundGradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.borderColorVariant} w-[47.5%]`}>Aceitar</Button>
+          </CardFooter>
+        </Card>
+      );
+    }), 
+    [serviceTypeTabs]
+  );
 
   return (
     <section className="grid grid-cols-10 gap-10 px-10 w-full">
@@ -388,8 +379,8 @@ const serviceRequests = useMemo (
             </CardContent>
           </Card>
         ) : (
-          <Tabs defaultValue="recentes" className="flex gap-7.5 w-full">
-            <div className="flex items-center justify-between ">
+          <Tabs value={activeTab} className="flex flex-col gap-7.5 w-full">
+            <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900">
                 Pedidos na zona
               </h2>
@@ -399,13 +390,19 @@ const serviceRequests = useMemo (
               </TabsList>
             </div>
 
-            <TabsContent value={tabsOptionsData} className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceRequests}
-            </TabsContent>
-
+            <div className="grid grid-cols-2 gap-2.5 w-full mt-4">
+              {serviceRequests.length > 0 ? (
+                serviceRequests
+              ) : (
+                <p className="text-sm text-slate-500 col-span-2 text-center py-10">
+                  Nenhum pedido encontrado para esta categoria.
+                </p>
+              )}
+            </div>
           </Tabs>
         )}
       </main>
+      
       <aside className="col-span-3 flex flex-col gap-5">
         <Card
           className={cn(
@@ -429,11 +426,7 @@ const serviceRequests = useMemo (
             </span>
 
             <div className="flex-1 min-w-0">
-              <p
-                className={cn(
-                  "text-xs font-bold uppercase tracking-wider opacity-90",
-                )}
-              >
+              <p className="text-xs font-bold uppercase tracking-wider opacity-90">
                 {available ? "Estás disponível" : "Indisponível"}
               </p>
               <p
@@ -482,7 +475,7 @@ const serviceRequests = useMemo (
               >
                 <WrenchIcon />
               </Badge>
-              <CardTitle>Servicos Prestados</CardTitle>
+              <CardTitle>Serviços Prestados</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
