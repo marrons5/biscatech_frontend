@@ -30,7 +30,7 @@ export const AppShell = ({ children }: AppShellProps) => {
             </button>
             {user && (
               <div className="hidden md:flex items-center gap-2 pl-3 ml-1 border-l border-border/60">
-                <div className="h-9 w-9 rounded-xl bg-gradient-hero flex items-center justify-center text-primary-foreground font-bold text-xs">
+                <div className="h-9 w-9 rounded-xl bg-primary-gradient flex items-center justify-center text-primary-foreground font-bold text-xs">
                   {user.initials}
                 </div>
                 <div className="hidden lg:block leading-tight">

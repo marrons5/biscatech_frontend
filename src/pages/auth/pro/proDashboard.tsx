@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+
 import {
   WrenchIcon,
   MapPinIcon,
@@ -30,43 +31,54 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/";
 import { cn } from "@/lib/utils";
 
 type BadgeVariant = "blue" | "green" | "orange" | "red";
-type GradientVariant = "primary-gradient" | "success-gradient" | "warning-gradient" | "destructive-gradient";
-type ColorsVariant = "primary" | "success" | "warning" | "destructive";
+type BackgroundColorVariant = "bg-primary" | "bg-success" | "bg-warning" | "bg-destructive";
+type BackgroundGradientVariant = "bg-primary-gradient" | "bg-success-gradient" | "bg-warning-gradient" | "bg-destructive-gradient";
+type TextColorVariant = "text-primary" | "text-success" | "text-warning" | "text-destructive";
+type BorderColorVariant = "border-primary" | "border-success" | "border-warning" | "border-destructive";
 
 type CardTheme = {
   badgeVariant: BadgeVariant;
-  gradientVariant: GradientVariant;
-  colorsVariant: ColorsVariant;
+  backgroundColorVariant: BackgroundColorVariant;
+  backgroundGradientVariant: BackgroundGradientVariant;
+  textColorVariant: TextColorVariant;
+  borderColorVariant: BorderColorVariant
 };
 
 const selectCardTheme = (serviceType: string): CardTheme | undefined => {
   switch (serviceType) {
-    case "reparo":
+    case "repair":
       return {
         badgeVariant: "blue",
-        gradientVariant: "primary-gradient",
-        colorsVariant: "primary",
+        backgroundColorVariant: "bg-primary",
+        backgroundGradientVariant: "bg-primary-gradient",
+        textColorVariant: "text-primary",
+        borderColorVariant: "border-primary"
       };
-    case "instalação":
+    case "installation":
       return {
         badgeVariant: "green",
-        gradientVariant: "success-gradient",
-        colorsVariant: "success",
+        backgroundColorVariant: "bg-success",
+        backgroundGradientVariant: "bg-success-gradient",
+        textColorVariant: "text-success",
+        borderColorVariant: "border-success"
       };
-    case "manutenção":
+    case "maintenance":
       return {
         badgeVariant: "orange",
-        gradientVariant: "warning-gradient",
-        colorsVariant: "warning",
+        backgroundColorVariant: "bg-warning",
+        backgroundGradientVariant: "bg-warning-gradient",
+        textColorVariant: "text-warning",
+        borderColorVariant: "border-warning"
       };
-    case "emergência":
+    case "emergency":
       return {
         badgeVariant: "red",
-        gradientVariant: "destructive-gradient",
-        colorsVariant: "destructive",
+        backgroundColorVariant: "bg-destructive",
+        backgroundGradientVariant: "bg-destructive-gradient",
+        textColorVariant: "text-destructive",
+        borderColorVariant: "border-destructive"
       };
-    default:
-      break;
+    default: break;
   }
 };
 
@@ -76,7 +88,7 @@ const serviceRequestsData = [
     location: "Talatona",
     date: "21/05/2026",
     proposedValue: "12.000 Kz",
-    serviceType: "emergência",
+    type: { key: "emergency", label: "Emergência" },
     serviceDescription:
       "O cano principal do lava-loiça rebentou e está a inundar a cozinha rapidamente. É necessário fechar a segurança e substituir a tubagem danificada com urgência.",
   },
@@ -85,7 +97,7 @@ const serviceRequestsData = [
     location: "Miramar",
     date: "22/05/2026",
     proposedValue: "5.000 Kz",
-    serviceType: "instalação",
+    type: { key: "installation", label: "Instalação" },
     serviceDescription:
       "Substituição de uma sanita antiga por um modelo novo com sistema de descarga dupla. O local já tem as furações prontas, apenas necessita de fixação e vedação.",
   },
@@ -94,7 +106,7 @@ const serviceRequestsData = [
     location: "Maianga",
     date: "23/05/2026",
     proposedValue: "10.000 Kz",
-    serviceType: "reparo",
+    type: { key: "repair", label: "Reparo" },
     serviceDescription:
       "A torneira do misturador da casa de banho está a pingar continuamente, mesmo estando totalmente fechada. Necessito da troca dos manípulos ou substituição total da peça.",
   },
@@ -103,7 +115,7 @@ const serviceRequestsData = [
     location: "Ingombota",
     date: "25/05/2026",
     proposedValue: "7.500 Kz",
-    serviceType: "manutenção",
+    type: { key: "maintenance", label: "Manutenção" },
     serviceDescription:
       "A caixa de visita do esgoto no quintal está a deitar água cinzenta para fora e apresenta forte mau cheiro. É preciso fazer uma desobstrução e limpeza preventiva.",
   },
@@ -112,7 +124,7 @@ const serviceRequestsData = [
     location: "Viana",
     date: "21/05/2026",
     proposedValue: "15.000 Kz",
-    serviceType: "emergência",
+    type: { key: "emergency", label: "Emergência" },
     serviceDescription:
       "O disjuntor principal do quadro elétrico dispara imediatamente sempre que o aparelho de ar condicionado é ligado. Cheira a queimado perto dos cabos de alimentação.",
   },
@@ -121,7 +133,7 @@ const serviceRequestsData = [
     location: "Centralidade do Kilamba",
     date: "24/05/2026",
     proposedValue: "25.000 Kz",
-    serviceType: "instalação",
+    type: { key: "installation", label: "Instalação" },
     serviceDescription:
       "Instalação completa de um aparelho Split de 12.000 BTUs na sala de estar. Requer furação da parede de betão para a passagem da tubagem de cobre e fixação do compressor externo.",
   },
@@ -130,7 +142,7 @@ const serviceRequestsData = [
     location: "Cacuaco",
     date: "26/05/2026",
     proposedValue: "35.000 Kz",
-    serviceType: "reparo",
+    type: { key: "repair", label: "Reparo" },
     serviceDescription:
       "Gerador a gasolina de 5.5 KVA não arranca de forma nenhuma. Já mudei a vela de ignição, mas continua a falhar e deita um fumo muito escuro pelo escape quando tenta dar partida.",
   },
@@ -139,22 +151,218 @@ const serviceRequestsData = [
     location: "Belas",
     date: "27/05/2026",
     proposedValue: "18.000 Kz",
-    serviceType: "manutenção",
+    type: { key: "maintenance", label: "Manutenção" },
     serviceDescription:
       "Manutenção de rotina em dois aparelhos de ar condicionado. O serviço inclui a lavagem completa dos filtros de poeira, higienização das turbinas internas e verificação/reposição do gás refrigerante.",
   },
 ];
 
+const tabsOptionsData = [
+  { key: "all", label: "Todos"},
+  { key: "repair", label: "Reparo" },
+  { key: "installation", label: "Instalação" },
+  { key: "maintenance", label: "Manutenção" },
+  { key: "emergency", label: "Emergência" }
+]
+
+
+
 function ProDashboard() {
   const [available, setAvailable] = useState(true);
+  const [activeTab, setActiveTab] = useState("all");
   const [serviceTypeTabs, setServiceTypeTabs] = useState(serviceRequestsData);
 
   const filteredServiceTypes = useCallback((serviceType: string) => {
     if (serviceType === "todos") return setServiceTypeTabs(serviceRequestsData);
     setServiceTypeTabs(
-      serviceRequestsData.filter((item) => item.serviceType === serviceType),
+      serviceRequestsData.filter((item) => item.type.label === serviceType),
     );
   }, []);
+
+const tabsOptions = useMemo (
+  () => tabsOptionsData.map((tab, index) => {
+    return(
+      <TabsTrigger
+      key={index}
+      value={tab.key}
+      className="text-xs font-semibold rounded-lg"
+      onClick={() => filteredServiceTypes("todos")}
+      >
+        {tab.label}
+      </TabsTrigger>
+    );
+  }),
+  [tabsOptionsData]
+);
+
+const serviceRequests = useMemo (
+  () => serviceRequestsData.map((serviceRequest, index) => {
+    const cardTheme = selectCardTheme(serviceRequest.type.key);
+    return (
+      <Card
+      key={index}
+      className={`${cardTheme?.backgroundColorVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
+      >
+
+        <CardHeader className="flex justify-between">
+          <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
+          <Badge
+            variant={cardTheme?.badgeVariant}
+            className=" capitalize"
+          >
+            {serviceRequest.type.label}
+          </Badge>
+        </CardHeader>
+
+        <CardContent className="flex justify-between items-center">
+          <div className="flex flex-col justify-between">
+                        <div className="flex items-center gap-1">
+                          <MapPinIcon
+                            weight="fill"
+                            className={`text-${cardTheme?.colorsVariant} size-4`}
+                          />
+                          <span className="text-sm">
+                            {serviceRequest.location}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <CalendarBlankIcon
+                            weight="fill"
+                            className={`text-${cardTheme?.colorsVariant} size-4`}
+                          />
+                          <span className="text-sm">{serviceRequest.date}</span>
+                        </div>
+          </div>
+
+          <div>
+            <div className={`${cardTheme?.backgroundGradientVariant} rounded-2xl py-2 px-4`}>
+              <span className="text-primary-foreground text-lg font-bold">
+                {serviceRequest.proposedValue}
+              </span>          
+            </div>
+          </div>
+        </CardContent>
+
+        <CardFooter className="flex justify-between items-center border-none">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+              className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
+              variant="outline"
+              size="sm"
+              >
+                Ver detalhes
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
+                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
+                            <DialogHeader>
+                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
+                                {serviceRequest.serviceTitle}
+                              </DialogTitle>
+                            </DialogHeader>
+
+                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
+                            <div className="space-y-2">
+                              <div className="grid grid-cols-3 gap-2">
+                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
+                                  <img
+                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
+                                    alt="Leak 1"
+                                    className="object-cover w-full h-full"
+                                  />
+                                </div>
+                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
+                                  <img
+                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
+                                    alt="Leak 2"
+                                    className="object-cover w-full h-full"
+                                  />
+                                </div>
+                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-background/50">
+                                  +1 Foto
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
+                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
+                              <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
+                                  CS
+                                </div>
+                                <div>
+                                  <p className="text-xs font-black text-[#091B3D]">
+                                    Carlos Silva
+                                  </p>
+                                  <div className="flex items-center gap-1">
+                                    <span className="text-[10px] text-[#848D9E]">
+                                      Maianga, Luanda
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
+                                VERIFICADO
+                              </Badge>
+                            </div>
+
+                            {/* 4. METADADOS (LOCAL E DATA) */}
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
+                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
+                                  Localização
+                                </span>
+                                <p className="text-xs font-bold text-[#091B3D] truncate">
+                                  {serviceRequest.location}
+                                </p>
+                              </div>
+                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
+                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
+                                  Data Desejada
+                                </span>
+                                <p className="text-xs font-bold text-[#091B3D]">
+                                  {serviceRequest.date}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* 5. DESCRIÇÃO */}
+                            <div className="space-y-1.5">
+                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
+                                Detalhes do Pedido
+                              </span>
+                              <p className="text-xs text-slate-600 leading-relaxed bg-background/50 p-4 rounded-xl border border-slate-100">
+                                A torneira principal do lava-loiça partiu e está
+                                a inundar a cozinha. Preciso de alguém para
+                                substituir o cano e a torneira com urgência.
+                                Tenho as peças novas já compradas.
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* 6. AÇÕES FIXAS NO FUNDO */}
+                          <div className="p-6 bg-background/80 border-t border-slate-100 flex gap-3">
+                            <DialogClose asChild>
+                              <Button
+                                variant="outline"
+                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
+                              >
+                                Ignorar
+                              </Button>
+                            </DialogClose>
+                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
+                              Aceitar Serviço
+                            </Button>
+                          </div>
+            </DialogContent>
+          </Dialog>
+          <Button className={`${cardTheme?.backgroundGradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}>Aceitar</Button>
+        </CardFooter>
+      </Card>
+    )
+  }), []
+)
 
   return (
     <section className="grid grid-cols-10 gap-10 px-10 w-full">
@@ -187,897 +395,12 @@ function ProDashboard() {
               </h2>
 
               <TabsList className="grid grid-cols-5 bg-slate-200/60 p-1 rounded-xl">
-                <TabsTrigger
-                  value="todos"
-                  className="text-xs font-semibold rounded-lg"
-                  onClick={() => filteredServiceTypes("todos")}
-                >
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger
-                  value="reparo"
-                  className="text-xs font-semibold rounded-lg"
-                  onClick={() => filteredServiceTypes("reparo")}
-                >
-                  Reparo
-                </TabsTrigger>
-                <TabsTrigger
-                  value="manutenção"
-                  className="text-xs font-semibold rounded-lg"
-                  onClick={() => filteredServiceTypes("manutenção")}
-                >
-                  Manutenção
-                </TabsTrigger>
-                <TabsTrigger
-                  value="instalação"
-                  className="text-xs font-semibold rounded-lg"
-                  onClick={() => filteredServiceTypes("instalação")}
-                >
-                  Instalação
-                </TabsTrigger>
-                <TabsTrigger
-                  value="emergência"
-                  className="text-xs font-semibold rounded-lg data-[state=active]:text-red-600"
-                  onClick={() => filteredServiceTypes("emergência")}
-                >
-                  Emergência
-                </TabsTrigger>
+                {tabsOptions}
               </TabsList>
             </div>
 
-            <TabsContent value="todos" className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceTypeTabs.map((serviceRequest, index) => {
-                const cardTheme = selectCardTheme(serviceRequest.serviceType);
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-${cardTheme?.colorsVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-                  >
-                    <CardHeader className="flex justify-between">
-                      <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-                      <Badge
-                        variant={cardTheme?.badgeVariant}
-                        className=" capitalize"
-                      >
-                        {serviceRequest.serviceType}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="flex justify-between items-center">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`bg-${cardTheme?.gradientVariant} rounded-2xl py-2 px-4`}
-                        >
-                          <span className="text-primary-foreground text-lg font-bold">
-                            {serviceRequest.proposedValue}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center border-none">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Ver detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-slate-50/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className={`bg-${cardTheme?.gradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}
-                      >
-                        Aceitar
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-            </TabsContent>
-
-            <TabsContent value="reparo" className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceTypeTabs.map((serviceRequest, index) => {
-                const cardTheme = selectCardTheme(serviceRequest.serviceType);
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-${cardTheme?.colorsVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-                  >
-                    <CardHeader className="flex justify-between">
-                      <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-                      <Badge
-                        variant={cardTheme?.badgeVariant}
-                        className=" capitalize"
-                      >
-                        {serviceRequest.serviceType}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="flex justify-between items-center">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`bg-${cardTheme?.gradientVariant} rounded-2xl py-2 px-4`}
-                        >
-                          <span className="text-primary-foreground text-lg font-bold">
-                            {serviceRequest.proposedValue}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center border-none">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Ver detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-slate-50/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className={`bg-${cardTheme?.gradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}
-                      >
-                        Aceitar
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-            </TabsContent> 
-
-            <TabsContent value="manutenção" className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceTypeTabs.map((serviceRequest, index) => {
-                const cardTheme = selectCardTheme(serviceRequest.serviceType);
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-${cardTheme?.colorsVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-                  >
-                    <CardHeader className="flex justify-between">
-                      <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-                      <Badge
-                        variant={cardTheme?.badgeVariant}
-                        className=" capitalize"
-                      >
-                        {serviceRequest.serviceType}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="flex justify-between items-center">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`bg-${cardTheme?.gradientVariant} rounded-2xl py-2 px-4`}
-                        >
-                          <span className="text-primary-foreground text-lg font-bold">
-                            {serviceRequest.proposedValue}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center border-none">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Ver detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-slate-50/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className={`bg-${cardTheme?.gradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}
-                      >
-                        Aceitar
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-            </TabsContent>
-
-            <TabsContent value="instalação" className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceTypeTabs.map((serviceRequest, index) => {
-                const cardTheme = selectCardTheme(serviceRequest.serviceType);
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-${cardTheme?.colorsVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-                  >
-                    <CardHeader className="flex justify-between">
-                      <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-                      <Badge
-                        variant={cardTheme?.badgeVariant}
-                        className=" capitalize"
-                      >
-                        {serviceRequest.serviceType}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="flex justify-between items-center">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`bg-${cardTheme?.gradientVariant} rounded-2xl py-2 px-4`}
-                        >
-                          <span className="text-primary-foreground text-lg font-bold">
-                            {serviceRequest.proposedValue}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center border-none">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Ver detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-slate-50/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className={`bg-${cardTheme?.gradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}
-                      >
-                        Aceitar
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
-            </TabsContent>
-
-            <TabsContent value="emergência" className="grid grid-cols-2 gap-2.5 w-full">
-              {serviceTypeTabs.map((serviceRequest, index) => {
-                const cardTheme = selectCardTheme(serviceRequest.serviceType);
-                return (
-                  <Card
-                    key={index}
-                    className={`bg-${cardTheme?.colorsVariant}/10 bg-card rounded-2xl p-5! *:p-0`}
-                  >
-                    <CardHeader className="flex justify-between">
-                      <CardTitle>{serviceRequest.serviceTitle}</CardTitle>
-                      <Badge
-                        variant={cardTheme?.badgeVariant}
-                        className=" capitalize"
-                      >
-                        {serviceRequest.serviceType}
-                      </Badge>
-                    </CardHeader>
-                    <CardContent className="flex justify-between items-center">
-                      <div className="flex flex-col justify-between">
-                        <div className="flex items-center gap-1">
-                          <MapPinIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">
-                            {serviceRequest.location}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarBlankIcon
-                            weight="fill"
-                            className={`text-${cardTheme?.colorsVariant} size-4`}
-                          />
-                          <span className="text-sm">{serviceRequest.date}</span>
-                        </div>
-                      </div>
-                      <div>
-                        <div
-                          className={`bg-${cardTheme?.gradientVariant} rounded-2xl py-2 px-4`}
-                        >
-                          <span className="text-primary-foreground text-lg font-bold">
-                            {serviceRequest.proposedValue}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between items-center border-none">
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            className={`bg-${cardTheme?.colorsVariant}/10 text-${cardTheme?.colorsVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                            variant="outline"
-                            size="sm"
-                          >
-                            Ver detalhes
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px] bg-white rounded-2xl p-0 border-none shadow-2xl overflow-hidden">
-                          <div className="overflow-y-auto max-h-[85vh] p-6 space-y-5">
-                            <DialogHeader>
-                              <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight leading-tight">
-                                {serviceRequest.serviceTitle}
-                              </DialogTitle>
-                            </DialogHeader>
-
-                            {/* 2. ANEXOS (LOGO ABAIXO DO TÍTULO) */}
-                            <div className="space-y-2">
-                              <div className="grid grid-cols-3 gap-2">
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 1"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square bg-slate-100 rounded-xl border border-slate-200/60 flex items-center justify-center text-[10px] text-slate-400 font-bold overflow-hidden">
-                                  <img
-                                    src="https://images.unsplash.com/photo-1595467796065-c4a74eb60091?auto=format&fit=crop&q=80&w=200"
-                                    alt="Leak 2"
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                                <div className="aspect-square border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-[10px] text-slate-400 font-medium bg-slate-50/50">
-                                  +1 Foto
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* 3. PERFIL DO CLIENTE (FIXO) */}
-                            <div className="flex items-center justify-between bg-[#F8FAFC] p-3 rounded-xl border border-slate-100">
-                              <div className="flex items-center gap-3">
-                                <div className="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center font-black text-sm shadow-sm">
-                                  CS
-                                </div>
-                                <div>
-                                  <p className="text-xs font-black text-[#091B3D]">
-                                    Carlos Silva
-                                  </p>
-                                  <div className="flex items-center gap-1">
-                                    <span className="text-[10px] text-[#848D9E]">
-                                      Maianga, Luanda
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <Badge className="bg-success/10 text-success border-none text-[9px] font-black px-2 py-0.5">
-                                VERIFICADO
-                              </Badge>
-                            </div>
-
-                            {/* 4. METADADOS (LOCAL E DATA) */}
-                            <div className="grid grid-cols-2 gap-3">
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Localização
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D] truncate">
-                                  {serviceRequest.location}
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white border border-slate-100 rounded-xl flex flex-col gap-0.5">
-                                <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest">
-                                  Data Desejada
-                                </span>
-                                <p className="text-xs font-bold text-[#091B3D]">
-                                  {serviceRequest.date}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* 5. DESCRIÇÃO */}
-                            <div className="space-y-1.5">
-                              <span className="text-[9px] font-black text-[#848D9E] uppercase tracking-widest ml-1">
-                                Detalhes do Pedido
-                              </span>
-                              <p className="text-xs text-slate-600 leading-relaxed bg-slate-50/50 p-4 rounded-xl border border-slate-100">
-                                A torneira principal do lava-loiça partiu e está
-                                a inundar a cozinha. Preciso de alguém para
-                                substituir o cano e a torneira com urgência.
-                                Tenho as peças novas já compradas.
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* 6. AÇÕES FIXAS NO FUNDO */}
-                          <div className="p-6 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-                            <DialogClose asChild>
-                              <Button
-                                variant="outline"
-                                className="flex-1 py-6 rounded-xl text-slate-500 border-slate-200 font-bold hover:bg-white"
-                              >
-                                Ignorar
-                              </Button>
-                            </DialogClose>
-                            <Button className="flex-1 bg-primary py-6 rounded-xl font-black text-white shadow-lg shadow-primary/20 hover:bg-primary/90">
-                              Aceitar Serviço
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button
-                        className={`bg-${cardTheme?.gradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.colorsVariant} w-[47.5%]`}
-                      >
-                        Aceitar
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                );
-              })}
+            <TabsContent value={tabsOptionsData} className="grid grid-cols-2 gap-2.5 w-full">
+              {serviceRequests}
             </TabsContent>
 
           </Tabs>

@@ -85,7 +85,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-12">
+    <div className="min-h-screen bg-background pb-12">
       <main className="container max-w-7xl px-6 lg:px-8 pt-8">
         <PageHeader
           title="Definições de Conta"

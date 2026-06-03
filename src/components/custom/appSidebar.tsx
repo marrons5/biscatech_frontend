@@ -116,7 +116,7 @@ export const AppSidebar = () => {
 
         <SidebarFooter className="p-3">
           {!collapsed && (
-            <div className="flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-100 p-3 mb-2 shadow-sm">
+            <div className="flex items-center gap-3 rounded-xl bg-background border border-slate-100 p-3 mb-2 shadow-sm">
               <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0 shadow-sm">
                 {mockUser.initials}
               </div>

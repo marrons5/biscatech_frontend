@@ -26,7 +26,7 @@ export const ProCard = ({
     <div className="bg-gradient-card border border-border/60 rounded-2xl p-4 shadow-card hover:shadow-soft transition-all duration-300">
       <div className="flex items-start gap-3">
         <div className="relative shrink-0">
-          <div className="h-12 w-12 rounded-2xl bg-gradient-hero flex items-center justify-center text-primary-foreground font-bold">
+          <div className="h-12 w-12 rounded-2xl bg-primary-gradient flex items-center justify-center text-primary-foreground font-bold">
             {initials}
           </div>
           {online && (

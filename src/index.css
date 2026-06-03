@@ -3,116 +3,103 @@
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-@theme inline {
- 
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --color-foreground: var(--foreground);
-  --color-background: var(--background);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
- -primary: 217 45% 51%;
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: #f2efe8;
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: #d38349;
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-    --gradient-hero: linear-gradient(
-      135deg,
-      hsl(222 75% 14%) 0%,
-      hsl(217 45% 51%) 60%,
-      hsl(217 55% 62%) 100%
-    );
+  /* ==========================================
+     TIPOGRAFIA PRINCIPAL
+  ========================================== */
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+  --heading: 'IBM Plex Sans', system-ui, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
 
-    --gradient-warm: linear-gradient(
-      180deg,
-      hsl(220 33% 98%) 0%,
-      hsl(220 33% 96%) 100%
-    );
+  font: 16px/145% var(--sans);
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 
-    --gradient-mesh:
-      radial-gradient(at 20% 0%, hsl(217 55% 62% / 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsl(217 45% 51% / 0.14) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, hsl(222 75% 14% / 0.1) 0px, transparent 50%);
+  /* ==========================================
+     SISTEMA DE CORES (LIGHT MODE)
+  ========================================== */
+  --background: #F5F7FB; 
+  --foreground: #091B3D;
 
-    --gradient-card: linear-gradient(
-      135deg,
-      hsl(0 0% 100%) 0%,
-      hsl(220 33% 99%) 100%
-    );
+  --card: #ffffff;
+  --card-foreground: #091B3D;
 
-    /* Shadows */
-    --shadow-glow: 0 20px 60px -20px hsl(217 45% 51% / 0.35);
-    --shadow-soft: 0 6px 24px -8px hsl(222 75% 14% / 0.08);
-    --shadow-card:
-      0 1px 2px hsl(222 75% 14% / 0.04), 0 4px 16px -4px hsl(222 75% 14% / 0.06);
+  --popover: #ffffff; 
+  --popover-foreground: #091B3D;
 
-    --shadow-float: 0 14px 40px -14px hsl(217 45% 51% / 0.28);
+  --primary: #4A72BC; 
+  --primary-foreground: #ffffff; 
+  
+  --dark: #091B3D;
+  --warning: #E0A41F;
+  --success: #2E8B57;
+  --destructive: #C94F4F;
+  --neutral: #848D9E;
 
-    /* Transitions */
-    --transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
-    --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* ==========================================
+  GRADIENTES SEMÂNTICOS EM HSL (135deg)
+  ========================================== */
+
+  --primary-gradient: linear-gradient(135deg,
+    hsl(219, 74%, 14%) 0%,
+    hsl(219, 46%, 51%) 60%,
+    hsl(218, 54%, 65%) 100%
+  );
+
+  --warning-gradient: linear-gradient(135deg, 
+    hsl(41, 76%, 15%) 0%, 
+    hsl(41, 76%, 50%) 60%, 
+    hsl(41, 85%, 68%) 100%
+  );
+
+  --success-gradient: linear-gradient(135deg, 
+    hsl(146, 55%, 14%) 0%, 
+    hsl(146, 50%, 36%) 60%, 
+    hsl(146, 52%, 55%) 100%
+  );
+
+  --destructive-gradient: linear-gradient(135deg, 
+    hsl(0, 60%, 18%) 0%, 
+    hsl(0, 54%, 55%) 60%, 
+    hsl(0, 70%, 68%) 100%
+  );
+
+  --neutral-gradient: linear-gradient(135deg, 
+    hsl(218, 15%, 20%) 0%, 
+    hsl(218, 11%, 57%) 60%, 
+    hsl(218, 14%, 75%) 100%
+  );  
+
+  --secondary: #e6ebf5; 
+  --secondary-foreground: #091B3D;
+
+  --muted: #e6ebf5;
+  --muted-foreground: #47546E; 
+
+  --accent: #e6ebf5; 
+  --accent-foreground: #091B3D;
+
+  --border: #848D9E;
+  --input: #848D9E;
+  --ring: #4A72BC;
+
+  --radius: 0.75rem;
+
+  /* ==========================================
+     SISTEMA DE CORES (SIDEBAR)
+  ========================================== */
+  --sidebar-background: #ffffff;
+  --sidebar-foreground: #47546E;
+  --sidebar-primary: #4A72BC;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F5F7FB;
+  --sidebar-accent-foreground: #091B3D;
+  --sidebar-border: #848D9E;
+  --sidebar-ring: #4A72BC;
 }
 
 /* ==========================================

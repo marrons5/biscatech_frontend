@@ -54,7 +54,7 @@ const Verify = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 relative">
+    <div className="min-h-screen bg-background relative">
       <div className="absolute inset-x-0 top-0 h-[420px] bg-gradient-mesh pointer-events-none" />
       <main className="relative container max-w-md px-6 pt-8 pb-8">
         <button
@@ -66,7 +66,7 @@ const Verify = () => {
           <Logo />
         </div>
         <div className="text-center">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-hero flex items-center justify-center shadow-glow mb-4">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-primary-gradient flex items-center justify-center shadow-glow mb-4">
             <ShieldCheck className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">

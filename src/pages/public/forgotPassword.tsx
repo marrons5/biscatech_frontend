@@ -89,7 +89,7 @@ function ForgotPassword() {
                             aria-invalid={fieldState.invalid}
                             placeholder="exemplo@gmail.com"
                             autoComplete="email"
-                            className="bg-slate-50 rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
+                            className="bg-background rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
                           />
                           {fieldState.invalid && (
                             <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
@@ -110,7 +110,7 @@ function ForgotPassword() {
             <CardFooter className="border-muted p-5 justify-center">
                 <p className="text-center text-sm text-slate-500 font-regular">
                   Não tem conta?{" "}
-                  <Link to="/register" className="font-medium text-primary hover:underline">
+                  <Link to="/auth/register" className="font-medium text-primary hover:underline">
                     Registe-se
                   </Link>
                 </p>

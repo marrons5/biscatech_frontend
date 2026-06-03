@@ -46,8 +46,8 @@ const About = () => {
           <div
             key={f.title}
             className="p-6 rounded-3xl bg-card border border-border/60 shadow-card">
-            <div className="h-12 w-12 rounded-full bg-blue-400/10 flex items-center justify-center mb-4">
-              <f.icon className="h-6 w-6 text-blue-400" />
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <f.icon className="h-6 w-6 text-primary" />
             </div>
             <h3 className="text-lg font-bold">{f.title}</h3>
             <p className="text-sm text-muted-foreground mt-1">{f.desc}</p>

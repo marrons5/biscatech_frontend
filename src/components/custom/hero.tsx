@@ -22,7 +22,7 @@ export const Hero = () => {
           <h1 className="text-[34px] leading-[1.05] font-extrabold text-foreground tracking-tight text-balance">
             Que serviço
             <br />
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
+            <span className="bg-primary-gradient bg-clip-text text-transparent">
               precisas hoje?
             </span>
           </h1>
@@ -33,7 +33,7 @@ export const Hero = () => {
 
           {/* Search */}
           <div className="mt-5 relative group">
-            <div className="absolute inset-0 bg-gradient-hero rounded-2xl blur-lg opacity-30 group-focus-within:opacity-50 transition-opacity" />
+            <div className="absolute inset-0 bg-primary-gradient rounded-2xl blur-lg opacity-30 group-focus-within:opacity-50 transition-opacity" />
             <div className="relative flex items-center gap-2 bg-card border border-border rounded-2xl shadow-card pl-4 pr-2 h-14">
               <Search className="h-5 w-5 text-muted-foreground shrink-0" />
               <input

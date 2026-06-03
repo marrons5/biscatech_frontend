@@ -11,6 +11,6 @@ export * from "./tooltip";
 export * from "./useSidebar";
 export * from "./drawer";
 export * from "./checkbox";
-
+export * from "./accordion";
 export * from "./dialog";
 

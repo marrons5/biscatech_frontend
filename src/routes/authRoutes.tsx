@@ -16,6 +16,7 @@ import { Avaliacoes } from '@/pages/auth/client/avaliacoes';
 import { ClientHistory } from '@/pages/auth/client/clientHistory';
 import { ClientSettings } from '@/pages/auth/client/clientSettings';
 import { ClientHome } from '@/pages/auth/client/clientHome';
+import { ProSettings } from '@/pages/auth/pro/proSettings';
 function AuthRoutes() {
   return (
     <React.Fragment>
@@ -105,8 +106,8 @@ function AuthRoutes() {
       <Route element={<PrivateAppLayout />}>
         <Route path="/pro/dashboard" element={<ProDashboard />} />
         <Route path="/pro/balance" element={<ProBalance />} />
-        {/*<Route path="/pro/evaluations" element={<ProEvaluations />} />*/}
         <Route path="/pro/history" element={<ProHistory />} />
+        <Route path="/pro/settings" element={<ProSettings />} />
       </Route>
     </React.Fragment>
   );

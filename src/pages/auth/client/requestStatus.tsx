@@ -45,12 +45,12 @@ const RequestStatus = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-12">
+    <div className="min-h-screen bg-background pb-12">
       <main className="container max-w-6xl px-4 lg:px-8 pt-6 lg:pt-10 space-y-5">
         <PageHeader title={`Pedido #${id}`} subtitle={job.service} back />
         {/* Pro card */}
         {status !== "pending" && status !== "cancelled" && (
-          <section className="relative overflow-hidden rounded-3xl bg-gradient-hero p-5 shadow-glow text-primary-foreground">
+          <section className="relative overflow-hidden rounded-3xl bg-primary-gradient p-5 shadow-glow text-primary-foreground">
             <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
             <div className="relative flex items-center gap-4">
               <div className="h-14 w-14 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-lg font-extrabold">

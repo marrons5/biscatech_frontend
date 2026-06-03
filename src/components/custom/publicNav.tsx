@@ -26,7 +26,7 @@ export const PublicNav = () => {
                 cn(
                   "px-3 py-2 rounded-4xl text-sm font-semibold transition-all duration-500",
                   isActive
-                    ? "text-blue-400 bg-blue-400/10"
+                    ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-foreground",
                 )
               }>
@@ -39,10 +39,10 @@ export const PublicNav = () => {
             asChild
             variant="ghost"
             size="sm"
-            className="hidden sm:inline-flex transition-all duration-200 hover:bg-blue-400/10 rounded-4xl p-5">
+            className="hidden sm:inline-flex transition-all duration-200 hover:bg-primary/10 rounded-4xl p-5">
             <Link to="/login">Entrar</Link>
           </Button>
-          <Button asChild className="bg-blue-950 text-white p-5 rounded-4xl">
+          <Button asChild className="bg-foreground text-white p-5 rounded-4xl">
             <Link to="/auth/register">Criar conta</Link>
           </Button>
         </div>

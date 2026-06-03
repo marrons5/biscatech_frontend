@@ -95,8 +95,8 @@ const Register = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
-      <section className="relative hidden lg:flex bg-blue-400 text-primary-foreground overflow-hidden p-12">
+    <div className="min-h-screen w-full bg-background grid lg:grid-cols-2">
+      <section className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
 
@@ -120,7 +120,7 @@ const Register = () => {
           </div>
 
           <p className="text-xs opacity-70 text-white">
-            © Nema 2026 · Luanda, Angola
+            © BiscaTech 2026 · Luanda, Angola
           </p>
         </div>
       </section>
@@ -161,7 +161,7 @@ const Register = () => {
                   className={cn(
                     "h-10 rounded-4xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all cursor-pointer",
                     role === r.id
-                      ? "bg-white text-primary shadow-sm text-blue-400"
+                      ? "bg-white text-primary shadow-sm text-primary"
                       : "text-zinc-400",
                   )}>
                   <r.icon size={16} weight="bold" />

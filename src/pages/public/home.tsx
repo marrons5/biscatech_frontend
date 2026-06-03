@@ -62,8 +62,8 @@ const Home = () => {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-400/10 text-blue-400 text-xs  mb-4 b">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-400/10 text-primary text-xs  mb-4 b">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
               ACTIVO EM LUANDA
             </span>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05] text-balance">
@@ -81,7 +81,7 @@ const Home = () => {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Button
                 asChild
-                className="bg-blue-950 text-white p-5 rounded-4xl">
+                className="bg-foreground text-white p-5 rounded-4xl">
                 <Link to="/auth/register">
                   Pedir ajuda <ArrowRight className="h-5 w-5" />
                 </Link>
@@ -95,7 +95,7 @@ const Home = () => {
                 <span
                   key={t.label}
                   className="inline-flex items-center gap-2 text-xs  text-zinc-400">
-                  <t.icon className="h-4 w-4 text-blue-400" /> {t.label}
+                  <t.icon className="h-4 w-4 text-primary" /> {t.label}
                 </span>
               ))}
             </div>
@@ -109,7 +109,7 @@ const Home = () => {
             className="relative mx-auto">
             <div className="absolute inset-0 bg-white rounded-[3rem] blur-3xl opacity-30" />
             <div className="relative w-[280px] md:w-[320px] aspect-[9/19] rounded-[3rem] bg-card border-[10px] border-black shadow-float overflow-hidden">
-              <div className="bg-gradient-hero p-5 text-primary-foreground">
+              <div className="bg-primary-gradient p-5 text-primary-foreground">
                 <p className="text-xs opacity-90 text-white">Pedido em curso</p>
                 <p className="font-bold text-white">Canalizador · Talatona</p>
                 <div className="mt-4 flex items-center gap-3 bg-white/15 backdrop-blur rounded-2xl p-3">
@@ -178,7 +178,7 @@ const Home = () => {
               key={s.label}
               to="/auth/register"
               className="group flex flex-col items-center gap-3 p-5 rounded-2xl bg-card border border-border/60 shadow-card hover:border-blue-400 hover:shadow-soft hover:-translate-y-1 transition-all">
-              <div className="h-12 w-12 rounded-full  bg-accent flex items-center justify-center bg-blue-400/10 group-hover:bg-blue-400 group-hover:text-white  transition-colors">
+              <div className="h-12 w-12 rounded-full  bg-accent flex items-center justify-center bg-primary/10 group-hover:bg-primary group-hover:text-white  transition-colors">
                 <s.icon className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
               </div>
               <span className="font-bold text-sm">{s.label}</span>
@@ -203,7 +203,7 @@ const Home = () => {
               <div
                 key={s.n}
                 className="relative p-6 rounded-3xl bg-card border border-border/60 shadow-card">
-                <div className="h-12 w-12 rounded-full bg-gradient-hero flex items-center justify-center text-primary-foreground font-extrabold shadow-glow text-lg text-white">
+                <div className="h-12 w-12 rounded-full bg-primary-gradient flex items-center justify-center text-primary-foreground font-extrabold shadow-glow text-lg text-white">
                   {s.n}
                 </div>
                 <h3 className="mt-4 font-bold text-lg">{s.title}</h3>
@@ -216,7 +216,7 @@ const Home = () => {
 
       {/* Pro CTA */}
       <section className="px-12 py-16">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-hero p-10 md:p-14 shadow-glow text-primary-foreground">
+        <div className="relative overflow-hidden rounded-[2.5rem] bg-primary-gradient p-10 md:p-14 shadow-glow text-primary-foreground">
           <div className="absolute -top-20 -right-20 h-60 w-60 rounded-full bg-white/15 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-primary-deep/30 blur-3xl" />
           <div className="relative max-w-2xl">
