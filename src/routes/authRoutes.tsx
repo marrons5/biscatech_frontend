@@ -9,9 +9,6 @@ import { AppShell } from '@/components/custom/appShell';
 import { Rate } from '@/pages/auth/client/rate';
 import { RequestCreate } from '@/pages/auth/client/requestCreate';
 import { RequestStatus } from '@/pages/auth/client/requestStatus';
-
-import { Orders } from '@/pages/auth/client/orders';
-import { Profile } from '@/pages/auth/client/profile';
 import { Avaliacoes } from '@/pages/auth/client/avaliacoes';
 import { ClientHistory } from '@/pages/auth/client/clientHistory';
 import { ClientSettings } from '@/pages/auth/client/clientSettings';
@@ -42,31 +39,11 @@ function AuthRoutes() {
         <Route path="/client/dashboard" element={<ClientHome/>}/>
 
         <Route
-          path="/app/pedidos"
-          element={
-            <RequireAuth role="client">
-              <AppShell>
-                <Orders />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
-        <Route
           path="/app/avaliacoes"
           element={
             <RequireAuth role="client">
               <AppShell>
                 <Avaliacoes />
-              </AppShell>
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/app/perfil"
-          element={
-            <RequireAuth>
-              <AppShell>
-                <Profile />
               </AppShell>
             </RequireAuth>
           }

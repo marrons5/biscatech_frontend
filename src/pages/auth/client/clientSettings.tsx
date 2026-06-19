@@ -115,8 +115,8 @@ const ClientSettings = () => {
                       <p className="font-semibold text-sm"></p>
                       <p className="text-xs text-muted-foreground"></p>
                     </div>
-                    <Button className="h-9 w-9 rounded-lg hover:bg-destructive/10 text-destructive flex items-center justify-center" aria-label="Remover">
-                      <TrashIcon className="h-4 w-4" />
+                    <Button className="bg-destructive text-primary-foreground border-transparent hover:border-destructive h-9 w-9 rounded-lg hover:bg-destructive/10 hover:text-destructive flex items-center justify-center" aria-label="Remover">
+                      <TrashIcon className=" h-4 w-4" />
                     </Button>
                   </li>
               </ul>

@@ -13,4 +13,4 @@ export * from "./drawer";
 export * from "./checkbox";
 export * from "./accordion";
 export * from "./dialog";
-
+export * from "./select";

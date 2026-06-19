@@ -245,8 +245,7 @@ function ProDashboard() {
             <Dialog>
               <DialogTrigger asChild>
                 <Button
-                  className={`${cardTheme?.backgroundColorVariant}/15 ${cardTheme?.textColorVariant} text-xs p-4 rounded-2xl border-slate-300 w-[47.5%]`}
-                  variant={"outline"}
+                  className={`${cardTheme?.backgroundColorVariant}/15 ${cardTheme?.textColorVariant} text-xs p-4 rounded-2xl w-[47.5%]`}
                   size="sm"
                 >
                   Ver detalhes
@@ -347,7 +346,7 @@ function ProDashboard() {
                 </div>
               </DialogContent>
             </Dialog>
-            <Button className={`${cardTheme?.backgroundGradientVariant} text-primary-foreground text-xs p-4 rounded-2xl border-none border-${cardTheme?.borderColorVariant} w-[47.5%]`}>Aceitar</Button>
+            <Button className={`${cardTheme?.backgroundGradientVariant} text-primary-foreground text-xs p-4 rounded-2xl w-[47.5%]`}>Aceitar</Button>
           </CardFooter>
         </Card>
       );
