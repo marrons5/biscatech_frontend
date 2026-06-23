@@ -27,18 +27,17 @@ import { useSidebar } from "../ui";
 // import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
 
-const clientItems = [
+const clientSidebarItems = [
   { to: "/client/dashboard", label: "Início", icon: HouseIcon },
-  { to: "/client/history", label: "Pedidos", icon: BriefcaseIcon },
+  { to: "/client/history", label: "Histórico", icon: BriefcaseIcon },
   { to: "/client/settings", label: "Definições", icon: GearIcon },
 ];
 
-const proItems = [
-  { to: "/pro/dashboard", label: "Agenda", icon: ClipboardTextIcon },
+const proSidebarItems = [
+  { to: "/pro/dashboard", label: "Início", icon: ClipboardTextIcon },
   { to: "/pro/history", label: "Histórico", icon: BriefcaseIcon },
-  { to: "/pro/balance", label: "Ganhos", icon: WalletIcon },
-  { to: "/pro/evaluations", label: "Avaliações", icon: StarIcon },
-  { to: "/pro/profile", label: "Perfil", icon: UserIcon },
+  { to: "/pro/balance", label: "Balanço", icon: WalletIcon },
+  { to: "/pro/settings", label: "Definições", icon: UserIcon },
 ];
 
 const mockUser = {
@@ -65,7 +64,7 @@ export const AppSidebar = () => {
   const collapsed = state === "collapsed";
   const navigate = useNavigate();
   
-  const items = mockUser.role === "pro" ? proItems : clientItems;
+  const sidebarItems = mockUser.role === "pro" ? proSidebarItems : clientSidebarItems;
   
   const handleLogout = () => {
     navigate("/", { replace: true });
@@ -83,12 +82,12 @@ export const AppSidebar = () => {
 
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="text-slate-400 font-bold uppercase tracking-wider text-xs">
-              {mockUser.role === "pro" ? "Painel do Profissional" : "Painel do Cliente"}
+            <SidebarGroupLabel className="text-slate-400 font-medium tracking-wider text-xs">
+              {mockUser.role === "pro" ? "Prestador de Serviço BiscaTech" : "Cliente BiscaTech"}
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {items.map((item) => (
+                {sidebarItems.map((item) => (
                   <SidebarMenuItem key={item.to}>
                     <SidebarMenuButton asChild tooltip={item.label}>
                       <NavLink

@@ -207,7 +207,6 @@ const ClientHistory = () => {
     });
   }, []);
 
-  // useMemo 2: Mapeamento do Resumo Lateral (Corrigida a omissão do nome da variável)
   const renderedStats = useMemo(() => {
     return statsData.map((s) => {
       const config = selectStatusBadge(s.key);
