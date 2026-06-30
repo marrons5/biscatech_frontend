@@ -22,7 +22,7 @@ export const ServiceCard = ({
       className={cn(
         "group relative flex flex-col items-start gap-3 p-4 rounded-2xl text-left transition-all duration-300 active:scale-[0.97]",
         featured
-          ? "bg-gradient-hero text-primary-foreground shadow-glow hover:shadow-float hover:-translate-y-1"
+          ? "bg-primary-gradient text-primary-foreground shadow-glow hover:shadow-float hover:-translate-y-1"
           : "bg-card border border-border/60 shadow-card hover:border-primary/30 hover:shadow-soft hover:-translate-y-0.5",
       )}>
       <div

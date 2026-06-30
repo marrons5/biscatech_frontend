@@ -54,7 +54,7 @@ const BePro = () => {
             <div
               key={b.title}
               className="p-6 rounded-3xl bg-card border border-border/60 shadow-card flex gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-gradient-hero flex items-center justify-center shrink-0 shadow-glow">
+              <div className="h-12 w-12 rounded-2xl bg-primary-gradient flex items-center justify-center shrink-0 shadow-glow">
                 <b.icon className="h-6 w-6 text-white" />
               </div>
               <div>

@@ -25,7 +25,7 @@ export const HowItWorks = () => {
           <div
             key={s.n}
             className="flex items-center gap-3 p-4 rounded-2xl bg-card border border-border/60 shadow-card">
-            <div className="h-10 w-10 shrink-0 rounded-xl bg-gradient-hero flex items-center justify-center text-primary-foreground font-extrabold shadow-glow">
+            <div className="h-10 w-10 shrink-0 rounded-xl bg-primary-gradient flex items-center justify-center text-primary-foreground font-extrabold shadow-glow">
               {s.n}
             </div>
             <div>

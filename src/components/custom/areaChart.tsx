@@ -45,10 +45,8 @@ export function ChartAreaAxes() {
   return (
     <Card className="rounded-2xl ring-1 ring-[#091B3D]/20 shadow-md">
       <CardHeader>
-        <CardTitle>Area Chart - Axes</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardTitle>Ganhos Mensais</CardTitle>
+        <CardDescription></CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

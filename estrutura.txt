@@ -1,0 +1,142 @@
+.
+├── README.md
+├── components.json
+├── dist
+│   ├── assets
+│   │   ├── index-DKmmMvQB.js
+│   │   ├── index-DmiNlggS.css
+│   │   └── tool-DViC0Ydl.png
+│   ├── favicon.svg
+│   ├── icons.svg
+│   └── index.html
+├── eslint.config.js
+├── estrutura.txt
+├── index.html
+├── package-lock.json
+├── package.json
+├── projecto.md
+├── public
+│   ├── favicon.svg
+│   └── icons.svg
+├── src
+│   ├── App.tsx
+│   ├── assets
+│   │   ├── hero.png
+│   │   ├── images
+│   │   │   └── tool.png
+│   │   ├── react.svg
+│   │   └── vite.svg
+│   ├── components
+│   │   ├── custom
+│   │   │   ├── NavLink.tsx
+│   │   │   ├── appHeader.tsx
+│   │   │   ├── appShell.tsx
+│   │   │   ├── appSidebar.tsx
+│   │   │   ├── areaChart.tsx
+│   │   │   ├── barChart.tsx
+│   │   │   ├── header.tsx
+│   │   │   ├── hero.tsx
+│   │   │   ├── howItWorks.tsx
+│   │   │   ├── index.ts
+│   │   │   ├── logo.tsx
+│   │   │   ├── pageHeader.tsx
+│   │   │   ├── pageHeadliner.tsx
+│   │   │   ├── proCard.tsx
+│   │   │   ├── publicFooter.tsx
+│   │   │   ├── publicNav.tsx
+│   │   │   ├── requireAuth.tsx
+│   │   │   └── serviceCard.tsx
+│   │   ├── index.ts
+│   │   └── ui
+│   │       ├── accordion.tsx
+│   │       ├── badge.tsx
+│   │       ├── badgeVariants.ts
+│   │       ├── button.tsx
+│   │       ├── card.tsx
+│   │       ├── chart.tsx
+│   │       ├── checkbox.tsx
+│   │       ├── dialog.tsx
+│   │       ├── drawer.tsx
+│   │       ├── field.tsx
+│   │       ├── index.ts
+│   │       ├── input.tsx
+│   │       ├── label.tsx
+│   │       ├── select.tsx
+│   │       ├── separator.tsx
+│   │       ├── sheet.tsx
+│   │       ├── sidebar.tsx
+│   │       ├── skeleton.tsx
+│   │       ├── sonner.tsx
+│   │       ├── switch.tsx
+│   │       ├── tabs.tsx
+│   │       ├── textarea.tsx
+│   │       ├── tooltip.tsx
+│   │       └── useSidebar.tsx
+│   ├── context
+│   │   ├── authContext.tsx
+│   │   └── authProvider.tsx
+│   ├── hooks
+│   │   ├── auth
+│   │   │   ├── index.ts
+│   │   │   ├── useLogin.ts
+│   │   │   └── useRegister.ts
+│   │   └── use-mobile.ts
+│   ├── index.css
+│   ├── layout
+│   │   ├── privateAppLayout.tsx
+│   │   └── publicAppLayout.tsx
+│   ├── lib
+│   │   └── utils.ts
+│   ├── main.tsx
+│   ├── pages
+│   │   ├── auth
+│   │   │   ├── client
+│   │   │   │   ├── avaliacoes.tsx
+│   │   │   │   ├── clientHistory.tsx
+│   │   │   │   ├── clientHome.tsx
+│   │   │   │   ├── clientSettings.tsx
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── rate.tsx
+│   │   │   │   ├── requestCreate.tsx
+│   │   │   │   └── requestStatus.tsx
+│   │   │   └── pro
+│   │   │       ├── index.ts
+│   │   │       ├── proBalance.tsx
+│   │   │       ├── proDashboard.tsx
+│   │   │       ├── proHistory.tsx
+│   │   │       └── proSettings.tsx
+│   │   └── public
+│   │       ├── about.tsx
+│   │       ├── bePro.tsx
+│   │       ├── forgotPassword.tsx
+│   │       ├── home.tsx
+│   │       ├── index.ts
+│   │       ├── login.tsx
+│   │       ├── register.tsx
+│   │       ├── servicesCatalog.tsx
+│   │       └── verify.tsx
+│   ├── routes
+│   │   ├── appRoutes.tsx
+│   │   ├── authRoutes.tsx
+│   │   └── publicRoutes.tsx
+│   ├── services
+│   │   ├── api
+│   │   │   ├── api.ts
+│   │   │   └── apiClient.ts
+│   │   └── auth
+│   │       └── userAuth.ts
+│   ├── types
+│   │   ├── auth
+│   │   │   ├── index.ts
+│   │   │   └── models.ts
+│   │   └── serviceRequest
+│   └── utils
+│       └── auth
+│           └── errors.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+├── vercel.json
+└── vite.config.ts
+
+28 directories, 111 files

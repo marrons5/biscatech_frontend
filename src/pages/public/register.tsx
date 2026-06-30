@@ -2,20 +2,20 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   UserIcon,
-  Wrench,
-  ArrowRight,
-  GoogleLogo,
-  Eye,
-  EyeSlash,
+  WrenchIcon,
+  ArrowRightIcon,
+  GoogleLogoIcon,
+  EyeIcon,
+  EyeSlashIcon,
 } from "@phosphor-icons/react";
 
 import { Logo } from "@/components/custom/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components";
+import { Checkbox } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components";
 
@@ -53,7 +53,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const [role, setRole] = useState<Role>("client");
   const [showPwd, setShowPwd] = useState(false);
@@ -64,39 +64,40 @@ const Register = () => {
     
   });
 
-  function submit(data: RegisterForm) {
+  function submit() {
     setLoading(true);
 
     setTimeout(() => {
       setLoading(false);
 
-      const initials =
-        data.name
-          .split(" ")
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((n) => n[0].toUpperCase())
-          .join("") || "U";
+      // const initials = data.name
+      //     .split(" ")
+      //     .filter(Boolean)
+      //     .slice(0, 2)
+      //     .map((n) => n[0].toUpperCase())
+      //     .join("") || "U";
+          
+      // login({
+      //   name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
 
-      login({
-        name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
-
-        phone: `+244 ${data.phone}`,
-        initials,
-        role,
-      });
+      //   phone: `+244 ${data.phone}`,
+      //   initials,
+      //   role,
+      // });
 
       toast("Conta criada!", {
         description: "Bem-vindo à Nema.",
       });
 
       navigate(role === "pro" ? "/pro" : "/app");
+
+
     }, 700);
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
-      <section className="relative hidden lg:flex bg-blue-400 text-primary-foreground overflow-hidden p-12">
+    <div className="min-h-screen w-full bg-background grid lg:grid-cols-2">
+      <section className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
 
@@ -104,14 +105,14 @@ const Register = () => {
           <Logo />
 
           <div className="my-auto">
-            <Wrench
+            <WrenchIcon
               size={200}
               weight="duotone"
               className="opacity-90 -ml-6 drop-shadow-2xl text-white"
             />
 
             <h2 className="text-5xl font-extrabold text-white leading-tight mt-6 max-w-md">
-              Resolve qualquer biscate. Em minutos.
+              Resolve qualquer biscato. Em minutos.
             </h2>
 
             <p className="text-base opacity-90 mt-4 max-w-md text-white">
@@ -120,7 +121,7 @@ const Register = () => {
           </div>
 
           <p className="text-xs opacity-70 text-white">
-            © Nema 2026 · Luanda, Angola
+            © BiscaTech 2026 · Luanda, Angola
           </p>
         </div>
       </section>
@@ -150,7 +151,7 @@ const Register = () => {
                 },
                 {
                   id: "pro" as Role,
-                  icon: Wrench,
+                  icon: WrenchIcon,
                   label: "Profissional",
                 },
               ].map((r) => (
@@ -161,7 +162,7 @@ const Register = () => {
                   className={cn(
                     "h-10 rounded-4xl text-sm font-bold inline-flex items-center justify-center gap-2 transition-all cursor-pointer",
                     role === r.id
-                      ? "bg-white text-primary shadow-sm text-blue-400"
+                      ? "bg-white text-primary shadow-sm text-primary"
                       : "text-zinc-400",
                   )}>
                   <r.icon size={16} weight="bold" />
@@ -175,7 +176,7 @@ const Register = () => {
               variant="outline"
               size="lg"
               className="w-full mt-5 gap-2.5 rounded-4xl border-2 py-5 bg-zinc-400/10 cursor-pointer">
-              <GoogleLogo size={20} weight="bold" />
+              <GoogleLogoIcon size={20} weight="bold" />
               Continuar com Google
             </Button>
 
@@ -287,7 +288,7 @@ const Register = () => {
                           type="button"
                           onClick={() => setShowPwd((v) => !v)}
                           className="absolute right-3 top-1/2 -translate-y-1/2">
-                          {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
+                          {showPwd ? <EyeSlashIcon size={18} /> : <EyeIcon size={18} />}
                         </button>
                       </div>
 
@@ -345,7 +346,7 @@ const Register = () => {
                   "A criar conta…"
                 ) : (
                   <>
-                    Criar conta <ArrowRight size={18} weight="bold" />
+                    Criar conta <ArrowRightIcon size={18} weight="bold" />
                   </>
                 )}
               </Button>

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/logo";
-import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +10,6 @@ const LEN = 6;
 
 const Verify = () => {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
   const [code, setCode] = useState<string[]>(Array(LEN).fill(""));
   const [seconds, setSeconds] = useState(45);
   const [loading, setLoading] = useState(false);
@@ -41,20 +39,20 @@ const Verify = () => {
     if (code.some((c) => !c)) return;
     setLoading(true);
     setTimeout(() => {
-      const role = user?.role ?? "client";
-      login({
-        name: user?.name ?? "Maria Silva",
-        phone: user?.phone ?? "+244 923 456 789",
-        initials: user?.initials ?? "MS",
-        role,
-      });
+      // const role = "client";
+      // login({
+      //   name: "Maria Silva",
+      //   phone: "+244 923 456 789",
+      //   initials: "MS",
+      //   role,
+      // });
       toast("Telefone verificado!");
-      navigate(role === "pro" ? "/pro" : "/app", { replace: true });
+      navigate("/proDashboard", { replace: true });
     }, 600);
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 relative">
+    <div className="min-h-screen bg-background relative">
       <div className="absolute inset-x-0 top-0 h-[420px] bg-gradient-mesh pointer-events-none" />
       <main className="relative container max-w-md px-6 pt-8 pb-8">
         <button
@@ -66,7 +64,7 @@ const Verify = () => {
           <Logo />
         </div>
         <div className="text-center">
-          <div className="mx-auto h-14 w-14 rounded-2xl bg-gradient-hero flex items-center justify-center shadow-glow mb-4">
+          <div className="mx-auto h-14 w-14 rounded-2xl bg-primary-gradient flex items-center justify-center shadow-glow mb-4">
             <ShieldCheck className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">
@@ -76,7 +74,7 @@ const Verify = () => {
             Enviámos um código de 6 dígitos para
             <br />
             <span className="font-semibold text-foreground">
-              {user?.phone ?? "+244 923 456 789"}
+              +244 923 456 789
             </span>
           </p>
         </div>

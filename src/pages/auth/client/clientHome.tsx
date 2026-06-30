@@ -104,7 +104,7 @@ function ClientHome () {
               </div>
               <h3 className="font-bold text-foreground">Dicas de Segurança</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mt-2">
-                Confirme sempre a identidade do profissional ao chegar. Todos os Nemma Pros têm BI verificado.
+                Confirme sempre a identidade do profissional ao chegar. Todos os BiscaTech Pros têm BI verificado.
               </p>
             </Card>
 
@@ -126,7 +126,7 @@ function ClientHome () {
               </div>
               <h3 className="font-bold text-foreground">Dicas de Segurança</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mt-2">
-                Confirme sempre a identidade do profissional ao chegar. Todos os Nemma Pros têm BI verificado.
+                Confirme sempre a identidade do profissional ao chegar. Todos os BiscaTech Pros têm BI verificado.
               </p>
             </Card>
       </section>

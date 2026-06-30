@@ -35,13 +35,13 @@ const Rate = () => {
   const labels = ["", "Mau", "Fraco", "Ok", "Bom", "Excelente"];
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-12">
+    <div className="min-h-screen bg-background pb-12">
       <main className="container max-w-6xl px-4 lg:px-8 pt-6 lg:pt-10">
         <PageHeader title="Avaliar" subtitle={`Pedido #${id}`} back />
         <form onSubmit={submit} className="space-y-5">
           {/* Pro card */}
           <section className="rounded-3xl bg-card border border-border/60 shadow-card p-5 text-center">
-            <div className="mx-auto h-16 w-16 rounded-2xl bg-gradient-hero flex items-center justify-center text-primary-foreground font-extrabold text-xl shadow-glow">
+            <div className="mx-auto h-16 w-16 rounded-2xl bg-primary-gradient flex items-center justify-center text-primary-foreground font-extrabold text-xl shadow-glow">
               JM
             </div>
             <p className="font-bold mt-3">João Mateus</p>

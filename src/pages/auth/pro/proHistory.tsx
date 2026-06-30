@@ -60,18 +60,9 @@ function ProHistory() {
       return(
         <Card className='rounded-lg w-full' key={index}>
           <CardHeader>
-            <div className='flex items-center gap-5'>
-              <div className='border rounded-lg size-10 aspect-square'>
-                <img 
-                src={service.imageUrl} 
-                alt=""
-                className='size-full bg-cover bg-center rounded-lg'
-                />
-              </div>
-              <CardTitle>{service.title}</CardTitle>
-            </div>
+              <CardTitle className="text-base font-semibold">{service.title}</CardTitle>
           </CardHeader>
-          <CardContent className='flex justify-between items-center [&_span:first-child]:font-medium [&_span:first-child]:text-slate-900 [&_span:first-child]:mr-1 [&_span:last-child]:text-slate-500 text-sm'>
+          <CardContent className='flex justify-between items-center  [&_span:first-child]:font-medium [&_span:first-child]:text-foreground [&_span:last-child]:text-muted-foreground text-sm'>
               <div className="flex flex-col gap-1">
                 <div><span>Cliente:</span> <span>{service.clientName}</span></div>
                 <div><span>Localização:</span> <span>{service.location}</span></div>
@@ -87,14 +78,20 @@ function ProHistory() {
                 <div><span>Completado em:</span> <span>{service.completedDate}</span></div>
               </div>
           </CardContent>
-          <CardFooter className='flex justify-between items-center'>
-            <div className='flex gap-1'>
-              <div><span>Avaliacao</span></div>
-              <div><span>{service.rating}</span></div>
+          <CardFooter className='border-accent! flex justify-between items-center'>
+            <div className='flex items-center gap-1'>
+              <div><span className='text-sm font-medium'>Avaliação</span></div>
+              <div className='flex *:size-3.5'>
+                <StarIcon weight='fill' fill='var(--foreground)'/>
+                <StarIcon weight='fill' fill='var(--foreground)'/>
+                <StarIcon weight='fill' fill='var(--foreground)'/>
+                <StarIcon weight='fill' fill='var(--foreground)'/>
+                <StarIcon weight='fill' fill='var(--foreground)'/>
+              </div>
             </div>
-            <div className='flex gap-1'>
-              <div><span>Ganho</span></div>
-              <div><span>{service.earnings}</span></div>
+            <div className='text-sm flex items-center gap-1'>
+              <div><span className='font-medium'>Ganho</span></div>
+              <div><span className='text-primary'>{service.earnings}</span></div>
             </div>
           </CardFooter>
         </Card>
@@ -104,17 +101,18 @@ function ProHistory() {
 
   return (
     <React.Fragment>
-      <main className='grid grid-cols-10 gap-10 px-10 w-full h-full'>
-        <section className='flex flex-col col-span-7 gap-7.5 w-'>
+      <section className='grid grid-cols-10 gap-10 px-10 w-full h-full'>
+        <main className='col-span-10 lg:col-span-7 flex flex-col gap-5'>
           {servicesHistory}
-        </section>
+        </main>
 
-        <section className='flex flex-col col-span-3 gap-5'>
-          <Card className="bg-primary-gradient rounded-2xl shadow-sm p-5 *:p-0">
+        <aside className='col-span-10 lg:col-span-3'>
+          <Card className="bg-primary-gradient flex flex-col gap-5 p-5! *:p-0 rounded-xl">
             <CardHeader>
               <CardTitle className='text-primary-foreground text-xl font-bold'>Avaliação Geral</CardTitle>
             </CardHeader>
             <CardContent className='flex flex-col gap-5 justify-center items-center'>
+              
               <div className='ring ring-primary-foreground rounded-full w-50 aspect-square flex flex-col justify-center items-center'>
                 <span className="text-white text-5xl font-extrabold text-primary">4.9</span>
                 <div className="flex items-center justify-center gap-1">
@@ -125,11 +123,11 @@ function ProHistory() {
                 <span className="text-white text-xs text-muted-foreground mt-1">142 avaliações</span>
               </div>
 
-              <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 w-full">
+              <Card className="bg-card rounded-2xl border border-slate-200 shadow-sm p-5! *:p-0 w-full">
                 <CardHeader>
-                  <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Desempenho</CardTitle>
+                  <CardTitle className="text-base font-semibold">Desempenho</CardTitle>
                 </CardHeader>
-                <div className="space-y-4">
+                <CardContent className='flex flex-col gap-2.5'>
                   <div>
                     <div className="flex justify-between text-sm mb-1.5">
                       <span className="text-muted-foreground">Taxa de Conclusão</span>
@@ -148,10 +146,10 @@ function ProHistory() {
                       <div className="h-full bg-primary rounded-full" style={{ width: "85%" }} />
                     </div>
                   </div>
-                </div>
+                </CardContent>
               </Card>
 
-              <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 w-full *:p-0">
+              <Card className="bg-card rounded-2xl  border border-slate-200 shadow-sm p-5! *:p-0">
                 <CardHeader className="text-xs font-bold tracking-wider text-foreground">
                   <CardTitle>Fidelização</CardTitle> 
                 </CardHeader>
@@ -169,8 +167,8 @@ function ProHistory() {
             </CardContent>
           </Card>
 
-        </section>
-      </main>
+        </aside>
+      </section>
     </React.Fragment>
   )
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, GoogleLogo, Eye, EyeSlash } from "@phosphor-icons/react";
+import { ArrowRightIcon, GoogleLogoIcon, EyeIcon, EyeSlashIcon, WrenchIcon } from "@phosphor-icons/react";
 import { Logo } from "@/components/custom/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { Wrench } from "lucide-react";
 const loginSchema = z.object({
   email: z.string().email("Verifica o seu email."),
   password: z
@@ -36,15 +35,15 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 grid lg:grid-cols-2">
+    <div className="min-h-screen w-full bg-background grid lg:grid-cols-2">
       {/* Left */}
-      <aside className="relative hidden lg:flex bg-gradient-hero text-primary-foreground overflow-hidden p-12">
+      <aside className="relative hidden lg:flex bg-primary-gradient text-primary-foreground overflow-hidden p-12">
         <div className="absolute -top-32 -left-20 h-96 w-96 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -right-20 h-[28rem] w-[28rem] rounded-full bg-primary-deep/40 blur-3xl" />
         <div className="relative z-10 flex flex-col w-full">
           <Logo />
           <div className="my-auto">
-            <Wrench
+            <WrenchIcon
               size={200}
               className="opacity-90 -ml-6 drop-shadow-2xl text-white"
             />
@@ -56,7 +55,7 @@ const Login = () => {
             </p>
           </div>
           <p className="text-xs opacity-70 text-white">
-            © Nema 2026 · Luanda, Angola
+            © BiscaTech 2026 · Luanda, Angola
           </p>
         </div>
       </aside>
@@ -68,17 +67,17 @@ const Login = () => {
             type="button"
             variant="outline"
             size="lg"
-            className="w-full mt-6 gap-2.5 rounded-4xl border-2 py-5 bg-zinc-400/10">
-            <GoogleLogo size={20} weight="bold" />
+            className="w-full mt-6 gap-2.5 rounded-4xl border-2 py-5 bg-neutral/12.5">
+            <GoogleLogoIcon size={20} weight="bold" />
             Continuar com Google
           </Button>
 
           <div className="my-6 flex items-center gap-3">
-            <div className="flex-1 h-px bg-slate-200" />
-            <span className="text-[11px] text-zinc-400 font-semibold">
+            <div className="flex-1 h-px bg-neutral/25" />
+            <span className="text-[11px] text-muted-foreground font-semibold">
               OU COM E-MAIL
             </span>
-            <div className="flex-1 h-px bg-slate-200" />
+            <div className="flex-1 h-px bg-neutral/25" />
           </div>
 
           <form
@@ -120,8 +119,8 @@ const Login = () => {
 
                       <span>
                         <Link
-                          to="#"
-                          className="text-[11px] font-semibold  hover:underline text-blue-400">
+                          to="/auth/forgot-password"
+                          className="text-[11px] font-semibold  hover:underline text-primary">
                           Esqueceste-te?
                         </Link>
                       </span>
@@ -138,7 +137,7 @@ const Login = () => {
                         type="button"
                         onClick={() => setShowPwd((v) => !v)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                        {showPwd ? <EyeSlash size={18} /> : <Eye size={18} />}
+                        {showPwd ? <EyeSlashIcon size={18} /> : <EyeIcon size={18} />}
                       </button>
                     </div>
                     {fieldState.invalid && (
@@ -151,14 +150,13 @@ const Login = () => {
 
             <Button
               type="submit"
-              variant="hero"
               disabled={loading}
-              className="w-full p-6 text-white rounded-4xl text-lg">
+              className="bg-primary w-full p-6 text-white rounded-4xl text-lg">
               {loading ? (
                 "A entrar…"
               ) : (
                 <>
-                  Entrar <ArrowRight size={18} weight="bold" />
+                  Entrar <ArrowRightIcon size={18} weight="bold" />
                 </>
               )}
             </Button>
