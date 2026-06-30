@@ -64,20 +64,19 @@ const Register = () => {
     
   });
 
-  function submit(data: RegisterForm) {
+  function submit() {
     setLoading(true);
 
     setTimeout(() => {
       setLoading(false);
 
-      // const initials =
-      //   data.name
+      // const initials = data.name
       //     .split(" ")
       //     .filter(Boolean)
       //     .slice(0, 2)
       //     .map((n) => n[0].toUpperCase())
       //     .join("") || "U";
-
+          
       // login({
       //   name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
 
@@ -91,6 +90,8 @@ const Register = () => {
       });
 
       navigate(role === "pro" ? "/pro" : "/app");
+
+
     }, 700);
   }
 
