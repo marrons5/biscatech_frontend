@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/logo";
-import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +10,6 @@ const LEN = 6;
 
 const Verify = () => {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
   const [code, setCode] = useState<string[]>(Array(LEN).fill(""));
   const [seconds, setSeconds] = useState(45);
   const [loading, setLoading] = useState(false);
@@ -41,15 +39,15 @@ const Verify = () => {
     if (code.some((c) => !c)) return;
     setLoading(true);
     setTimeout(() => {
-      const role = user?.role ?? "client";
-      login({
-        name: user?.name ?? "Maria Silva",
-        phone: user?.phone ?? "+244 923 456 789",
-        initials: user?.initials ?? "MS",
-        role,
-      });
+      // const role = "client";
+      // login({
+      //   name: "Maria Silva",
+      //   phone: "+244 923 456 789",
+      //   initials: "MS",
+      //   role,
+      // });
       toast("Telefone verificado!");
-      navigate(role === "pro" ? "/pro" : "/app", { replace: true });
+      navigate("/proDashboard", { replace: true });
     }, 600);
   };
 
@@ -76,7 +74,7 @@ const Verify = () => {
             Enviámos um código de 6 dígitos para
             <br />
             <span className="font-semibold text-foreground">
-              {user?.phone ?? "+244 923 456 789"}
+              +244 923 456 789
             </span>
           </p>
         </div>

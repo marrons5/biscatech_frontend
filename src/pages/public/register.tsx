@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components";
 
@@ -53,7 +53,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
 
   const [role, setRole] = useState<Role>("client");
   const [showPwd, setShowPwd] = useState(false);
@@ -70,21 +70,21 @@ const Register = () => {
     setTimeout(() => {
       setLoading(false);
 
-      const initials =
-        data.name
-          .split(" ")
-          .filter(Boolean)
-          .slice(0, 2)
-          .map((n) => n[0].toUpperCase())
-          .join("") || "U";
+      // const initials =
+      //   data.name
+      //     .split(" ")
+      //     .filter(Boolean)
+      //     .slice(0, 2)
+      //     .map((n) => n[0].toUpperCase())
+      //     .join("") || "U";
 
-      login({
-        name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
+      // login({
+      //   name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
 
-        phone: `+244 ${data.phone}`,
-        initials,
-        role,
-      });
+      //   phone: `+244 ${data.phone}`,
+      //   initials,
+      //   role,
+      // });
 
       toast("Conta criada!", {
         description: "Bem-vindo à Nema.",

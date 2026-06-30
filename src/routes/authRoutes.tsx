@@ -4,12 +4,12 @@ import { PrivateAppLayout } from '@/layout/privateAppLayout';
 
 //import { ClientDashboard, ClientCatalog, ClientEvaluations, ClientRequests, ClientHistory } from '@/pages/auth/client';
 import { ProDashboard, ProBalance, ProHistory } from '@/pages/auth/pro';
-import { RequireAuth } from '@/components/custom/requireAuth';
-import { AppShell } from '@/components/custom/appShell';
-import { Rate } from '@/pages/auth/client/rate';
-import { RequestCreate } from '@/pages/auth/client/requestCreate';
-import { RequestStatus } from '@/pages/auth/client/requestStatus';
-import { Avaliacoes } from '@/pages/auth/client/avaliacoes';
+// import { RequireAuth } from '@/components/custom/requireAuth';
+// import { AppShell } from '@/components/custom/appShell';
+// import { Rate } from '@/pages/auth/client/rate';
+// import { RequestCreate } from '@/pages/auth/client/requestCreate';
+// import { RequestStatus } from '@/pages/auth/client/requestStatus';
+// import { Avaliacoes } from '@/pages/auth/client/avaliacoes';
 import { ClientHistory } from '@/pages/auth/client/clientHistory';
 import { ClientSettings } from '@/pages/auth/client/clientSettings';
 import { ClientHome } from '@/pages/auth/client/clientHome';
@@ -37,7 +37,7 @@ function AuthRoutes() {
         <Route path="/client/history" element={<ClientHistory/>}/>
         <Route path="/client/settings" element={<ClientSettings/>}/>
         <Route path="/client/dashboard" element={<ClientHome/>}/>
-
+{/* 
         <Route
           path="/app/avaliacoes"
           element={
@@ -77,7 +77,7 @@ function AuthRoutes() {
               </AppShell>
             </RequireAuth>
           }
-        />
+        /> */}
       </Route>
 
       <Route element={<PrivateAppLayout />}>
