@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/logo";
-import { useAuth } from "@/hooks/useAuth";
+//import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +11,7 @@ const LEN = 6;
 
 const Verify = () => {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
+  // const { login, user } = useAuth();
   const [code, setCode] = useState<string[]>(Array(LEN).fill(""));
   const [seconds, setSeconds] = useState(45);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ const Verify = () => {
       inputs.current[i - 1]?.focus();
   };
 
-  const submit = (e: React.FormEvent) => {
+  /*const submit = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.some((c) => !c)) return;
     setLoading(true);
@@ -51,7 +51,7 @@ const Verify = () => {
       toast("Telefone verificado!");
       navigate(role === "pro" ? "/pro" : "/app", { replace: true });
     }, 600);
-  };
+  };*/
 
   return (
     <div className="min-h-screen bg-background relative">

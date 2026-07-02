@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { type ReactNode } from "react";
 import { type Role } from "@/context/authContext";
-import { useAuth } from "@/hooks/useAuth";
+//import { useAuth } from "@/hooks/useAuth";
 
 interface Props {
   children: ReactNode;
@@ -9,8 +9,8 @@ interface Props {
 }
 
 export const RequireAuth = ({ children, role }: Props) => {
-  const { user, loading} = useAuth();
-  const location = useLocation();
+  // const { user, loading} = useAuth();
+  /*const location = useLocation();
 
   if (loading) {
     return (
@@ -27,6 +27,6 @@ export const RequireAuth = ({ children, role }: Props) => {
   if (role && user.role !== role) {
     return <Navigate to={user.role === "pro" ? "/pro" : "/app"} replace />;
   }
-
+*/
   return <>{children}</>;
 };

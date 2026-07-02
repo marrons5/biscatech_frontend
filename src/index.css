@@ -202,3 +202,7 @@
     @apply font-sans; 
   }
 }
+ .bgImg {
+    object-fit: cover;
+    background: url(https://picsum.photos/2000) 50%/cover;
+  }

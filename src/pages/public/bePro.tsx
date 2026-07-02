@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, TrendingUp, Calendar, Wallet, Bell } from "lucide-react";
-import { PublicNav } from "@/components/custom/publicNav";
 import { PublicFooter } from "@/components/custom/publicFooter";
 import { Button } from "@/components/ui/button";
 
@@ -29,8 +28,8 @@ const benefits = [
 
 const BePro = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <PublicNav />
+    <div className="min-h-screen">
+    
       <section className="px-12 py-16 md:py-24">
         <div className="text-center max-w-3xl mx-auto">
           <span className="inline-block px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-bold mb-4">
