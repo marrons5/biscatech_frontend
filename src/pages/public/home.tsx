@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { PublicNav } from "@/components/custom/publicNav";
 import { PublicFooter } from "@/components/custom/publicFooter";
+import { useGetCatalog } from "@/hooks/useGetCatalog";
 
 const services = [
   { icon: Wrench, label: "Canalizador" },
@@ -39,7 +40,11 @@ const steps = [
     title: "Encontramos um profissional",
     desc: "Aceitamos o pedido em minutos.",
   },
-  { n: "3", title: "Resolvido", desc: "Acompanha em tempo real e avalia." },
+  { 
+    n: "3",
+    title: "Resolvido",
+    desc: "Acompanha em tempo real e avalia." 
+  },
 ];
 
 const trust = [
@@ -49,6 +54,9 @@ const trust = [
 ];
 
 const Home = () => {
+  
+  const { data } = useGetCatalog();
+  console.log(data);
   return (
     <div className="min-h-screen bg-background">
       <PublicNav />

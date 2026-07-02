@@ -7,7 +7,7 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner";
 
 const forgotPasswordSchema = z.object({
-    identifier: z.string().min(9, "Insira um e-mail ou numero de telefone valido. Ex: joaodomingos@gmail.com ou 912345678")
+    email: z.string().min(9, "Insira um e-mail ou numero de telefone valido. Ex: joaodomingos@gmail.com ou 912345678")
 })
 
 function useForgotPassword (){
@@ -17,13 +17,13 @@ function useForgotPassword (){
     const form = useForm<z.infer<typeof forgotPasswordSchema>>({
         resolver: zodResolver(forgotPasswordSchema),
         defaultValues: {
-            identifier: ""
+            email: ""
         }
     });
 
     async function onSubmit(value: z.infer<typeof forgotPasswordSchema>) {
         const payload = {
-            identifier: value.identifier,
+            email: value.email,
         }
 
         try {
@@ -35,14 +35,15 @@ function useForgotPassword (){
                 throw new Error (`Erro ${response.status}`);
             }
             
-            navigate("/dashboard", { replace: true});
-            toast.success("Sessão iniciada com sucesso!", {
+            navigate("/verify", { replace: true});
+            toast.success("Código de recuperação enviado!", {
                 className: "bg-green-500 text-white font-semibold",
             });
         } catch (error) {
-            toast.error("Erro ao iniciar a sessão", {
+            toast.error("Erro ao enviar pedido de recuperação", {
                 className: "bg-red-500/10 text-white font-semibold",
             });
+
 
             console.error("error:", error);
 

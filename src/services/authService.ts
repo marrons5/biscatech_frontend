@@ -4,7 +4,7 @@ export interface User {
     id?: string;
     firstName?: string;
     lastName?: string;
-    email?: string;
+    email: string;
     phone: string;
     role?: string;
     photo?: string;
@@ -14,14 +14,14 @@ export interface User {
 export interface RegisterCredentials {
     firstName: string;
     lastName: string;
-    email?: string;
+    email: string;
     phone: string;
     role: "CLIENTE" | "PRESTADOR";
     password: string;
 }
 
 export interface LoginCredentials {
-    identifier: string;
+    email: string;
     password: string;
     role: "CLIENTE" | "PRESTADOR"
 }
@@ -45,7 +45,7 @@ export const authService = {
         return await apiClient.post<AuthResponse>("/api/auth/users", {...data});
     },
 
-    async forgotPassword(credentials: { identifier: string}){
+    async forgotPassword(credentials: { email: string}){
         return await apiClient.post<AuthResponse>("/api/auth/forgot-password", {...credentials});
     },
 

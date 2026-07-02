@@ -1,80 +1,143 @@
 import apiClient from "./apiClient";
 
-export interface ServiceRequest {
+interface ServiceRequest {
     id: string;
     clientId: string;
-    proId?: string
+    proId: string | null;
+    serviceId: string | null;
     title: string;
     description: string;
-    category: string;
     type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
     location: string;
     scheduledDate: string;
-    price: string;
-    status: "PENDENTE" | "ACEITE" | "CANCELADA" | "CONCLUÍDA" | "EXPIRADA";
-    createdAt: string;
+    stipulatedPrice: number | null;
+    proposedValue: number | null;
+    priceAgreed: number | null;
+    eta: string | null;
+    status: "pending" | "ACEITE" | "CANCELADA" | "CONCLUÍDA" | "EXPIRADA";
+    createdAt: Date | null;
+    updatedAt: Date | null;
+    expiresAt: Date | null;
+    proCompletedAt: Date | null;
+    clientConfirmedAt: Date | null;
+    reactivedFromId: string | null;
     isCustom: boolean;
 }
 
-export interface CreateServiceRequestProps {
+interface CreateServiceRequestRequest {
+    serviceId?: string;
     title: string;
     description: string;
-    category: string;
-    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
     location: string;
-    scheduledDate: string;
-    price?: number;
-    isCustom: boolean;
+    type: "repair" | "maintenance" | "installation" | "emergency";
+    date: string;
+    stipulatedPrice?: number;
+    photos?: string[];
+    isCustom?: boolean;
 }
 
-export interface CreateServiceRequestResponse {
+interface CreateServiceRequestResponse {
     success: boolean;
     data: {
-        request: ServiceRequest;
-        message?: string;
+        serviceRequest: CreateServiceRequestRequest;
+        message: string;
     }
 }
 
-export interface GetRequestParams {
+interface ListServiceRequestsRequest {
+    id: string;
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    status: string;
+    type: "repair" | "installation" | "maintenance" | "emergency";
+    price: number
+    proposedValue: number;
+    eta: string;
+    isCustom?: boolean;
+    expiresAt: string;
+    proCompletedAt: string;
+    clientConfirmedAt: string;
+}
+
+interface ListServiceRequestsResponse {
+    success: boolean;
+    data: ListServiceRequestsRequest[];
+}
+
+interface ReactivateServiceRequestRequest {
+    
+}
+
+interface CreateServiceRequestProps {
+    title: string;
+    description: string;
+    category: string;
+    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
+    location: string;
+    scheduledDate: string;
+    stipulatedPrice?: number;
+    isCustom: boolean;
+}
+
+interface GetRequestParams {
     page?: number;
     limit?: number;
     status?: string;
     category?: string;
 }
 
-export interface ListServiceRequestsResponse {
-    success: boolean;
-    data: {
-        requests: ServiceRequest[];
-        total: number;
-    }
-}
-
-export interface GetServiceRequestDetailsResponse {
+interface GetServiceRequestDetailsResponse {
     success: boolean;
     data: {
         request: ServiceRequest;
     }
 }
 
-export interface CompleteAndRateRequestProps {
+interface CompleteAndRateRequestProps {
     status: string;
     rating: number;
     comment?: string;
 } 
 
-export interface ChangeServiceRequestStatusProps {
+interface ChangeServiceRequestStatusProps {
     proId?: string;
     status: string;
 }
 
-export interface ChangeServiceRequestStatusResponse {
+interface ChangeServiceRequestStatusResponse {
     success: boolean;
     data: {
         proId?: string;
         status: string;
         message?: string;
     }
+}
+
+
+interface ListServiceRequestsQueryParams {
+    scope: "mine" | "assigned" | "available";
+    status: "pending" | "accepted" | "in_progress" | "awaiting_confirmation" | "completed" | "cancelled" | "expired";
+    type: "repair" | "installation" | "maintenance" | "emergency";
+}
+
+
+interface GetServiceRequestDetailsRequest {
+
+}
+
+interface AcceptServiceRequestRequest {
+    priceAgreed: number;
+    eta: string;
+}
+
+interface AcceptServiceRequestResponse {
+    success: boolean;
+    data: {
+        id: string;
+        status: "ACEITE"
+    };
 }
 
 export const serviceRequestService = {
@@ -87,7 +150,6 @@ export const serviceRequestService = {
     },
 
     async getById(id: string){
-
         return await apiClient.get<GetServiceRequestDetailsResponse>(`/api/service-requests/${id}`);
     },
 
@@ -102,4 +164,12 @@ export const serviceRequestService = {
     async completeAndRate(id: string, data: CompleteAndRateRequestProps){
         return await apiClient.patch<ChangeServiceRequestStatusResponse>(`/api/service-requests/${id}/complete`, {...data});
     },
+
+    async accept(id: string, data: AcceptServiceRequestRequest){
+        return apiClient.post<AcceptServiceRequestResponse>(`/api/service-requests/${id}/accept`, {...data});
+    },
+
+    async reactivate () {
+        return await apiClient.post
+    }
 }
