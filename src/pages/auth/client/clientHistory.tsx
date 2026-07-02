@@ -12,7 +12,6 @@ import {
   UserIcon,
   StarIcon,
 } from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
 import { 
   Badge, 
   Card, 
@@ -163,9 +162,8 @@ const ClientHistory = () => {
 
   const serviceRequests = useMemo(() => {
     return serviceRequestsData.map((serviceRequest) => {
-      const Icon = serviceRequest.icon;
       const badgeStatus = selectStatusBadge(serviceRequest.status);
-      const StatusIcon = badgeStatus?.icon;
+      // const StatusIcon = badgeStatus?.icon;
 
       return (
         <Card
@@ -176,7 +174,7 @@ const ClientHistory = () => {
           <CardHeader className="flex justify-between items-center">
             <CardTitle>{serviceRequest.service}</CardTitle>
             <Badge variant={badgeStatus?.variant}>
-              <StatusIcon weight="bold" className={cn("h-3 w-3", serviceRequest.status === "accepted" && "animate-spin")} />
+              {/* <StatusIcon weight="bold" className={cn("h-3 w-3", serviceRequest.status === "accepted" && "animate-spin")} /> */}
               <span>{badgeStatus?.label}</span>
             </Badge>
           </CardHeader>
@@ -210,7 +208,7 @@ const ClientHistory = () => {
   const renderedStats = useMemo(() => {
     return statsData.map((s) => {
       const config = selectStatusBadge(s.key);
-      const StatIcon = config?.icon;
+      // const StatIcon = config?.icon;
 
       return (
         <Badge
@@ -219,7 +217,7 @@ const ClientHistory = () => {
           className="flex items-center justify-between py-5 px-3 w-full rounded-xl"
         >
           <div className="flex items-center gap-2">
-            <StatIcon className="size-4" weight="bold" />
+            {/* <StatIcon className="size-4" weight="bold" /> */}
             <span className="text-base font-medium">{s.label}</span>
           </div>
 
@@ -272,7 +270,7 @@ const ClientHistory = () => {
       <Dialog open={!!selectedRequest} onOpenChange={(open) => !open && setSelectedRequest(null)}>
         {selectedRequest && (() => {
           const dialogConfig = selectStatusBadge(selectedRequest.status);
-          const DialogIcon = dialogConfig?.icon;
+          // const DialogIcon = dialogConfig?.icon;
 
           return (
             <DialogContent className="sm:max-w-[550px] bg-white rounded-2xl p-6 border-none shadow-2xl overflow-hidden *:border-0">
@@ -282,7 +280,7 @@ const ClientHistory = () => {
                     {selectedRequest.service}
                   </DialogTitle>
                   <Badge variant={dialogConfig?.variant} className="flex items-center gap-1 font-bold">
-                    <DialogIcon weight="bold" className={cn("h-3 w-3", selectedRequest.status === "accepted" && "animate-spin")} />
+                    {/* <DialogIcon weight="bold" className={cn("h-3 w-3", selectedRequest.status === "accepted" && "animate-spin")} /> */}
                     {dialogConfig?.label}
                   </Badge>
                 </div>

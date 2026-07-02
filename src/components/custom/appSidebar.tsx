@@ -1,7 +1,6 @@
 import { 
   HouseIcon, 
   BriefcaseIcon, 
-  StarIcon, 
   UserIcon, 
   ClipboardTextIcon, 
   WalletIcon, 

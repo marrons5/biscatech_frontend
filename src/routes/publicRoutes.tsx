@@ -19,10 +19,10 @@ function PublicRoutes() {
         <Route path="/sobre" element={<About />} />
         <Route path="/profissionais" element={<BePro />} />
 
-        <Route path="/verify" element={<Verify />} />
         <Route path="/" element={<Home />} />
       </Route>
        
+        <Route path="/verify" element={<Verify />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/auth/forgot-password" element={<ForgotPassword />} />

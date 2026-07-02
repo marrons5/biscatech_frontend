@@ -62,12 +62,12 @@ const Register = () => {
     resolver: zodResolver(registerSchema),
   });
 
-  function submit(data: RegisterForm) {
+  function submit() {
     setLoading(true);
 
     setTimeout(() => {
       setLoading(false);
-
+      /* 
       const initials =
         data.name
           .split(" ")
@@ -76,7 +76,7 @@ const Register = () => {
           .map((n) => n[0].toUpperCase())
           .join("") || "U";
       console.log( initials);
-      /* login({
+      login({
         name: data.name || (role === "pro" ? "João Mateus" : "Maria Silva"),
 
         phone: `+244 ${data.phone}`,
