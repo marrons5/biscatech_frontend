@@ -9,8 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { authService } from "@/services/authService";
 import { AuthContext } from "@/context/authContext";
-import { setAuthToken, setRefreshToken } from "@/utils/auth/session";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 
 import background from "@/assets/images/auth_background_left.png";
 
@@ -36,7 +36,9 @@ const Login = () => {
       const response = await authService.login({ email, password });
 
       if (!response.data.success) {
-        throw new Error((response.data as any).error ?? "Login failed");
+        const msg = (response.data as any).error ?? "Login failed";
+        logger.warn("Login", msg, response.data);
+        throw new Error(msg);
       }
 
       const { token, refreshToken, user } = response.data.data;
@@ -59,7 +61,9 @@ const Login = () => {
         className: "bg-green-500 text-white font-semibold",
       });
     } catch (error) {
-      toast.error("Invalid email or password.", {
+      const msg = error instanceof Error ? error.message : "Invalid email or password.";
+      logger.error("Login", msg, error);
+      toast.error(msg, {
         className: "bg-red-500/10 text-white font-semibold",
       });
       console.error("login error:", error);

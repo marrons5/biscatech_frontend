@@ -1,4 +1,5 @@
 import { config } from "@/config";
+import { logger } from "@/utils/logger";
 
 type ApiErrorDetails = Record <string, unknown>;
 type HTTPMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -43,6 +44,7 @@ class ApiClient {
     constructor() {
         this.baseURL = String(config.apiURL ?? "");
         this.timeout = 120_000;
+        logger.debug("ApiClient", "init", { baseURL: this.baseURL });
     }
 
     private onRefreshed(token: string) {
@@ -107,6 +109,7 @@ class ApiClient {
         const refreshToken = this.getRefreshToken();
         if (!refreshToken) return null;
 
+        logger.debug("ApiClient", "refreshing token");
         try {
             const { data } = await fetch(`${this.baseURL}/api/v1/auth/refresh`, {
                 method: "POST",
@@ -119,10 +122,13 @@ class ApiClient {
                 if (data.refreshToken) {
                     this.setRefreshToken(data.refreshToken);
                 }
+                logger.info("ApiClient", "token refreshed");
                 return data.token;
             }
+            logger.warn("ApiClient", "refresh returned no token");
             return null;
-        } catch {
+        } catch (err) {
+            logger.error("ApiClient", "refresh failed", err);
             this.clearAuthToken();
             return null;
         }
@@ -176,7 +182,10 @@ class ApiClient {
         };
 
         const url = `${this.baseURL}${endpoint}`;
+        const start = Date.now();
+        logger.debug("ApiClient", `→ ${options.method ?? "GET"} ${url}`);
         const response = await fetch(url, requestConfig);
+        const dur = Date.now() - start;
 
         if (response.status === 401 && this.getRefreshToken()) {
             if (!this.isRefreshing) {
@@ -193,6 +202,7 @@ class ApiClient {
                     const retryData = contentType?.includes("application/json")
                         ? await retryResponse.json()
                         : await retryResponse.text();
+                    logger.info("ApiClient", `← ${retryResponse.status} ${url} (${Date.now() - start}ms)`);
                     return { data: retryData, status: retryResponse.status };
                 }
 
@@ -217,6 +227,7 @@ class ApiClient {
             ? await response.json()
             : await response.text();
 
+        logger.debug("ApiClient", `← ${response.status} ${url} (${Date.now() - start}ms)`);
         return { data, status: response.status };
     }
 

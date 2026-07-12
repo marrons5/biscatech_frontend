@@ -7,6 +7,7 @@ import { authService } from "@/services/authService";
 import { AuthContext } from "@/context/authContext";
 import { setAuthToken, setRefreshToken, getPendingEmail, clearPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 
 import { cn } from "@/lib/utils";
 
@@ -63,7 +64,9 @@ const Verify = () => {
       const response = await authService.verify({ email, code: code.join("") });
 
       if (!response.data.success) {
-        throw new Error((response.data as any).error ?? `Error ${response.status}`);
+        const msg = (response.data as any).error ?? `Error ${response.status}`;
+        logger.warn("Verify", msg, response.data);
+        throw new Error(msg);
       }
 
       const { token, refreshToken, user } = response.data.data;
@@ -84,8 +87,9 @@ const Verify = () => {
       const dashboard = user.role === "provider" ? "/pro/dashboard" : "/client/dashboard";
       navigate(dashboard, { replace: true });
     } catch (error) {
-      toast.error("Invalid or expired code. Try again.");
-      console.error("error:", error);
+      const msg = error instanceof Error ? error.message : "Invalid or expired code. Try again.";
+      logger.error("Verify", msg, error);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

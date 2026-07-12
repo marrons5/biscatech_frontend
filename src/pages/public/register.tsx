@@ -9,6 +9,7 @@ import * as z from "zod";
 import { authService } from "@/services/authService";
 import { setPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
+import { logger } from "@/utils/logger";
 import background from "@/assets/images/auth_background_right.png";
 
 const registerSchema = z.object({
@@ -42,7 +43,9 @@ const Register = () => {
       const response = await authService.register(payload);
 
       if (!response.data.success) {
-        throw new Error((response.data as any).error ?? "Erro ao criar conta");
+        const msg = (response.data as any).error ?? "Erro ao criar conta";
+        logger.warn("Register", msg, response.data);
+        throw new Error(msg);
       }
 
       setPendingEmail(email);
@@ -51,7 +54,9 @@ const Register = () => {
       });
       navigate("/verify", { replace: true });
     } catch (error) {
-      toast.error("Erro ao criar conta. Tenta novamente.", {
+      const msg = error instanceof Error ? error.message : "Erro ao criar conta. Tenta novamente.";
+      logger.error("Register", msg, error);
+      toast.error(msg, {
         className: "bg-red-500/10 text-white font-semibold",
       });
       console.error("register error:", error);
