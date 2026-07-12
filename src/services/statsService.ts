@@ -35,3 +35,5 @@ export const statsService = {
         return await apiClient.get<GetProStatsResponse>("/api/stats/pro", {...params})
     }
 }
+
+// TODO: Adicionar endpoint /api/v1/stats/pro no backend quando necessário

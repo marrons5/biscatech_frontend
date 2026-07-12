@@ -18,10 +18,10 @@ const changePasswordSchema = z.object({
         .min(8, { error: 'A palavra-passe deve conter no minimo 8 caracteres'}),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
     error: "As palavras-passes não coincidem",
-    path: ["confirmPassword"],
-}).refine((data) => data.currentPassword === data.newPassword, {
+    path: ["confirmNewPassword"],
+}).refine((data) => data.currentPassword !== data.newPassword, {
     error: "A palavras-passe nova não pode ser igual à antiga.",
-    path: ["confirmPassword"],
+    path: ["newPassword"],
 });
 
 function useChangePassword() {

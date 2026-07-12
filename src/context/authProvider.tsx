@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { AuthContext, type AuthUser } from "./authContext";
 
-const STORAGE_KEY = "nema:auth";
+const STORAGE_KEY = "biscatech:auth";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setUser(JSON.parse(raw));
     } catch {
-      console.log("");
+      // ignore
     }
     setLoading(false);
   }, []);

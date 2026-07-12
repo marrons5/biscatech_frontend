@@ -1,15 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useContext } from "react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/custom/logo";
+import { authService } from "@/services/authService";
+import { AuthContext } from "@/context/authContext";
+import { setAuthToken, setRefreshToken, getPendingEmail, clearPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 
 const LEN = 6;
 
 const Verify = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get("mode") ?? "verify";
+  const { login: setAuthUser } = useContext(AuthContext)!;
   const [code, setCode] = useState<string[]>(Array(LEN).fill(""));
   const [seconds, setSeconds] = useState(45);
   const [loading, setLoading] = useState(false);
@@ -34,48 +41,73 @@ const Verify = () => {
       inputs.current[i - 1]?.focus();
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (code.some((c) => !c)) return;
+
+    const email = getPendingEmail();
+    if (!email) {
+      toast.error("Email not found. Please register again.");
+      navigate("/auth/register", { replace: true });
+      return;
+    }
+
+    // If mode is "reset", navigate to reset-password page with email and code
+    if (mode === "reset") {
+      navigate(`/auth/reset-password?email=${encodeURIComponent(email)}&code=${code.join("")}`, { replace: true });
+      return;
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      // const role = "client";
-      // login({
-      //   name: "Maria Silva",
-      //   phone: "+244 923 456 789",
-      //   initials: "MS",
-      //   role,
-      // });
-      toast("Telefone verificado!");
-      navigate("/proDashboard", { replace: true });
-    }, 600);
+    try {
+      const response = await authService.verify({ email, code: code.join("") });
+
+      if (!response.data.success) {
+        throw new Error(`Error ${response.status}`);
+      }
+
+      const { token, refreshToken, user } = response.data.data;
+
+      setAuthToken(token);
+      setRefreshToken(refreshToken);
+      setAuthUser({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        initials: user.initials,
+      });
+      clearPendingEmail();
+
+      toast.success("Account verified successfully!");
+      const dashboard = user.role === "provider" ? "/pro/dashboard" : "/client/dashboard";
+      navigate(dashboard, { replace: true });
+    } catch (error) {
+      toast.error("Invalid or expired code. Try again.");
+      console.error("error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const title = mode === "reset" ? "Reset your password" : "Verify your account";
+  const subtitle = mode === "reset"
+    ? "Enter the code sent to your email to reset your password"
+    : "We sent a 6-digit code to your email";
+
   return (
-    <div className="min-h-screen bg-background relative">
-      <div className="absolute inset-x-0 top-0 h-[420px] bg-gradient-mesh pointer-events-none" />
-      <main className="relative container max-w-md px-6 pt-8 pb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="h-10 w-10 -ml-2 rounded-full flex items-center justify-center hover:bg-accent">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex justify-center my-6">
-          <Logo />
-        </div>
+    <div className="h-svh bg-background flex items-center justify-center">
+      <div className="relative container max-w-md px-6 pt-8 pb-8 bg-white rounded-3xl shadow-lg">
         <div className="text-center">
           <div className="mx-auto h-14 w-14 rounded-2xl bg-primary-gradient flex items-center justify-center shadow-glow mb-4">
             <ShieldCheck className="h-7 w-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-extrabold tracking-tight">
-            Verifica o teu telefone
+            {title}
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Enviámos um código de 6 dígitos para
-            <br />
-            <span className="font-semibold text-foreground">
-              +244 923 456 789
-            </span>
+            {subtitle}
           </p>
         </div>
 
@@ -105,14 +137,14 @@ const Verify = () => {
             variant="default"
             size="lg"
             disabled={loading || code.some((c) => !c)}
-            className="w-full">
-            {loading ? "A verificar…" : "Verificar"}
+            className="w-full p-6 rounded-4xl">
+            {loading ? "Verifying…" : mode === "reset" ? "Reset password" : "Verify"}
           </Button>
 
           <p className="text-center text-xs text-muted-foreground">
             {seconds > 0 ? (
               <>
-                Reenviar código em{" "}
+                Resend code in{" "}
                 <span className="font-bold text-foreground">{seconds}s</span>
               </>
             ) : (
@@ -120,12 +152,12 @@ const Verify = () => {
                 type="button"
                 onClick={() => setSeconds(45)}
                 className="text-primary font-bold hover:underline">
-                Reenviar código
+                Resend code
               </button>
             )}
           </p>
         </form>
-      </main>
+      </div>
     </div>
   );
 };

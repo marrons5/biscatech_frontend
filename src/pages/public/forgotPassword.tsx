@@ -1,125 +1,118 @@
-import background from "@/assets/images/tool.png";
-import { Card, CardHeader, CardContent, CardFooter } from "@/components";
-import { FieldGroup, Field, FieldLabel, FieldError, FieldDescription, FieldTitle } from "@/components";
-import { Input, Button } from "@/components"; // Não te esqueças de importar o Button!
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components";
 import { Controller, useForm } from "react-hook-form";
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { authService } from "@/services/authService";
+import { setPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
-import { Link } from "react-router-dom";
 
-import { WrenchIcon } from "@phosphor-icons/react";
-import type React from "react";
+import background from "@/assets/images/auth_background_left.png";
 
-const formSchema = z.object({
-  email: z.email("Formato de e-mail inválido.")
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email format."),
 });
 
-function ForgotPassword() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+
+const ForgotPassword = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const form = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: ""
     }
   });
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    toast("Sessão iniciada com sucesso!", {
-      description: (
-        <pre className="mt-2 w-[320px] overflow-x-auto rounded-md bg-slate-900 p-4 text-emerald-400">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "bottom-right",
-      classNames: {
-        content: "flex flex-col gap-2"
-      },
-      style: {
-        "--border-radius": "calc(var(--radius) + 4px)"
-      } as React.CSSProperties
-    });
+  async function submit({ email }: ForgotPasswordForm) {
+    setLoading(true);
+    try {
+      const response = await authService.forgotPassword({ email });
+
+      if (!response.data.success) {
+        throw new Error("Request failed");
+      }
+
+      setPendingEmail(email);
+      toast.success("If the email exists, you will receive a recovery code.", {
+        className: "bg-green-500 text-white font-semibold",
+      });
+      navigate("/auth/verify");
+    } catch (error) {
+      toast.error("Something went wrong. Try again.", {
+        className: "bg-red-500/10 text-white font-semibold",
+      });
+      console.error("forgot-password error:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <>
-      <section
-        className="bg-primary bg-cover bg-left bg-no-repeat flex items-center justify-center lg:justify-end p-4 lg:p-12 h-dvh w-dvw "
-        style={{ 
-          backgroundImage: `url(${background})`,
-          backgroundBlendMode: 'luminosity' 
-        }}
-      >
-        <div className="w-full lg:w-2/5 h-full">
-          <Card className="bg-white/95 rounded-[2rem] shadow-2xl border-slate-100 backdrop-blur-sm flex-col justify-center gap-15 p-2 sm:p-4 h-full">
-            <CardHeader>
-                    <div className="flex justify-center items-center gap-2">
-                        <div className="bg-primary rounded-full flex justify-center items-center">
-                            <WrenchIcon className="text-white size-10 p-2"/>
-                        </div>
-                        <h1 className="text-3xl font-black">BiscaTech</h1>
-                    </div>
-            </CardHeader>
-            
-            <CardContent>
+    <div
+      className="bg-primary/65 bg-cover bg-no-repeat h-svh w-full flex items-center justify-end py-5 md:px-4 px-2"
+      style={{ backgroundImage: `url(${background})`, backgroundBlendMode: "color-burn" }}
+    >
+      <div className="bg-card border border-border/30 shadow-2xl rounded-3xl p-8 lg:p-10 md:w-2/6 w-full animate-in fade-in zoom-in-95 duration-500">
 
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                  <FieldGroup className="gap-5">
-                    <Field>
-                        
-                      <FieldTitle className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-                        Esqueceu-se da sua senha
-                      </FieldTitle>
-                        
-                      <FieldDescription className="text-base text-slate-500 font-medium">
-                        Você receberá um e-mail para recuperar a sua conta
-                      </FieldDescription>
-                    </Field>
-                    <Controller
-                      name="email"
-                      control={form.control}
-                      render={({ field, fieldState }) => (
-                        <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel htmlFor="form-rhf-demo-email" className="text-base text-slate-700 font-medium">
-                            E-mail
-                          </FieldLabel>
-                          <Input
-                            {...field}
-                            id="form-rhf-demo-email"
-                            type="email"
-                            aria-invalid={fieldState.invalid}
-                            placeholder="exemplo@gmail.com"
-                            autoComplete="email"
-                            className="bg-background rounded-xl text-sm placeholder:text-sm  py-6  border-slate-200 focus-visible:ring-ring"
-                          />
-                          {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} className="text-red-500 text-xs font-medium mt-1" />
-                          )}
-                        </Field>
-                      )}
-                    />
-                  </FieldGroup>
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 mt-6 rounded-xl text-base font-bold bg-primary hover:bg-primary/90 shadow-md active:scale-[0.98] transition-all"
-                >
-                  Iniciar sessão
-                </Button>
-              </form>
-            </CardContent>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          Recover password
+        </h1>
+        <p className="text-sm text-muted-foreground mt-2 mb-6">
+          Enter your email to receive recovery instructions.
+        </p>
 
-            <CardFooter className="border-muted p-5 justify-center">
-                <p className="text-center text-sm text-slate-500 font-regular">
-                  Não tem conta?{" "}
-                  <Link to="/auth/register" className="font-medium text-primary hover:underline">
-                    Registe-se
-                  </Link>
-                </p>
-            </CardFooter>
-          </Card>
-        </div>
-      </section>
-    </>
+        <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
+          <FieldGroup className="space-y-1.5">
+            <Controller
+              name="email"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="email-forgot" className="text-foreground font-semibold">
+                    E-mail
+                  </FieldLabel>
+                  <Input
+                    {...field}
+                    id="email-forgot"
+                    type="email"
+                    placeholder="exemplo@gmail.com"
+                    className="h-12 rounded-xl border-border focus:border-primary focus:ring-ring/20 transition-all duration-200 bg-background"
+                  />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+          </FieldGroup>
+
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full text-primary-foreground bg-primary hover:bg-primary/90 rounded-2xl h-14 text-lg font-bold shadow-md cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] mt-2 flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <span className="animate-pulse">Sending…</span>
+            ) : (
+              <>Send email <ArrowRightIcon size={18} weight="bold" /></>
+            )}
+          </Button>
+        </form>
+
+        <p className="text-center text-sm text-muted-foreground mt-8">
+          Remembered your password?{" "}
+          <Link to="/auth/login" className="font-bold text-primary hover:underline transition-all">
+            Back to Login
+          </Link>
+        </p>
+      </div>
+    </div>
   );
-}
+};
 
 export { ForgotPassword };

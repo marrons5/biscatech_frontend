@@ -1,39 +1,43 @@
 import apiClient from "./apiClient";
 
-export interface AppNotification {
+export type NotificationType = "order_status" | "new_order" | "review" | "system" | "support";
+
+export type AppNotification = {
     id: string;
-    userId: string;
+    type: NotificationType;
     title: string;
     message: string;
+    orderId?: string; 
+    time: string;     
     isRead: boolean;
-    relatedRequestId?: string;
-    createdAt: string;
-}
+};
 
-export interface GetNotificationParams {
-    unreadOnly?: boolean;
-    page?: number;
-    limit?: number;
-}
+// RESPONSES
+export type ListNotificationsResponse = {
+    success: boolean;
+    data: AppNotification[];
+};
 
-export interface ListNotificationsResponse {
+export type MessageResponse = {
     success: boolean;
     data: {
-        notifications: AppNotification[];
-        unreadCount: number;
-    }
-}
+        message: string;
+    };
+};
+
+// MÉTODOS
 
 export const notificationService = {
-    async list (params?: GetNotificationParams) {
-        return await apiClient.get<ListNotificationsResponse>("/api/notifications", {...params});
+    
+    async list() {
+        return await apiClient.get<ListNotificationsResponse>("/api/notifications");
     },
 
-    async markAsRead (id:string) {
-        return await apiClient.patch<AppNotification>(`/api/notifications/${id}/read`);
+    async markAsRead(id: string) {
+        return await apiClient.patch<MessageResponse>(`/api/notifications/${id}/read`);
     },
 
-    async markAllAsRead () {
-        return await apiClient.patch("/api/notifications/read-all");
+    async markAllAsRead() {
+        return await apiClient.patch<MessageResponse>("/api/notifications/read-all");
     }
-}
+};

@@ -1,75 +1,152 @@
 import apiClient from "./apiClient";
 
+export type Role = "customer" | "provider" | "admin";
+
+export interface Address {
+    id: string;
+    label: string;
+    full: string;
+}
+
 export interface User {
-    id?: string;
-    firstName?: string;
-    lastName?: string;
-    email?: string;
+    id: string;
+    name: string;
+    email: string;
     phone: string;
-    role?: string;
-    photo?: string;
-    isVerified: boolean;
+    role: Role;
+    initials: string;
+    status?: string;
+    emailVerified?: boolean;
+    addresses?: Address[];
+
+    isAvailable?: boolean;
+    isVerified?: boolean;
+    ratingAvg?: number;
+    ratingCount?: number;
 }
 
-export interface RegisterCredentials {
-    firstName: string;
-    lastName: string;
-    email?: string;
+export type RegisterPayload = {
+    name: string;
+    email: string;
     phone: string;
-    role: "CLIENTE" | "PRESTADOR";
     password: string;
+};
+
+export type VerifyEmailPayload = {
+    email: string;
+    code: string;
+};
+
+export type LoginPayload = {
+    email: string;
+    password: string;
+};
+
+export type ForgotPasswordPayload = {
+    email: string;
+};
+
+export type ResetPasswordPayload = {
+    email: string;
+    code: string;
+    password: string;
+};
+
+export type RefreshTokenPayload = {
+    refreshToken: string;
+};
+
+export interface AuthData {
+    token: string;
+    refreshToken: string;
+    user: User;
 }
 
-export interface LoginCredentials {
-    identifier: string;
-    password: string;
-    role: "CLIENTE" | "PRESTADOR"
+export interface RegisterData {
+    message: string;
+    user: User;
+}
+
+export interface MessageData {
+    message: string;
+}
+
+export interface RefreshTokenData {
+    token: string;
+    refreshToken: string;
 }
 
 export interface AuthResponse {
     success: boolean;
-    data: {
-        user: User;
-        token: string;
-        message?: string;
-    }
+    data: AuthData;
+}
+
+export interface RegisterResponse {
+    success: boolean;
+    data: RegisterData;
+}
+
+export interface MessageResponse {
+    success: boolean;
+    data: MessageData;
+}
+
+export interface RefreshTokenResponse {
+    success: boolean;
+    data: RefreshTokenData;
+}
+
+export interface GetMeResponse {
+    success: boolean;
+    data: User;
 }
 
 export const authService = {
-
-    async login(data: LoginCredentials){
-        return await apiClient.post<AuthResponse>(`/api/auth/login`, {...data});
+    async register(payload: RegisterPayload) {
+        return await apiClient.post<RegisterResponse>("/api/auth/register", payload);
     },
 
-    async register(data: RegisterCredentials){
-        return await apiClient.post<AuthResponse>("/api/auth/users", {...data});
+    async verify(payload: VerifyEmailPayload) {
+        return await apiClient.post<AuthResponse>("/api/auth/verify", payload);
     },
 
-    async forgotPassword(credentials: { identifier: string}){
-        return await apiClient.post<AuthResponse>("/api/auth/forgot-password", {...credentials});
+    async login(payload: LoginPayload) {
+        return await apiClient.post<AuthResponse>("/api/auth/login", payload);
     },
 
-    async resetPassword(credentials: {newPassword: string}){
-        return await apiClient.post<AuthResponse>("/api/auth/reset-password", {credentials: credentials.newPassword});
+    async forgotPassword(payload: ForgotPasswordPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/forgot-password", payload);
     },
 
-    async verifyEmail(token:  string){
-        return await apiClient.post<AuthResponse>("/api/auth/verify-email", {token});
+    async resetPassword(payload: ResetPasswordPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/reset-password", payload);
     },
 
-    async verifyPhone(token: string){
-        return await apiClient.post<AuthResponse>("/api/auth/verify-phone", {token});
+    async refresh(payload: RefreshTokenPayload) {
+        return await apiClient.post<RefreshTokenResponse>("/api/auth/refresh", payload);
     },
-    logout(){
-        return  apiClient.clearAuthToken();
+
+    async logout(payload: RefreshTokenPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/logout", payload);
     },
-    async changePassword(credentials: {currentPassword: string, newPassword: string}){
-        return await apiClient.patch<AuthResponse>("/api/auth/change-password", {...credentials});
+
+    async getMe() {
+        return await apiClient.get<GetMeResponse>("/api/auth/me");
     },
-    async getUserMe(){
-        return await apiClient.get<AuthResponse>("/api/auth/users/me")
+
+    async changePassword(payload: { currentPassword: string; newPassword: string }) {
+        return await apiClient.post<MessageResponse>("/api/auth/change-password", payload);
     },
-    async updateProfile(data: Partial<User>){
-        return await apiClient.patch<AuthResponse>("/api/auth/users/me", {...data})
+
+    clearSession() {
+        apiClient.clearAuthToken();
     },
-}
+
+    isAuthenticated() {
+        return !!apiClient.getAuthToken();
+    },
+
+    getToken() {
+        return apiClient.getAuthToken();
+    }
+};
