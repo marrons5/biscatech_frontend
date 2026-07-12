@@ -36,7 +36,7 @@ const Login = () => {
       const response = await authService.login({ email, password });
 
       if (!response.data.success) {
-        throw new Error("Login failed");
+        throw new Error((response.data as any).error ?? "Login failed");
       }
 
       const { token, refreshToken, user } = response.data.data;

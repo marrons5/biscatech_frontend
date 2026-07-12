@@ -42,7 +42,7 @@ const Register = () => {
       const response = await authService.register(payload);
 
       if (!response.data.success) {
-        throw new Error("Erro ao criar conta");
+        throw new Error((response.data as any).error ?? "Erro ao criar conta");
       }
 
       setPendingEmail(email);

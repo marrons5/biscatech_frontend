@@ -36,7 +36,7 @@ const ForgotPassword = () => {
       const response = await authService.forgotPassword({ email });
 
       if (!response.data.success) {
-        throw new Error("Request failed");
+        throw new Error((response.data as any).error ?? "Request failed");
       }
 
       setPendingEmail(email);
