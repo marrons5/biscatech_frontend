@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { authService } from "@/services/authService";
 import { AuthContext } from "@/context/authContext";
-import { setAuthToken, setRefreshToken, setAuthUser } from "@/utils/auth/session";
+import { setAuthToken, setRefreshToken } from "@/utils/auth/session";
 import { toast } from "sonner";
 import { logger } from "@/utils/logger";
 
