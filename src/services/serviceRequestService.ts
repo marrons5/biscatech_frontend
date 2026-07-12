@@ -80,11 +80,11 @@ export interface StatusUpdateResponse {
 export const serviceRequestService = {
 
     async create(payload: CreateServiceRequestPayload) {
-        return await apiClient.post<SingleRequestResponse>("/api/service-requests", payload);
+        return await apiClient.post<SingleRequestResponse>("/api/v1/service-requests", payload);
     },
 
     async list(params?: ListServiceRequestParams) {
-        return await apiClient.get<ListRequestResponse>("/api/service-requests", params );
+        return await apiClient.get<ListRequestResponse>("/api/v1/service-requests", params );
     },
 
     async getById(id: string) {

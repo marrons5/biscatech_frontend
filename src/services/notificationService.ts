@@ -30,7 +30,7 @@ export type MessageResponse = {
 export const notificationService = {
     
     async list() {
-        return await apiClient.get<ListNotificationsResponse>("/api/notifications");
+        return await apiClient.get<ListNotificationsResponse>("/api/v1/notifications");
     },
 
     async markAsRead(id: string) {
@@ -38,6 +38,6 @@ export const notificationService = {
     },
 
     async markAllAsRead() {
-        return await apiClient.patch<MessageResponse>("/api/notifications/read-all");
+        return await apiClient.patch<MessageResponse>("/api/v1/notifications/read-all");
     }
 };
