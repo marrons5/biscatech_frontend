@@ -185,7 +185,6 @@ class ApiClient {
         const start = Date.now();
         logger.debug("ApiClient", `→ ${options.method ?? "GET"} ${url}`);
         const response = await fetch(url, requestConfig);
-        const dur = Date.now() - start;
 
         if (response.status === 401 && this.getRefreshToken()) {
             if (!this.isRefreshing) {
