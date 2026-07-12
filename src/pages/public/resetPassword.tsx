@@ -40,7 +40,7 @@ const ResetPassword = () => {
       const response = await authService.resetPassword({ email, code, password });
 
       if (!response.data.success) {
-        throw new Error("Reset failed");
+        throw new Error((response.data as any).error ?? "Reset failed");
       }
 
       toast.success("Password updated successfully!", {

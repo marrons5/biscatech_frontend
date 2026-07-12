@@ -63,7 +63,7 @@ const Verify = () => {
       const response = await authService.verify({ email, code: code.join("") });
 
       if (!response.data.success) {
-        throw new Error(`Error ${response.status}`);
+        throw new Error((response.data as any).error ?? `Error ${response.status}`);
       }
 
       const { token, refreshToken, user } = response.data.data;
