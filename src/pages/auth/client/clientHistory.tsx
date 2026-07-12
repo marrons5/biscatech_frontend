@@ -14,7 +14,6 @@ import {
   CircleNotchIcon,
   // ArrowClockwiseIcon
 } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -120,7 +119,7 @@ const serviceRequestsData: ServiceRequest[] = [
 
 const ClientHistory = () => {
   const [activeTab, setActiveTab] = useState("all");
-  const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
+  const [_, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
   const filteredRequests = useMemo(() => {
     if (activeTab === "all") return serviceRequestsData;

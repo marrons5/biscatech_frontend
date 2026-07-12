@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
 
-export type Role = "client" | "pro";
+export type Role = "customer" | "provider" | "admin";
 
 export interface Address {
     id: string;
@@ -19,21 +19,17 @@ export interface User {
     emailVerified?: boolean;
     addresses?: Address[];
 
-    // Campos exclusivos do Prestador de Serviços
     isAvailable?: boolean;
     isVerified?: boolean;
     ratingAvg?: number;
     ratingCount?: number;
 }
 
-// PAYLOADS
-
 export type RegisterPayload = {
     name: string;
     email: string;
     phone: string;
     password: string;
-    role: Role;
 };
 
 export type VerifyEmailPayload = {
@@ -56,31 +52,48 @@ export type ResetPasswordPayload = {
     password: string;
 };
 
-// RESPONSES
+export type RefreshTokenPayload = {
+    refreshToken: string;
+};
+
+export interface AuthData {
+    token: string;
+    refreshToken: string;
+    user: User;
+}
+
+export interface RegisterData {
+    message: string;
+    user: User;
+}
+
+export interface MessageData {
+    message: string;
+}
+
+export interface RefreshTokenData {
+    token: string;
+    refreshToken: string;
+}
 
 export interface AuthResponse {
     success: boolean;
-    data: {
-        token: string;
-        user: User;
-    };
+    data: AuthData;
 }
 
 export interface RegisterResponse {
     success: boolean;
-    data: {
-        message: string;
-        otp?: string;
-        user: User;
-    };
+    data: RegisterData;
 }
 
 export interface MessageResponse {
     success: boolean;
-    data: {
-        message: string;
-        otp?: string;
-    };
+    data: MessageData;
+}
+
+export interface RefreshTokenResponse {
+    success: boolean;
+    data: RefreshTokenData;
 }
 
 export interface GetMeResponse {
@@ -88,10 +101,7 @@ export interface GetMeResponse {
     data: User;
 }
 
-// MÉTODOS
-
 export const authService = {
-    
     async register(payload: RegisterPayload) {
         return await apiClient.post<RegisterResponse>("/api/auth/register", payload);
     },
@@ -112,11 +122,23 @@ export const authService = {
         return await apiClient.post<MessageResponse>("/api/auth/reset-password", payload);
     },
 
+    async refresh(payload: RefreshTokenPayload) {
+        return await apiClient.post<RefreshTokenResponse>("/api/auth/refresh", payload);
+    },
+
+    async logout(payload: RefreshTokenPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/logout", payload);
+    },
+
     async getMe() {
         return await apiClient.get<GetMeResponse>("/api/auth/me");
     },
 
-    logout() {
+    async changePassword(payload: { currentPassword: string; newPassword: string }) {
+        return await apiClient.post<MessageResponse>("/api/auth/change-password", payload);
+    },
+
+    clearSession() {
         apiClient.clearAuthToken();
     },
 

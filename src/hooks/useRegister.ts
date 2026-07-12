@@ -4,12 +4,13 @@ import * as z from "zod";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { authService } from "@/services/authService";
+import { setPendingEmail } from "@/utils/auth/session";
 import { useState } from "react";
 
 const registerSchema = z.object({
     firstName: z.string().nonempty(),
     lastName: z.string().nonempty(),
-    email: z.email({error: "Insira um e-mail válido. Ex: joaodomingos@gmail.com"}).optional(),
+    email: z.string().email("Insira um e-mail válido. Ex: joaodomingos@gmail.com"),
     phone: z.e164({error: "Insira um número de telefone váLido. Ex: +244912345678"}),
     role: z.enum(["CLIENTE", "PRESTADOR"]),
     password: z
@@ -46,11 +47,10 @@ function useRegister() {
 
     async function onSubmit(value: z.infer<typeof registerSchema>) {
         const payload = {
-            firstName: value.firstName,
-            lastName: value.lastName,
+            name: `${value.firstName} ${value.lastName}`.trim(),
             email: value.email,
             phone: value.phone,
-            role: value.role,
+            role: value.role === "PRESTADOR" ? "pro" as const : "client" as const,
             password: value.password,
         }
 
@@ -62,14 +62,12 @@ function useRegister() {
             if(!response.data.success) {
                 throw new Error(`Erro ${response.status}`);
             }
-            
-            if( value.role === "CLIENTE"){
-                navigate("/clientDashboard", { replace: true });
-            } else if ( value.role === "PRESTADOR"){
-                navigate("/proDashboard", { replace: true });
-            }
 
-            toast.success("Conta criada com sucesso!", {
+            setPendingEmail(value.email);
+
+            navigate("/verify", { replace: true });
+
+            toast.success("Conta criada com sucesso! Verifica o teu email.", {
                 className: "bg-green-500 text-white font-semibold",
             });
         } catch (error) {

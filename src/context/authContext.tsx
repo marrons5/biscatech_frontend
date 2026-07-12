@@ -1,12 +1,11 @@
-import {
-  createContext,
- 
-} from "react";
+import { createContext } from "react";
 
-export type Role = "client" | "pro";
+export type Role = "customer" | "provider" | "admin";
 
 export interface AuthUser {
+  id: string;
   name: string;
+  email: string;
   phone: string;
   role: Role;
   initials: string;
@@ -21,6 +20,3 @@ interface AuthContextValue {
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-
-

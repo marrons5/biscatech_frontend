@@ -6,16 +6,18 @@ function useGetCatalog(defaultParams?: GetCatalogParams) {
     const [data, setData] = useState<PredefinedService[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // Carregamento inicial do Catálogo
     useEffect(() => {
         let isMounted = true;
 
         const fetchCatalog = async () => {
             try {
                 const response = await catalogService.list(defaultParams);
+                const payload = response as unknown as { data: { success: boolean; data: { services: PredefinedService[] } } };
                 
-                if (response.data?.success && isMounted) {
-                    setData(response.data.data.services);
+                if (payload.data?.success && isMounted) {
+                    setData(payload.data.data.services);
+                } else if (isMounted) {
+                    setData([]);
                 }
             } catch (error) {
                 if (isMounted) {
@@ -33,21 +35,19 @@ function useGetCatalog(defaultParams?: GetCatalogParams) {
 
         fetchCatalog();
 
-        // Função de limpeza
         return () => {
             isMounted = false; 
         };
     }, [defaultParams]);
 
-    // A função para filtrar por categorias
-
     const refetchCatalog = async (newParams?: GetCatalogParams) => {
         try {
             setIsLoading(true); 
             const response = await catalogService.list(newParams || defaultParams);
+            const payload = response as unknown as { data: { success: boolean; data: { services: PredefinedService[] } } };
 
-            if (response.data?.success) {
-                setData(response.data.data.services);
+            if (payload.data?.success) {
+                setData(payload.data.data.services);
             } else {
                 throw new Error("Erro na resposta do servidor");
             }
