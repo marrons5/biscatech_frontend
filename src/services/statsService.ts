@@ -32,7 +32,7 @@ export interface GetStatsParams {
 
 export const statsService = {
     async getProStats(params?: GetStatsParams) {
-        return await apiClient.get<GetProStatsResponse>("/api/stats/pro", {...params})
+        return await apiClient.get<GetProStatsResponse>("/api/v1/stats/pro", {...params})
     }
 }
 

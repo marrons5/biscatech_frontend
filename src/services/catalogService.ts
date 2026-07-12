@@ -62,7 +62,7 @@ function flattenCatalog(categories: BackendCategory[]): PredefinedService[] {
 export const catalogService = {
 
     async list (params?: GetCatalogParams) {
-        const response = await apiClient.get<ListCatalogResponse>("/api/services", {...params});
+        const response = await apiClient.get<ListCatalogResponse>("/api/v1/services", {...params});
         if (response.data?.success && Array.isArray(response.data.data)) {
             return {
                 data: {

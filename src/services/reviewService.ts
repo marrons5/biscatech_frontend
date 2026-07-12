@@ -20,6 +20,6 @@ export const reviewService = {
     },
 
     async list() {
-        return await apiClient.get<{ success: boolean; data: Review[] }>("/api/reviews");
+        return await apiClient.get<{ success: boolean; data: Review[] }>("/api/v1/reviews");
     }
 };

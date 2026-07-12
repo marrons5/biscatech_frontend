@@ -108,7 +108,7 @@ class ApiClient {
         if (!refreshToken) return null;
 
         try {
-            const { data } = await fetch(`${this.baseURL}/api/auth/refresh`, {
+            const { data } = await fetch(`${this.baseURL}/api/v1/auth/refresh`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ refreshToken }),

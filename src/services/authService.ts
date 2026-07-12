@@ -103,39 +103,39 @@ export interface GetMeResponse {
 
 export const authService = {
     async register(payload: RegisterPayload) {
-        return await apiClient.post<RegisterResponse>("/api/auth/register", payload);
+        return await apiClient.post<RegisterResponse>("/api/v1/auth/register", payload);
     },
 
     async verify(payload: VerifyEmailPayload) {
-        return await apiClient.post<AuthResponse>("/api/auth/verify", payload);
+        return await apiClient.post<AuthResponse>("/api/v1/auth/verify", payload);
     },
 
     async login(payload: LoginPayload) {
-        return await apiClient.post<AuthResponse>("/api/auth/login", payload);
+        return await apiClient.post<AuthResponse>("/api/v1/auth/login", payload);
     },
 
     async forgotPassword(payload: ForgotPasswordPayload) {
-        return await apiClient.post<MessageResponse>("/api/auth/forgot-password", payload);
+        return await apiClient.post<MessageResponse>("/api/v1/auth/forgot-password", payload);
     },
 
     async resetPassword(payload: ResetPasswordPayload) {
-        return await apiClient.post<MessageResponse>("/api/auth/reset-password", payload);
+        return await apiClient.post<MessageResponse>("/api/v1/auth/reset-password", payload);
     },
 
     async refresh(payload: RefreshTokenPayload) {
-        return await apiClient.post<RefreshTokenResponse>("/api/auth/refresh", payload);
+        return await apiClient.post<RefreshTokenResponse>("/api/v1/auth/refresh", payload);
     },
 
     async logout(payload: RefreshTokenPayload) {
-        return await apiClient.post<MessageResponse>("/api/auth/logout", payload);
+        return await apiClient.post<MessageResponse>("/api/v1/auth/logout", payload);
     },
 
     async getMe() {
-        return await apiClient.get<GetMeResponse>("/api/auth/me");
+        return await apiClient.get<GetMeResponse>("/api/v1/auth/me");
     },
 
     async changePassword(payload: { currentPassword: string; newPassword: string }) {
-        return await apiClient.post<MessageResponse>("/api/auth/change-password", payload);
+        return await apiClient.post<MessageResponse>("/api/v1/auth/change-password", payload);
     },
 
     clearSession() {
