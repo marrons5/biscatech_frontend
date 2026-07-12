@@ -16,7 +16,7 @@ export default defineConfig({
       "/api": {
         target: "https://api-bt.bisc8.digital",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "/api/v1"),
+        rewrite: (path) => path.replace(/^\/api(\/v1)?/, "/api/v1"),
       },
     },
   },
