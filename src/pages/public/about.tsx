@@ -1,5 +1,5 @@
 import { CheckCircle2, ShieldCheck, Zap, Users } from "lucide-react";
-import { PublicNav } from "@/components/custom/publicNav";
+
 import { PublicFooter } from "@/components/custom/publicFooter";
 
 const features = [
@@ -27,8 +27,8 @@ const features = [
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <PublicNav />
+    <div className="min-h-screen">
+      
       <section className=" py-16 md:py-24 text-center">
         <span className="inline-block px-3 py-1 rounded-full bg-accent text-accent-foreground text-xs font-bold mb-4">
           SOBRE A NEMA

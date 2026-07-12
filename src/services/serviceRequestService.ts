@@ -1,105 +1,125 @@
 import apiClient from "./apiClient";
 
-export interface ServiceRequest {
+export type RequestStatus = "pending" | "accepted" | "in_progress" | "awaiting_confirmation" | "completed" | "cancelled" | "expired";
+export type RequestType = "repair" | "installation" | "maintenance" | "emergency";
+export type RequestScope = "mine" | "assigned" | "available";
+
+export interface IServiceRequest {
     id: string;
-    clientId: string;
-    proId?: string
+    serviceId?: string;
     title: string;
     description: string;
-    category: string;
-    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
     location: string;
-    scheduledDate: string;
-    price: string;
-    status: "PENDENTE" | "ACEITE" | "CANCELADA" | "CONCLUÍDA" | "EXPIRADA";
-    createdAt: string;
+    date: string;
+    status: RequestStatus;
+    type: RequestType;
     isCustom: boolean;
+    price?: number | null;
+    proposedValue?: number | null;
+    eta?: string | null;
+    expiresAt: string;
+    proCompletedAt?: string | null;
+    clientConfirmedAt?: string | null;
+    photos?: string[];
 }
 
-export interface CreateServiceRequestProps {
+// PAYLOADS
+
+export type CreateServiceRequestPayload = {
+    serviceId?: string;
+    isCustom?: boolean;
     title: string;
     description: string;
-    category: string;
-    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
     location: string;
-    scheduledDate: string;
-    price?: number;
-    isCustom: boolean;
+    date: string;
+    type?: RequestType;
+    stipulatedPrice?: number;
+    photos?: string[];
 }
 
-export interface CreateServiceRequestResponse {
+export type UpdateServiceRequestPayload = {
+    title?: string;
+    description?: string;
+    location?: string;
+    date?: string;
+}
+
+export type AcceptServiceRequestPayload = {
+    priceAgreed?: number;
+    eta?: string;
+}
+
+export type ListServiceRequestParams = {
+    scope?: RequestScope;
+    status?: RequestStatus;
+    type?: RequestType;
+}
+
+// RESPONSES
+
+export interface SingleRequestResponse {
+    success: boolean;
+    data: IServiceRequest;
+}
+
+export interface ListRequestResponse {
+    success: boolean;
+    data: IServiceRequest[];
+}
+
+export interface StatusUpdateResponse {
     success: boolean;
     data: {
-        request: ServiceRequest;
-        message?: string;
-    }
+        id: string;
+        status: RequestStatus;
+    };
 }
 
-export interface GetRequestParams {
-    page?: number;
-    limit?: number;
-    status?: string;
-    category?: string;
-}
-
-export interface ListServiceRequestsResponse {
-    success: boolean;
-    data: {
-        requests: ServiceRequest[];
-        total: number;
-    }
-}
-
-export interface GetServiceRequestDetailsResponse {
-    success: boolean;
-    data: {
-        request: ServiceRequest;
-    }
-}
-
-export interface CompleteAndRateRequestProps {
-    status: string;
-    rating: number;
-    comment?: string;
-} 
-
-export interface ChangeServiceRequestStatusProps {
-    proId?: string;
-    status: string;
-}
-
-export interface ChangeServiceRequestStatusResponse {
-    success: boolean;
-    data: {
-        proId?: string;
-        status: string;
-        message?: string;
-    }
-}
+// MÉTODOS
 
 export const serviceRequestService = {
-    async create(data: CreateServiceRequestProps){
-        return await apiClient.post<CreateServiceRequestResponse>("/api/service-requests", {...data});
+
+    async create(payload: CreateServiceRequestPayload) {
+        return await apiClient.post<SingleRequestResponse>("/api/service-requests", payload);
     },
 
-    async list(params?: GetRequestParams){
-        return await apiClient.get<ListServiceRequestsResponse>("/api/service-requests", {...params});
+    async list(params?: ListServiceRequestParams) {
+        return await apiClient.get<ListRequestResponse>("/api/service-requests", params );
     },
 
-    async getById(id: string){
-
-        return await apiClient.get<GetServiceRequestDetailsResponse>(`/api/service-requests/${id}`);
+    async getById(id: string) {
+        return await apiClient.get<SingleRequestResponse>(`/api/service-requests/${id}`);
     },
 
-    async update(id:string, data: Partial<CreateServiceRequestProps>){
-        return await apiClient.patch<GetServiceRequestDetailsResponse>(`/api/service-requests/${id}`, {...data});
+    async update(id: string, payload: UpdateServiceRequestPayload) {
+        return await apiClient.patch<SingleRequestResponse>(`/api/service-requests/${id}`, payload);
     },
 
-    async changeStatus(id:string, data: ChangeServiceRequestStatusProps){
-        return await apiClient.patch<ChangeServiceRequestStatusResponse>(`/api/service-requests/${id}/status`, {...data});
+    async reactivate(id: string) {
+        return await apiClient.post<SingleRequestResponse>(`/api/service-requests/${id}/reactivate`);
     },
 
-    async completeAndRate(id: string, data: CompleteAndRateRequestProps){
-        return await apiClient.patch<ChangeServiceRequestStatusResponse>(`/api/service-requests/${id}/complete`, {...data});
+    async accept(id: string, payload: AcceptServiceRequestPayload) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/accept`, payload);
     },
-}
+
+    async start(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/start`);
+    },
+
+    async markCompleted(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/mark-completed`);
+    },
+
+    async confirm(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/confirm`);
+    },
+
+    async cancelByPro(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-pro`);
+    },
+
+    async cancelByClient(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-client`);
+    }
+};

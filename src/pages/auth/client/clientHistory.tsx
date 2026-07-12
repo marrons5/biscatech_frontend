@@ -6,107 +6,89 @@ import {
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,
-  CircleNotchIcon,
-  ArrowRightIcon,
+  // ArrowRightIcon,
   ChartBarIcon,
-  UserIcon,
   StarIcon,
+  WarningCircleIcon,
+  DropIcon,
+  CircleNotchIcon,
+  // ArrowClockwiseIcon
 } from "@phosphor-icons/react";
-import { 
-  Badge, 
-  Card, 
-  CardContent, 
-  CardHeader, 
-  CardTitle,
-  Dialog, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogContent, 
-  DialogClose, 
-  DialogFooter
-} from "@/components";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
-type ServiceRequestStatus = "pending" | "accepted" | "concluded" | "cancelled" | "expired";
-
-type BadgeVariants = "blue" | "green" | "red" | "grey" | "dark";
-
-interface BadgeStatus {
-  icon: React.ComponentType;
-  variant: BadgeVariants;
-  label: string;
-}
-
-interface ServiceProvider {
-  name: string;
-  avatar?: string;
-  rating: string;
-  specialty: string;
-}
+type OrderStatus = "pending" | "accepted" | "concluded" | "cancelled" | "expired";
 
 interface ServiceRequest {
   id: string;
-  icon: React.ComponentType;
-  serviceProvider: ServiceProvider;
   service: string;
+  icon: React.ElementType;
   description: string;
   date: string;
   location: string;
   price: string;
-  status: ServiceRequestStatus;
+  status: OrderStatus;
+  pro?: {
+    name: string;
+    avatar: string;
+    rating: string;
+  };
 }
 
-function selectStatusBadge(status: string) : BadgeStatus | undefined {
+// Configuração de cores temáticas para os estados com foco no "Hover"
+const getStatusConfig = (status: OrderStatus) => {
   switch (status) {
-    case "pending":
-      return {
-        icon: ClockIcon,
-        variant: "blue",
-        label: "Pendente"
-      };
     case "accepted":
-      return {
-        icon: CircleNotchIcon,
-        variant: "blue",
-        label: "Em curso"
+      return { 
+        label: "Em Andamento", 
+        baseColor: "text-primary", 
+        hoverWash: "group-hover:bg-primary", 
+        hoverText: "group-hover:text-primary",
+        icon: ClockIcon 
       };
     case "concluded":
-      return {
-        icon: CheckCircleIcon,
-        variant: "green",
-        label: "Concluído"
+      return { 
+        label: "Concluído", 
+        baseColor: "text-success", 
+        hoverWash: "group-hover:bg-success/5", 
+        hoverText: "group-hover:text-success",
+        icon: CheckCircleIcon 
       };
     case "cancelled":
-      return {
-        icon: XCircleIcon,
-        variant: "red",
-        label: "Cancelado"
+      return { 
+        label: "Cancelado", 
+        baseColor: "text-destructive", 
+        hoverWash: "group-hover:bg-destructive/5", 
+        hoverText: "group-hover:text-destructive",
+        icon: XCircleIcon 
       };
     case "expired":
-      return {
-        icon: XCircleIcon,
-        variant: "dark",
-        label: "Expirado"
+      return { 
+        label: "Expirado", 
+        baseColor: "text-warning", 
+        hoverWash: "group-hover:bg-warning/5", 
+        hoverText: "group-hover:text-warning",
+        icon: WarningCircleIcon 
       };
     default:
-      return {
-        icon: ClockIcon,
-        variant: "grey",
-        label: "Pendente"
+      return { 
+        label: "Pendente", 
+        baseColor: "text-foreground", 
+        hoverWash: "group-hover:bg-foreground/5", 
+        hoverText: "group-hover:text-foreground",
+        icon: CircleNotchIcon 
       };
   }
-}
+};
 
 const serviceRequestsData: ServiceRequest[] = [
   {
-    id: "1",
-    service: "Canalizador",
-    icon: WrenchIcon,
-    serviceProvider: {
-      name: "João Mateus",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100",
-      rating: "4.9",
-      specialty: "Instalações Hidráulicas & Reparos de Fugas"
-    },
+    id: "sr1",
+    service: "Desentupir lavatório",
+    icon: DropIcon,
+    pro: { name: "João Mateus", avatar: "JM", rating: "4.9" },
     description: "Inundação na cozinha devido à rutura do cano principal por baixo do lava-loiça.",
     date: "Hoje, 14:30",
     location: "Talatona, Luanda",
@@ -114,15 +96,10 @@ const serviceRequestsData: ServiceRequest[] = [
     status: "accepted",
   },
   {
-    id: "2",
-    service: "Eletricista",
+    id: "sr2",
+    service: "Reparar curto-circuito",
     icon: LightningIcon,
-    serviceProvider: {
-      name: "Aline Costa",
-      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100",
-      rating: "4.8",
-      specialty: "Manutenção de Quadros Elétricos"
-    },
+    pro: { name: "Aline Costa", avatar: "AC", rating: "4.8" },
     description: "Curto-circuito intermitente no disjuntor da sala.",
     date: "Ontem",
     location: "Miramar, Luanda",
@@ -130,219 +107,203 @@ const serviceRequestsData: ServiceRequest[] = [
     status: "concluded",
   },
   {
-    id: "5",
-    service: "Canalizador",
+    id: "sr3",
+    service: "Instalação de Sanita",
     icon: WrenchIcon,
-    serviceProvider: {
-      name: "A aguardar prestador",
-      rating: "0.0",
-      specialty: "Nenhum técnico alocado"
-    },
-    description: "Limpeza preventiva da caixa de esgoto.",
-    date: "2 Abr",
+    description: "Substituição de uma sanita antiga por um modelo novo.",
+    date: "2 Abr 2026",
     location: "Viana, Luanda",
     price: "4.500 Kz",
     status: "cancelled",
-  },
+  }
 ];
-
-const statsData = [
-  { key: "accepted", label: "Aceites", value: 5 },
-  { key: "concluded", label: "Concluídas", value: 4 },
-  { key: "cancelled", label: "Canceladas", value: 1 },
-  { key: "expired", label: "Expiradas", value: 0 },
-  { key: "pending", label: "Pendentes", value: 0 },
-];
-
 
 const ClientHistory = () => {
+  const [activeTab, setActiveTab] = useState("all");
   const [selectedRequest, setSelectedRequest] = useState<ServiceRequest | null>(null);
 
-  const activeJob = useMemo(() => serviceRequestsData.find((j) => j.status === "accepted"), []);
+  const filteredRequests = useMemo(() => {
+    if (activeTab === "all") return serviceRequestsData;
+    if (activeTab === "active") return serviceRequestsData.filter(r => r.status === "accepted" || r.status === "pending");
+    if (activeTab === "history") return serviceRequestsData.filter(r => r.status === "concluded" || r.status === "cancelled" || r.status === "expired");
+    return serviceRequestsData.filter(r => r.status === activeTab);
+  }, [activeTab]);
 
-  const serviceRequests = useMemo(() => {
-    return serviceRequestsData.map((serviceRequest) => {
-      const badgeStatus = selectStatusBadge(serviceRequest.status);
-      // const StatusIcon = badgeStatus?.icon;
-
-      return (
-        <Card
-          key={serviceRequest.id}
-          onClick={() => setSelectedRequest(serviceRequest)}
-          className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl p-5! *:p-0 hover:border-primary/20 hover:-translate-y-0.5 transition-all cursor-pointer"
-        >
-          <CardHeader className="flex justify-between items-center">
-            <CardTitle>{serviceRequest.service}</CardTitle>
-            <Badge variant={badgeStatus?.variant}>
-              {/* <StatusIcon weight="bold" className={cn("h-3 w-3", serviceRequest.status === "accepted" && "animate-spin")} /> */}
-              <span>{badgeStatus?.label}</span>
-            </Badge>
-          </CardHeader>
-          <CardContent className="flex justify-between">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="font-bold text-foreground"></h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    com <span className="font-semibold text-foreground">{serviceRequest.serviceProvider.name}</span>
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1"><ClockIcon className="h-3.5 w-3.5" />{serviceRequest.date}</span>
-                <span className="inline-flex items-center gap-1 truncate"><MapPinIcon className="h-3.5 w-3.5" />{serviceRequest.location}</span>
-              </div>
-            </div>
-
-            <div className="text-right shrink-0">
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold">Valor</p>
-              <p className="text-base font-extrabold text-foreground">{serviceRequest.price}</p>
-            </div>
-          </CardContent>
-        </Card>
-      );
-    });
-  }, []);
-
-  const renderedStats = useMemo(() => {
-    return statsData.map((s) => {
-      const config = selectStatusBadge(s.key);
-      // const StatIcon = config?.icon;
-
-      return (
-        <Badge
-          variant={config?.variant}
-          key={s.key}
-          className="flex items-center justify-between py-5 px-3 w-full rounded-xl"
-        >
-          <div className="flex items-center gap-2">
-            {/* <StatIcon className="size-4" weight="bold" /> */}
-            <span className="text-base font-medium">{s.label}</span>
-          </div>
-
-          <span className="text-base font-extrabold">{s.value}</span>
-        </Badge>
-      );
-    });
-  }, []);
+  const stats = [
+    { label: "Em Andamento", value: serviceRequestsData.filter(r => r.status === "accepted").length },
+    { label: "Concluídos", value: serviceRequestsData.filter(r => r.status === "concluded").length },
+    { label: "Cancelados", value: serviceRequestsData.filter(r => r.status === "cancelled").length },
+  ];
 
   return (
-    <section className="w-full grid grid-cols-10 gap-10 px-10">
-      <main className="col-span-10 lg:col-span-7">
-        <div className="flex flex-col gap-2.5">
-          {serviceRequests}
+    <section className="w-full grid grid-cols-1 lg:grid-cols-10 gap-10 px-4 lg:px-10 pb-8 bg-background min-h-svh">
+      
+      {/* LADO ESQUERDO: LISTAGEM NEUMÓRFICA */}
+      <main className="col-span-1 lg:col-span-7">
+
+        {/* Tabs Neumórficas perfeitamente alinhadas com o ClientHome */}
+        <div className="flex flex-wrap gap-4 justify-center py-2">
+           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex justify-center">
+            <TabsList className="bg-transparent h-auto p-0 flex flex-wrap gap-4 border-none">
+              {[
+                { id: "all", label: "Todos os Pedidos" },
+                { id: "active", label: "Ativos" },
+                { id: "history", label: "Histórico" }
+              ].map((t) => (
+                <TabsTrigger 
+                  key={t.id} 
+                  value={t.id} 
+                  className={cn(
+                    "rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 outline-none border-none",
+                    activeTab === t.id 
+                      ? "neu-pressed text-primary" 
+                      : "neu-flat text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {t.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
+          {filteredRequests.map((req, index) => {
+            const config = getStatusConfig(req.status);
+            return (
+              <Dialog key={req.id}>
+                <DialogTrigger asChild>
+                  <button
+                    onClick={() => setSelectedRequest(req)}
+                    className={cn(
+                      "group relative flex flex-col items-start gap-4 p-8 rounded-[2rem] neu-flat active:neu-pressed transition-all duration-300 text-left overflow-hidden animate-in fade-in slide-in-from-bottom-4",
+                      config.hoverWash
+                    )}
+                    style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
+                  >
+                    <div className="flex items-start justify-between w-full">
+                      {/* Ícone com sombra interna */}
+                      <div className={cn("h-14 w-14 rounded-full flex items-center justify-center neu-pressed transition-colors duration-300", config.baseColor)}>
+                        <req.icon weight="duotone" className="h-7 w-7" />
+                      </div>
+                      
+                      {/* Badge do estado fundido no fundo (Neumórfico) */}
+                      <div className={cn("px-4 py-1.5 font-bold text-[10px] uppercase tracking-wider rounded-full neu-pressed transition-colors duration-300", config.baseColor)}>
+                        {config.label}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-2 w-full">
+                      <h3 className={cn("font-extrabold text-foreground text-lg leading-tight transition-colors duration-300", config.hoverText)}>
+                        {req.service}
+                      </h3>
+                      {/* Ícone de Localização e Texto mudam de cor no Hover */}
+                      <p className={cn("text-sm font-semibold text-muted-foreground mt-2 flex items-center gap-1.5 transition-colors duration-300", config.hoverText)}>
+                        <MapPinIcon className="h-4 w-4" weight="fill" /> {req.location}
+                      </p>
+                    </div>
+
+                    {req.pro && (
+                      <div className="w-full flex items-center gap-3 mt-4 pt-4 border-t border-border/20">
+                         <div className="h-10 w-10 rounded-full neu-pressed text-primary flex items-center justify-center text-sm font-bold">
+                            {req.pro.avatar}
+                         </div>
+                         <div>
+                           <p className="text-sm font-bold text-foreground">{req.pro.name}</p>
+                           <p className="text-xs text-muted-foreground flex items-center gap-1">
+                             <StarIcon weight="fill" className="text-warning" /> {req.pro.rating}
+                           </p>
+                         </div>
+                      </div>
+                    )}
+                  </button>
+                </DialogTrigger>
+
+                <DialogContent className="sm:max-w-[450px] bg-background rounded-[2rem] p-8 border-none neu-flat overflow-hidden">
+                  
+                  <div className="flex flex-col items-center justify-center text-center pb-6 border-b border-border/20">
+                     <div className={cn("h-16 w-16 rounded-full flex items-center justify-center neu-pressed mb-4", config.baseColor)}>
+                       <req.icon weight="duotone" className="h-8 w-8" />
+                     </div>
+                     <h3 className="font-extrabold text-2xl text-foreground mb-2">{req.service}</h3>
+                     <div className={cn("px-4 py-1 text-xs uppercase font-bold rounded-full neu-pressed", config.baseColor)}>
+                       {config.label}
+                     </div>
+                  </div>
+
+                  {/* Informações "afundadas" (neu-pressed) para criar contraste físico */}
+                  <div className="space-y-4 py-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 neu-pressed rounded-2xl flex flex-col items-center text-center">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Agendado</span>
+                        <p className="text-sm font-bold text-foreground mt-1">{req.date}</p>
+                      </div>
+                      <div className="p-4 neu-pressed rounded-2xl flex flex-col items-center text-center">
+                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Preço</span>
+                        <p className="text-sm font-bold text-foreground mt-1">{req.price}</p>
+                      </div>
+                    </div>
+
+                    <div className="p-4 neu-pressed rounded-2xl text-center">
+                       <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Localização</span>
+                       <p className="text-sm font-bold text-foreground mt-1">{req.location}</p>
+                    </div>
+
+                    <div className="p-4 neu-pressed rounded-2xl text-center">
+                       <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Descrição</span>
+                       <p className="text-sm text-foreground/80 mt-1">{req.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Botões de Ação */}
+                  <div className="flex gap-4">
+                    <DialogClose asChild>
+                      <button className="flex-1 rounded-full neu-flat text-muted-foreground font-bold h-14 hover:text-foreground transition-all">
+                        Voltar
+                      </button>
+                    </DialogClose>
+                    
+                    {req.status === "accepted" && (
+                      <button className="flex-1 neu-flat rounded-full bg-primary! text-primary-foreground font-bold h-14 active:neu-pressed transition-all">
+                        Confirmar Conclusão
+                      </button>
+                    )}
+
+                    {req.status === "concluded" && (
+                      <button className="flex-1 neu-flat rounded-full bg-success! text-primary-foreground font-bold h-14 active:neu-pressed transition-all flex items-center justify-center gap-2">
+                        <StarIcon weight="fill" size={18} /> Avaliar
+                      </button>
+                    )}
+                  </div>
+
+                </DialogContent>
+              </Dialog>
+            );
+          })}
         </div>
       </main>
 
-      <aside className="col-span-10 lg:col-span-3 flex flex-col">
-        {activeJob && (
-          <Card className="rounded-2xl bg-primary-gradient shadow-sm p-5 text-white border-none">
-            <CardHeader className="flex flex-row items-center gap-2 p-0 space-y-0">
-              <span className="size-2 rounded-full bg-white animate-pulse" />
-              <CardTitle className="text-white text-base font-bold">Pedido ativo</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0 mt-4">
-              <h3 className="font-bold text-lg">{activeJob.service}</h3>
-              <p className="text-xs opacity-90 mt-1">com {activeJob.serviceProvider.name} • {activeJob.location}</p>
-              <button
-                onClick={() => setSelectedRequest(activeJob)}
-                className="mt-4 inline-flex items-center gap-1 text-sm font-bold hover:underline bg-transparent border-none text-white cursor-pointer"
-              >
-                Ver detalhes <ArrowRightIcon className="h-4 w-4" />
-              </button>
-            </CardContent>
-          </Card>
-        )}
+      {/* LADO DIREITO: BARRA LATERAL (WIDGETS NEUMÓRFICOS) */}
+      <aside className="col-span-1 lg:col-span-3 space-y-8">
+        
+        <div className="rounded-[2rem] neu-flat p-8 flex flex-col items-center text-center">
+          <div className="h-16 w-16 rounded-full neu-pressed text-primary flex items-center justify-center mb-6">
+            <ChartBarIcon weight="duotone" className="h-8 w-8" />
+          </div>
+          <h3 className="font-extrabold text-foreground text-xl mb-6">Resumo Geral</h3>
+          
+          <div className="w-full space-y-4">
+            {stats.map((stat, i) => (
+              <div key={i} className="flex justify-between items-center neu-pressed p-4 rounded-2xl">
+                <span className="text-sm font-semibold text-muted-foreground">{stat.label}</span>
+                <span className="text-lg font-black text-foreground">{stat.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <Card className="rounded-2xl bg-card border border-border/60 shadow-sm p-5 flex-1">
-          <CardHeader className="flex flex-row items-center gap-2 p-0 space-y-0 mb-4">
-            <ChartBarIcon weight="duotone" className="h-5 w-5 text-primary" />
-            <CardTitle className="text-foreground text-base font-bold">Resumo Geral</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 flex flex-col gap-2.5">
-            {renderedStats}
-          </CardContent>
-        </Card>
       </aside>
 
-      {/* Dialog Unificado de Detalhes */}
-      <Dialog open={!!selectedRequest} onOpenChange={(open) => !open && setSelectedRequest(null)}>
-        {selectedRequest && (() => {
-          const dialogConfig = selectStatusBadge(selectedRequest.status);
-          // const DialogIcon = dialogConfig?.icon;
-
-          return (
-            <DialogContent className="sm:max-w-[550px] bg-white rounded-2xl p-6 border-none shadow-2xl overflow-hidden *:border-0">
-              <DialogHeader className="border-b pb-4">
-                <div className="flex items-center gap-2.5 w-full">
-                  <DialogTitle className="text-2xl font-black text-[#091B3D] tracking-tight">
-                    {selectedRequest.service}
-                  </DialogTitle>
-                  <Badge variant={dialogConfig?.variant} className="flex items-center gap-1 font-bold">
-                    {/* <DialogIcon weight="bold" className={cn("h-3 w-3", selectedRequest.status === "accepted" && "animate-spin")} /> */}
-                    {dialogConfig?.label}
-                  </Badge>
-                </div>
-
-              </DialogHeader>
-
-              <Card className="bg-primary-gradient rounded-xl gap-2 p-5 *:p-0">
-                <CardContent className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-slate-200 border overflow-hidden flex items-center justify-center shrink-0">
-                    {selectedRequest.serviceProvider.avatar ? (
-                      <img src={selectedRequest.serviceProvider.avatar} alt={selectedRequest.serviceProvider.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <UserIcon className="size-6 text-slate-400" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="text-primary-foreground flex flex-col">
-                      <span className="text-base font-medium">{selectedRequest.serviceProvider.name}</span>
-                      <span className="text-sm">{selectedRequest.serviceProvider.specialty}</span>
-                    </div>
-                    <div className="text-warning flex items-center gap-1">
-                      <StarIcon weight="fill" className="size-3.5"/>
-                      <span className="text-sm">{selectedRequest.serviceProvider.rating}</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="flex flex-col gap-5 py-2">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-card border border-muted-foreground/25 flex flex-col gap-1 rounded-xl p-2.5">
-                    <span className="text-muted-foreground text-xs font-medium">Data Agendada</span>
-                    <span className="text-sm font-bold text-foreground">{selectedRequest.date}</span>
-                  </div>
-                  <div className="bg-card border border-muted-foreground/25 flex flex-col gap-1 rounded-xl p-2.5">
-                    <span className="text-muted-foreground text-xs font-medium">Local da Ocorrência</span>
-                    <span className="text-sm font-bold text-foreground">{selectedRequest.location}</span>
-                  </div>
-                </div>
-
-                  <div className="bg-card border border-muted-foreground/25 flex flex-col gap-1 rounded-xl p-2.5">
-                    <span className="text-muted-foreground text-xs font-medium">Preço</span>
-                    <span className="text-sm font-bold text-foreground">{selectedRequest.price}</span>
-                  </div>
-
-                  <div className="bg-card border border-muted-foreground/25 flex flex-col gap-1 rounded-xl p-2.5">
-                    <span className="text-muted-foreground text-xs font-medium">Descrição</span>
-                    <span className="text-sm text-foreground">{selectedRequest.description}</span>
-                  </div>
-              </div>
-
-              <DialogFooter className="pt-4 border-t flex justify-end">
-                <DialogClose asChild>
-                  <button className="px-5 py-2.5 bg-[#091B3D] text-white text-xs font-bold rounded-xl shadow-md hover:bg-[#091B3D]/90 transition-all border-none cursor-pointer">
-                    Fechar Janela
-                  </button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          );
-        })()}
-      </Dialog>
     </section>
   );
 };

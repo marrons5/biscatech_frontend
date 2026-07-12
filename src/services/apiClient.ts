@@ -1,3 +1,5 @@
+import { config } from "@/config";
+
 type ApiErrorDetails = Record <string, unknown>;
 type HTTPMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -38,7 +40,7 @@ class ApiClient {
     private timeout: number;
 
     constructor() {
-        this.baseURL = String("");
+        this.baseURL = String(config.apiURL ?? "");
         this.timeout = 120_000;
 
         if (!this.baseURL) {

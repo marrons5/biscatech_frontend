@@ -202,3 +202,54 @@
     @apply font-sans; 
   }
 }
+ .bgImg {
+    object-fit: cover;
+    background: url(https://picsum.photos/2000) 50%/cover;
+  }
+
+/* ==========================================
+   PERSONALIZAÇÃO DO SCROLLBAR (BARRA DE ROLAGEM)
+   ========================================== */
+
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; 
+  border-radius: var(--radius);
+  margin-block: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: var(--radius);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary); 
+}
+
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.neu-flat {
+  background-color: var(--background);
+  box-shadow: 8px 8px 16px rgba(132, 141, 158, 0.25), -8px -8px 16px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease-in-out;
+}
+
+.neu-flat:hover {
+  box-shadow: 10px 10px 20px rgba(132, 141, 158, 0.3), -10px -10px 20px rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.neu-pressed {
+  background-color: var(--background);
+  box-shadow: inset 6px 6px 12px rgba(132, 141, 158, 0.25), inset -6px -6px 12px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease-in-out;
+}

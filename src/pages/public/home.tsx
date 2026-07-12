@@ -16,8 +16,8 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PublicNav } from "@/components/custom/publicNav";
 import { PublicFooter } from "@/components/custom/publicFooter";
+import { useGetCatalog } from "@/hooks/useGetCatalog";
 
 const services = [
   { icon: Wrench, label: "Canalizador" },
@@ -39,7 +39,11 @@ const steps = [
     title: "Encontramos um profissional",
     desc: "Aceitamos o pedido em minutos.",
   },
-  { n: "3", title: "Resolvido", desc: "Acompanha em tempo real e avalia." },
+  { 
+    n: "3",
+    title: "Resolvido",
+    desc: "Acompanha em tempo real e avalia." 
+  },
 ];
 
 const trust = [
@@ -49,11 +53,13 @@ const trust = [
 ];
 
 const Home = () => {
+  
+  const { data } = useGetCatalog();
+  console.log(data);
   return (
     <div className="min-h-screen bg-background">
-      <PublicNav />
-
-      {/* Hero */}
+      {/* Hero  <PublicNav />
+       */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-mesh pointer-events-none" />
         <div className="absolute -top-32 -right-32 h-80 w-80 rounded-full bg-primary/15 blur-3xl animate-float-slow" />

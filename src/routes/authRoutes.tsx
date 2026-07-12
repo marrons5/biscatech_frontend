@@ -14,6 +14,7 @@ import { ClientHistory } from '@/pages/auth/client/clientHistory';
 import { ClientSettings } from '@/pages/auth/client/clientSettings';
 import { ClientHome } from '@/pages/auth/client/clientHome';
 import { ProSettings } from '@/pages/auth/pro/proSettings';
+import { RequestCreate, RequestStatus } from '@/pages/auth/client';
 function AuthRoutes() {
   return (
     <React.Fragment>
@@ -37,6 +38,9 @@ function AuthRoutes() {
         <Route path="/client/history" element={<ClientHistory/>}/>
         <Route path="/client/settings" element={<ClientSettings/>}/>
         <Route path="/client/dashboard" element={<ClientHome/>}/>
+        <Route path="/client/request/create" element={<RequestCreate/>}/>
+        <Route path="/client/request/:id" element={<RequestStatus/>}/>
+
 {/* 
         <Route
           path="/app/avaliacoes"

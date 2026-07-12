@@ -317,7 +317,7 @@ const ClientSettings = () => {
         <div className="pt-2">
           <Button
             variant="outline"
-            className="text-destructive border-destructive/40 hover:bg-destructive/5 rounded-xl gap-2"
+            className="bg-destructive/15 text-destructive border-destructive/40 hover:bg-destructive hover:text-primary-foreground rounded-xl gap-2"
           >
             <SignOutIcon size={18} weight="bold" /> Terminar Sessão
           </Button>

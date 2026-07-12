@@ -71,7 +71,7 @@ export const AppSidebar = () => {
 
   return (
     <TooltipProvider>
-      <Sidebar collapsible="icon" className="border-r border-slate-200 bg-white">
+      <Sidebar collapsible="icon" className="border-r border-slate-200 rounded-e-4xl bg-white">
         <SidebarHeader className="px-3 py-4">
           <div className={cn("flex items-center", collapsed && "justify-center")}>
             {/* <Logo showText={!collapsed} /> */}

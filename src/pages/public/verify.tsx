@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/logo";
-import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 
 const LEN = 6;
@@ -34,7 +34,8 @@ const Verify = () => {
       inputs.current[i - 1]?.focus();
   };
 
-  const submit = (e: React.FormEvent) => {
+  const submit = () => {
+    /*
     e.preventDefault();
     if (code.some((c) => !c)) return;
     setLoading(true);
@@ -49,20 +50,12 @@ const Verify = () => {
       toast("Telefone verificado!");
       navigate("/proDashboard", { replace: true });
     }, 600);
+    */
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
-      <div className="absolute inset-x-0 top-0 h-[420px] bg-gradient-mesh pointer-events-none" />
-      <main className="relative container max-w-md px-6 pt-8 pb-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="h-10 w-10 -ml-2 rounded-full flex items-center justify-center hover:bg-accent">
-          <ArrowLeft className="h-5 w-5" />
-        </button>
-        <div className="flex justify-center my-6">
-          <Logo />
-        </div>
+    <div className="h-svh bg-background flex  items-center justify-center ">
+      <div className="relative container max-w-md px-6 pt-8 pb-8 bg-white rounded-3xl shadow-lg">
         <div className="text-center">
           <div className="mx-auto h-14 w-14 rounded-2xl bg-primary-gradient flex items-center justify-center shadow-glow mb-4">
             <ShieldCheck className="h-7 w-7 text-primary-foreground" />
@@ -71,11 +64,7 @@ const Verify = () => {
             Verifica o teu telefone
           </h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Enviámos um código de 6 dígitos para
-            <br />
-            <span className="font-semibold text-foreground">
-              +244 923 456 789
-            </span>
+            Enviámos um código de 6 dígitos para o seu email
           </p>
         </div>
 
@@ -105,7 +94,7 @@ const Verify = () => {
             variant="default"
             size="lg"
             disabled={loading || code.some((c) => !c)}
-            className="w-full">
+            className="w-full p-6  rounded-4xl">
             {loading ? "A verificar…" : "Verificar"}
           </Button>
 
@@ -125,7 +114,7 @@ const Verify = () => {
             )}
           </p>
         </form>
-      </main>
+      </div>
     </div>
   );
 };
