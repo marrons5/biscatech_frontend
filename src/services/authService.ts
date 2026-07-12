@@ -1,75 +1,130 @@
 import apiClient from "./apiClient";
 
+export type Role = "client" | "pro";
+
+export interface Address {
+    id: string;
+    label: string;
+    full: string;
+}
+
 export interface User {
-    id?: string;
-    firstName?: string;
-    lastName?: string;
+    id: string;
+    name: string;
     email: string;
     phone: string;
-    role?: string;
-    photo?: string;
-    isVerified: boolean;
+    role: Role;
+    initials: string;
+    status?: string;
+    emailVerified?: boolean;
+    addresses?: Address[];
+
+    // Campos exclusivos do Prestador de Serviços
+    isAvailable?: boolean;
+    isVerified?: boolean;
+    ratingAvg?: number;
+    ratingCount?: number;
 }
 
-export interface RegisterCredentials {
-    firstName: string;
-    lastName: string;
+// PAYLOADS
+
+export type RegisterPayload = {
+    name: string;
     email: string;
     phone: string;
-    role: "CLIENTE" | "PRESTADOR";
     password: string;
-}
+    role: Role;
+};
 
-export interface LoginCredentials {
+export type VerifyEmailPayload = {
+    email: string;
+    code: string;
+};
+
+export type LoginPayload = {
     email: string;
     password: string;
-    role: "CLIENTE" | "PRESTADOR"
-}
+};
+
+export type ForgotPasswordPayload = {
+    email: string;
+};
+
+export type ResetPasswordPayload = {
+    email: string;
+    code: string;
+    password: string;
+};
+
+// RESPONSES
 
 export interface AuthResponse {
     success: boolean;
     data: {
-        user: User;
         token: string;
-        message?: string;
-    }
+        user: User;
+    };
 }
+
+export interface RegisterResponse {
+    success: boolean;
+    data: {
+        message: string;
+        otp?: string;
+        user: User;
+    };
+}
+
+export interface MessageResponse {
+    success: boolean;
+    data: {
+        message: string;
+        otp?: string;
+    };
+}
+
+export interface GetMeResponse {
+    success: boolean;
+    data: User;
+}
+
+// MÉTODOS
 
 export const authService = {
-
-    async login(data: LoginCredentials){
-        return await apiClient.post<AuthResponse>(`/api/auth/login`, {...data});
+    
+    async register(payload: RegisterPayload) {
+        return await apiClient.post<RegisterResponse>("/api/auth/register", payload);
     },
 
-    async register(data: RegisterCredentials){
-        return await apiClient.post<AuthResponse>("/api/auth/users", {...data});
+    async verify(payload: VerifyEmailPayload) {
+        return await apiClient.post<AuthResponse>("/api/auth/verify", payload);
     },
 
-    async forgotPassword(credentials: { email: string}){
-        return await apiClient.post<AuthResponse>("/api/auth/forgot-password", {...credentials});
+    async login(payload: LoginPayload) {
+        return await apiClient.post<AuthResponse>("/api/auth/login", payload);
     },
 
-    async resetPassword(credentials: {newPassword: string}){
-        return await apiClient.post<AuthResponse>("/api/auth/reset-password", {credentials: credentials.newPassword});
+    async forgotPassword(payload: ForgotPasswordPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/forgot-password", payload);
     },
 
-    async verifyEmail(token:  string){
-        return await apiClient.post<AuthResponse>("/api/auth/verify-email", {token});
+    async resetPassword(payload: ResetPasswordPayload) {
+        return await apiClient.post<MessageResponse>("/api/auth/reset-password", payload);
     },
 
-    async verifyPhone(token: string){
-        return await apiClient.post<AuthResponse>("/api/auth/verify-phone", {token});
+    async getMe() {
+        return await apiClient.get<GetMeResponse>("/api/auth/me");
     },
-    logout(){
-        return  apiClient.clearAuthToken();
+
+    logout() {
+        apiClient.clearAuthToken();
     },
-    async changePassword(credentials: {currentPassword: string, newPassword: string}){
-        return await apiClient.patch<AuthResponse>("/api/auth/change-password", {...credentials});
+
+    isAuthenticated() {
+        return !!apiClient.getAuthToken();
     },
-    async getUserMe(){
-        return await apiClient.get<AuthResponse>("/api/auth/users/me")
-    },
-    async updateProfile(data: Partial<User>){
-        return await apiClient.patch<AuthResponse>("/api/auth/users/me", {...data})
-    },
-}
+
+    getToken() {
+        return apiClient.getAuthToken();
+    }
+};

@@ -9,10 +9,9 @@ import {
   Wind,
   MapPin,
   Calendar,
-  Camera,
   ArrowRight,
+  LightbulbIcon,
 } from "@phosphor-icons/react";
-import { PageHeader } from "@/components/custom/pageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -50,18 +49,13 @@ const RequestCreate = () => {
       toast("Pedido enviado!", {
         description: "À procura de profissionais perto de ti.",
       });
-      navigate("/app/request/1", { replace: true });
+      navigate("/client/request/1", { replace: true });
     }, 700);
   };
 
   return (
     <div className="min-h-screen bg-background pb-12">
-      <main className="container max-w-7xl px-6 lg:px-8 pt-8">
-        <PageHeader
-          title="Pedir Biscate"
-          subtitle="Descreve o teu problema"
-          back
-        />
+      <main className="container max-w-7xl px-6 lg:px-10">
 
         <form onSubmit={submit} className="grid grid-cols-10 gap-6">
           {/* Left 7/10 */}
@@ -107,7 +101,7 @@ const RequestCreate = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ex: Cano roto na cozinha"
-                  className="h-11"
+                  className="rounded-xl h-11"
                 />
               </div>
 
@@ -119,7 +113,7 @@ const RequestCreate = () => {
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Conta os detalhes para receberes melhores orçamentos…"
                   maxLength={300}
-                  className="min-h-[120px] resize-none"
+                  className="min-h-[120px] rounded-xl resize-none"
                 />
               </div>
 
@@ -136,7 +130,7 @@ const RequestCreate = () => {
                       id="loc"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      className="h-11 pl-9"
+                      className="rounded-xl h-11 pl-9"
                       required
                     />
                   </div>
@@ -153,25 +147,25 @@ const RequestCreate = () => {
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="h-11 pl-9"
+                      className="h-11 pl-9 rounded-xl"
                     />
                   </div>
                 </div>
               </div>
 
-              <Button
+              {/* <Button
                 type="button"
                 variant="outline"
                 className="w-full h-12 border-dashed">
                 <Camera size={18} weight="bold" /> Anexar Foto do Problema
-              </Button>
+              </Button> */}
 
               <Button
                 type="submit"
                 
                 size="lg"
                 disabled={loading}
-                className="w-full">
+                className="rounded-xl w-full">
                 {loading ? (
                   "A enviar…"
                 ) : (
@@ -204,8 +198,8 @@ const RequestCreate = () => {
             </section>
 
             <section className="rounded-2xl bg-blue-50 border border-blue-100 p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-primary/80 mb-2">
-                💡 Dica
+              <p className="text-xs font-bold uppercase tracking-wider text-primary/80 flex items-center gap-1 mb-2">
+                <LightbulbIcon size={14} weight="fill"/> Dica
               </p>
               <p className="text-sm text-foreground/80 leading-relaxed">
                 Adicionar fotos e descrição detalhada ajuda os profissionais a
@@ -224,7 +218,7 @@ const RequestCreate = () => {
                 </li>
                 <li className="flex gap-2">
                   <span className="font-extrabold text-primary">2.</span>{" "}
-                  Profissionais respondem
+                  Profissionais aceitam
                 </li>
                 <li className="flex gap-2">
                   <span className="font-extrabold text-primary">3.</span>{" "}

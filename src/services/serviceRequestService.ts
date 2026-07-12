@@ -1,175 +1,125 @@
 import apiClient from "./apiClient";
 
-interface ServiceRequest {
-    id: string;
-    clientId: string;
-    proId: string | null;
-    serviceId: string | null;
-    title: string;
-    description: string;
-    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
-    location: string;
-    scheduledDate: string;
-    stipulatedPrice: number | null;
-    proposedValue: number | null;
-    priceAgreed: number | null;
-    eta: string | null;
-    status: "pending" | "ACEITE" | "CANCELADA" | "CONCLUÍDA" | "EXPIRADA";
-    createdAt: Date | null;
-    updatedAt: Date | null;
-    expiresAt: Date | null;
-    proCompletedAt: Date | null;
-    clientConfirmedAt: Date | null;
-    reactivedFromId: string | null;
-    isCustom: boolean;
-}
+export type RequestStatus = "pending" | "accepted" | "in_progress" | "awaiting_confirmation" | "completed" | "cancelled" | "expired";
+export type RequestType = "repair" | "installation" | "maintenance" | "emergency";
+export type RequestScope = "mine" | "assigned" | "available";
 
-interface CreateServiceRequestRequest {
+export interface IServiceRequest {
+    id: string;
     serviceId?: string;
     title: string;
     description: string;
     location: string;
-    type: "repair" | "maintenance" | "installation" | "emergency";
     date: string;
+    status: RequestStatus;
+    type: RequestType;
+    isCustom: boolean;
+    price?: number | null;
+    proposedValue?: number | null;
+    eta?: string | null;
+    expiresAt: string;
+    proCompletedAt?: string | null;
+    clientConfirmedAt?: string | null;
+    photos?: string[];
+}
+
+// PAYLOADS
+
+export type CreateServiceRequestPayload = {
+    serviceId?: string;
+    isCustom?: boolean;
+    title: string;
+    description: string;
+    location: string;
+    date: string;
+    type?: RequestType;
     stipulatedPrice?: number;
     photos?: string[];
-    isCustom?: boolean;
 }
 
-interface CreateServiceRequestResponse {
+export type UpdateServiceRequestPayload = {
+    title?: string;
+    description?: string;
+    location?: string;
+    date?: string;
+}
+
+export type AcceptServiceRequestPayload = {
+    priceAgreed?: number;
+    eta?: string;
+}
+
+export type ListServiceRequestParams = {
+    scope?: RequestScope;
+    status?: RequestStatus;
+    type?: RequestType;
+}
+
+// RESPONSES
+
+export interface SingleRequestResponse {
     success: boolean;
-    data: {
-        serviceRequest: CreateServiceRequestRequest;
-        message: string;
-    }
+    data: IServiceRequest;
 }
 
-interface ListServiceRequestsRequest {
-    id: string;
-    title: string;
-    description: string;
-    location: string;
-    date: string;
-    status: string;
-    type: "repair" | "installation" | "maintenance" | "emergency";
-    price: number
-    proposedValue: number;
-    eta: string;
-    isCustom?: boolean;
-    expiresAt: string;
-    proCompletedAt: string;
-    clientConfirmedAt: string;
-}
-
-interface ListServiceRequestsResponse {
+export interface ListRequestResponse {
     success: boolean;
-    data: ListServiceRequestsRequest[];
+    data: IServiceRequest[];
 }
 
-interface ReactivateServiceRequestRequest {
-    
-}
-
-interface CreateServiceRequestProps {
-    title: string;
-    description: string;
-    category: string;
-    type: "REPARO" | "MANUTENÇÃO" | "INSTALAÇÃO" | "EMERGÊNCIA";
-    location: string;
-    scheduledDate: string;
-    stipulatedPrice?: number;
-    isCustom: boolean;
-}
-
-interface GetRequestParams {
-    page?: number;
-    limit?: number;
-    status?: string;
-    category?: string;
-}
-
-interface GetServiceRequestDetailsResponse {
-    success: boolean;
-    data: {
-        request: ServiceRequest;
-    }
-}
-
-interface CompleteAndRateRequestProps {
-    status: string;
-    rating: number;
-    comment?: string;
-} 
-
-interface ChangeServiceRequestStatusProps {
-    proId?: string;
-    status: string;
-}
-
-interface ChangeServiceRequestStatusResponse {
-    success: boolean;
-    data: {
-        proId?: string;
-        status: string;
-        message?: string;
-    }
-}
-
-
-interface ListServiceRequestsQueryParams {
-    scope: "mine" | "assigned" | "available";
-    status: "pending" | "accepted" | "in_progress" | "awaiting_confirmation" | "completed" | "cancelled" | "expired";
-    type: "repair" | "installation" | "maintenance" | "emergency";
-}
-
-
-interface GetServiceRequestDetailsRequest {
-
-}
-
-interface AcceptServiceRequestRequest {
-    priceAgreed: number;
-    eta: string;
-}
-
-interface AcceptServiceRequestResponse {
+export interface StatusUpdateResponse {
     success: boolean;
     data: {
         id: string;
-        status: "ACEITE"
+        status: RequestStatus;
     };
 }
 
+// MÉTODOS
+
 export const serviceRequestService = {
-    async create(data: CreateServiceRequestProps){
-        return await apiClient.post<CreateServiceRequestResponse>("/api/service-requests", {...data});
+
+    async create(payload: CreateServiceRequestPayload) {
+        return await apiClient.post<SingleRequestResponse>("/api/service-requests", payload);
     },
 
-    async list(params?: GetRequestParams){
-        return await apiClient.get<ListServiceRequestsResponse>("/api/service-requests", {...params});
+    async list(params?: ListServiceRequestParams) {
+        return await apiClient.get<ListRequestResponse>("/api/service-requests", params );
     },
 
-    async getById(id: string){
-        return await apiClient.get<GetServiceRequestDetailsResponse>(`/api/service-requests/${id}`);
+    async getById(id: string) {
+        return await apiClient.get<SingleRequestResponse>(`/api/service-requests/${id}`);
     },
 
-    async update(id:string, data: Partial<CreateServiceRequestProps>){
-        return await apiClient.patch<GetServiceRequestDetailsResponse>(`/api/service-requests/${id}`, {...data});
+    async update(id: string, payload: UpdateServiceRequestPayload) {
+        return await apiClient.patch<SingleRequestResponse>(`/api/service-requests/${id}`, payload);
     },
 
-    async changeStatus(id:string, data: ChangeServiceRequestStatusProps){
-        return await apiClient.patch<ChangeServiceRequestStatusResponse>(`/api/service-requests/${id}/status`, {...data});
+    async reactivate(id: string) {
+        return await apiClient.post<SingleRequestResponse>(`/api/service-requests/${id}/reactivate`);
     },
 
-    async completeAndRate(id: string, data: CompleteAndRateRequestProps){
-        return await apiClient.patch<ChangeServiceRequestStatusResponse>(`/api/service-requests/${id}/complete`, {...data});
+    async accept(id: string, payload: AcceptServiceRequestPayload) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/accept`, payload);
     },
 
-    async accept(id: string, data: AcceptServiceRequestRequest){
-        return apiClient.post<AcceptServiceRequestResponse>(`/api/service-requests/${id}/accept`, {...data});
+    async start(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/start`);
     },
 
-    async reactivate () {
-        return await apiClient.post
+    async markCompleted(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/mark-completed`);
+    },
+
+    async confirm(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/confirm`);
+    },
+
+    async cancelByPro(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-pro`);
+    },
+
+    async cancelByClient(id: string) {
+        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-client`);
     }
-}
+};

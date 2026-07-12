@@ -40,7 +40,7 @@ export const PublicNav = () => {
             variant="ghost"
             size="sm"
             className="hidden sm:inline-flex transition-all duration-200 hover:bg-primary/10 rounded-4xl p-5">
-            <Link to="/login">Entrar</Link>
+            <Link to="/auth/login">Entrar</Link>
           </Button>
           <Button asChild className="bg-foreground text-white p-5 rounded-4xl">
             <Link to="/auth/register">Criar conta</Link>

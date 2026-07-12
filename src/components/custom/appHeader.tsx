@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { 
   BellIcon, 
   MapPinIcon, 
@@ -32,7 +32,7 @@ const mockNotifications = [
 ];
 
 export function AppHeader() {
-
+  const location = useLocation()
   // const navigate = useNavigate();
   // const [headerChangeBg, setHeaderChangeBg] = useState(false);
   // const [openProfileDrawer, setOpenProfileDrawer] = useState(false);
@@ -49,13 +49,24 @@ export function AppHeader() {
   // }, []);
 
   const unreadCount = mockNotifications.filter((n) => !n.isRead).length;
+  console.log(location.pathname)
+
+  const selectPageHeader = () => {
+    switch(location.pathname){
+      case "/client/dashboard": return {title: "Dashboard", description: "Então brada, algum pânico?"};
+      case "/client/history": return {title: "Histórico", description: "Então brada, algum pânico?"};
+      case "/client/settings": return {title: "Definições", description: "Então brada, algum pânico?"};
+      case "/client/request/create": return {title: "Solicitar Serviço", description: "Descreve o teu problema."};
+
+    }
+  };
 
   return (
     <React.Fragment>
       <header className="bg-background flex justify-between items-center pt-5 px-10 backdrop-blur-xl w-full">
             <div className="flex flex-col gap-1">
-              <h1 className="text-foreground text-3xl font-bold">Dashboard</h1>
-              <h2 className="text-muted-foreground text-lg">Então brada, algum pânico?</h2>
+              <h1 className="text-foreground text-3xl font-bold">{selectPageHeader()?.title}</h1>
+              <h2 className="text-muted-foreground text-lg">{selectPageHeader()?.description}</h2>
             </div>
 
             <div className="bg-primary-foreground rounded-full ring-1 ring-[#091B3D]/20 shadow-md flex items-center gap-2.5 p-2">
@@ -167,16 +178,18 @@ export function AppHeader() {
                     </div>
                     
                     <div className="flex flex-col py-2">
-                      <button
-                        className="text-sm font-medium flex items-center gap-4 py-4 px-6 hover:bg-muted transition-colors text-foreground"
-                        // onClick={() => {
-                        //   setOpenProfileDrawer(false);
-                        //   navigate("/client/profile"); // Ajustado para as tuas rotas
-                        // }}
-                      >
-                        <UserGearIcon className="size-5 text-muted-foreground" weight="regular" />
-                        <span>Editar Perfil</span>
-                      </button>
+                        <Link
+                          to="/client/settings"
+                          // onClick={() => {
+                            //   setOpenProfileDrawer(false);
+                            //   navigate("/client/profile"); // Ajustado para as tuas rotas
+                            // }}
+                            >
+                          <DrawerClose className="text-sm font-medium flex items-center gap-4 py-4 px-6 hover:bg-muted transition-colors text-foreground w-full">
+                            <UserGearIcon className="size-5 text-muted-foreground" weight="regular" />
+                            <span>Editar Perfil</span>
+                          </DrawerClose>
+                        </Link>
                       
                       <Link
                         to="/"
