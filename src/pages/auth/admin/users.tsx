@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { adminService, type AdminUser } from "@/services/adminService";
 
 const statusTone: Record<string, "success" | "danger" | "warning" | "neutral"> = {
-  ACTIVE: "success",
-  SUSPENDED: "danger",
-  BANNED: "danger",
-  PENDING_VERIFICATION: "warning",
-  INACTIVE: "neutral",
+  active: "success",
+  suspended: "danger",
+  banned: "danger",
+  pending_verification: "warning",
+  inactive: "neutral",
 };
 
 export default function AdminUsers() {
@@ -19,7 +19,10 @@ export default function AdminUsers() {
     (async () => {
       try {
         const res = await adminService.listUsers();
-        if (res.data.success) setUsers(res.data.data);
+        if (res.data.success) {
+          const raw = res.data.data;
+          setUsers(Array.isArray(raw) ? raw : raw.users);
+        }
       } catch { /* ignore */ }
       setLoading(false);
     })();
@@ -53,7 +56,7 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{u.role === "provider" ? "Profissional" : u.role === "admin" ? "Admin" : "Cliente"}</td>
-                  <td className="px-4 py-3"><Badge tone={statusTone[u.status] ?? "neutral"}>{u.status === "ACTIVE" ? "Activo" : u.status === "SUSPENDED" ? "Suspenso" : u.status === "BANNED" ? "Banido" : u.status === "PENDING_VERIFICATION" ? "Pendente" : u.status}</Badge></td>
+                  <td className="px-4 py-3"><Badge tone={statusTone[u.status] ?? "neutral"}>{u.status === "active" ? "Activo" : u.status === "suspended" ? "Suspenso" : u.status === "banned" ? "Banido" : u.status === "pending_verification" ? "Pendente" : u.status}</Badge></td>
                   <td className="px-4 py-3 text-muted-foreground">{new Date(u.createdAt).toLocaleDateString("pt-AO")}</td>
                   <td className="px-4 py-3 text-right"><button className="rounded-lg p-1.5 hover:bg-muted"><MoreVertical className="h-4 w-4" /></button></td>
                 </tr>

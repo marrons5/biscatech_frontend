@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, Search, Menu, X, LayoutDashboard, PlusCircle, ClipboardList, Settings, Wallet, History, Star, User, MapPin, LifeBuoy, TrendingUp, Clock } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Bell, Search, Menu, X, LayoutDashboard, PlusCircle, ClipboardList, Settings, Wallet, History, Star, User, MapPin, LifeBuoy, TrendingUp, Clock, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ComponentType } from "react";
 import { AuthContext } from "@/context/authContext";
@@ -44,7 +44,13 @@ const proNav: NavItem[] = [
 function PrivateAppLayout() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const { user } = useContext(AuthContext)!;
+  const { user, logout } = useContext(AuthContext)!;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth/login", { replace: true });
+  };
   const role = user?.role ?? "customer";
   const nav = role === "provider" ? proNav : clientNav;
   const brandLabel = role === "provider" ? "BiscaTech Pro" : "BiscaTech";
@@ -54,7 +60,7 @@ function PrivateAppLayout() {
   return (
     <div className="min-h-screen bg-muted/30">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-border bg-card lg:flex lg:flex-col">
-        <SidebarInner brand={{ label: brandLabel, sub: brandSub, accent: brandAccent }} nav={nav} pathname={pathname} user={user} />
+        <SidebarInner brand={{ label: brandLabel, sub: brandSub, accent: brandAccent }} nav={nav} pathname={pathname} user={user} onLogout={handleLogout} />
       </aside>
 
       {open && (
@@ -67,7 +73,7 @@ function PrivateAppLayout() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <SidebarInner brand={{ label: brandLabel, sub: brandSub, accent: brandAccent }} nav={nav} pathname={pathname} user={user} />
+            <SidebarInner brand={{ label: brandLabel, sub: brandSub, accent: brandAccent }} nav={nav} pathname={pathname} user={user} onLogout={handleLogout} />
           </aside>
         </div>
       )}
@@ -117,11 +123,13 @@ function SidebarInner({
   nav,
   pathname,
   user,
+  onLogout,
 }: {
   brand: { label: string; sub: string; accent: string };
   nav: NavItem[];
   pathname: string;
   user: { name?: string; initials?: string } | null;
+  onLogout: () => void;
 }) {
   return (
     <>
@@ -176,6 +184,9 @@ function SidebarInner({
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-ink">{user?.name ?? ""}</p>
           </div>
+          <button onClick={onLogout} className="rounded-lg p-1.5 text-muted-foreground hover:bg-danger/10 hover:text-danger transition" title="Terminar sessão">
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </>

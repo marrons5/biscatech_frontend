@@ -16,10 +16,11 @@ export default function AdminDashboard() {
           adminService.listUsers(),
         ]);
         if (usersRes.data.success) {
-          const all = usersRes.data.data;
+          const raw = usersRes.data.data;
+          const all = Array.isArray(raw) ? raw : raw.users;
           setTotalUsers(all.length);
-          setActivePros(all.filter((u) => u.role === "provider" && u.status === "ACTIVE").length);
-          setPendingApprovals(all.filter((u) => u.status === "PENDING_VERIFICATION"));
+          setActivePros(all.filter((u) => u.role === "provider" && u.status === "active").length);
+          setPendingApprovals(all.filter((u) => u.status === "pending_verification"));
         }
       } catch { /* ignore */ }
       setLoading(false);

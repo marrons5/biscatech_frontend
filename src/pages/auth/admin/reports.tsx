@@ -10,7 +10,10 @@ export default function AdminReports() {
     (async () => {
       try {
         const res = await adminService.listUsers();
-        if (res.data.success) setTotalUsers(res.data.data.length);
+        if (res.data.success) {
+          const raw = res.data.data;
+          setTotalUsers(Array.isArray(raw) ? raw.length : raw.total);
+        }
       } catch { /* ignore */ }
     })();
   }, []);

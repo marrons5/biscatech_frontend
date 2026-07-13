@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { AuthShell, PrimaryButton } from "@/components/custom/authShell";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -17,8 +17,13 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login: setAuthUser } = useContext(AuthContext)!;
+  const { user, login: setAuthUser } = useContext(AuthContext)!;
   const [loading, setLoading] = useState(false);
+
+  if (user) {
+    const dashboard = user.role === "provider" ? "/pro/dashboard" : "/client/dashboard";
+    return <Navigate to={dashboard} replace />;
+  }
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),

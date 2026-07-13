@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import { Bell, Search, Menu, X, LayoutDashboard, Users, ShieldCheck, ClipboardList, FolderTree, Star, AlertOctagon, LifeBuoy, BarChart3, Settings, Briefcase } from "lucide-react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Bell, Search, Menu, X, LayoutDashboard, Users, ShieldCheck, ClipboardList, FolderTree, Star, AlertOctagon, LifeBuoy, BarChart3, Settings, Briefcase, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useContext } from "react";
+import { AuthContext } from "@/context/authContext";
 import type { ComponentType } from "react";
 
 type NavItem = {
@@ -14,7 +16,7 @@ type NavItem = {
 const adminNav: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/users", label: "Utilizadores", icon: Users },
-  { to: "/admin/providers", label: "Profissionais", icon: ShieldCheck, badge: 12 },
+  { to: "/admin/providers", label: "Profissionais", icon: ShieldCheck },
   { to: "/admin/requests", label: "Pedidos", icon: ClipboardList },
   { to: "/admin/categories", label: "Categorias", icon: FolderTree },
   { to: "/admin/services", label: "Serviços", icon: Briefcase },
@@ -28,11 +30,18 @@ const adminNav: NavItem[] = [
 function AdminAppLayout() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
+  const { user, logout } = useContext(AuthContext)!;
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/auth/login", { replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-muted/30">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-border bg-card lg:flex lg:flex-col">
-        <SidebarInner nav={adminNav} pathname={pathname} />
+        <SidebarInner nav={adminNav} pathname={pathname} user={user} onLogout={handleLogout} />
       </aside>
 
       {open && (
@@ -45,7 +54,7 @@ function AdminAppLayout() {
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <SidebarInner nav={adminNav} pathname={pathname} />
+            <SidebarInner nav={adminNav} pathname={pathname} user={user} onLogout={handleLogout} />
           </aside>
         </div>
       )}
@@ -91,9 +100,13 @@ function AdminAppLayout() {
 function SidebarInner({
   nav,
   pathname,
+  user,
+  onLogout,
 }: {
   nav: NavItem[];
   pathname: string;
+  user: { initials?: string; name?: string } | null;
+  onLogout: () => void;
 }) {
   return (
     <>
@@ -137,6 +150,19 @@ function SidebarInner({
           );
         })}
       </nav>
+      <div className="border-t border-border p-4">
+        <div className="flex items-center gap-3 rounded-xl bg-muted/50 p-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+            {user?.initials ?? "BT"}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-ink">{user?.name ?? "Admin"}</p>
+          </div>
+          <button onClick={onLogout} className="rounded-lg p-1.5 text-muted-foreground hover:bg-danger/10 hover:text-danger transition" title="Terminar sessão">
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
     </>
   );
 }

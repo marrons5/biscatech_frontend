@@ -13,7 +13,7 @@ export interface AdminUser {
 
 export interface ListAdminUsersResponse {
   success: boolean;
-  data: AdminUser[];
+  data: AdminUser[] | { users: AdminUser[]; total: number; page: number; totalPages: number };
 }
 
 export interface UpdateUserStatusPayload {

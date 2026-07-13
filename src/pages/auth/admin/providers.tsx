@@ -14,8 +14,10 @@ export default function AdminProviders() {
       try {
         const res = await adminService.listUsers();
         if (res.data.success) {
-          setPending(res.data.data.filter((u) => u.role === "provider" && u.status === "PENDING_VERIFICATION"));
-          setActive(res.data.data.filter((u) => u.role === "provider" && u.status === "ACTIVE"));
+          const raw = res.data.data;
+          const users = Array.isArray(raw) ? raw : raw.users;
+          setPending(users.filter((u: any) => u.role === "provider" && u.status === "pending_verification"));
+          setActive(users.filter((u: any) => u.role === "provider" && u.status === "active"));
         }
       } catch { /* ignore */ }
       setLoading(false);

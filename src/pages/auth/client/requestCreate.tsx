@@ -1,25 +1,32 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Lightning, PaintRoller, Hammer, Sparkle, Wind, MapPin, Calendar, ArrowRight, LightbulbIcon } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { PageHeader, Card } from "@/components/custom/primitives";
+import { Wrench, Zap, Paintbrush, Hammer, Sparkles, Snowflake, Camera, Wifi, Home, Upload, MapPin, Calendar, Zap as Emergency, Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { catalogService, type PredefinedService } from "@/services/catalogService";
 import { serviceRequestService } from "@/services/serviceRequestService";
 
-const iconMap: Record<string, any> = { Canalizador: Wrench, Eletricista: Lightning, Pintor: PaintRoller, Pedreiro: Hammer, Limpeza: Sparkle, "AC / Refr.": Wind };
+const iconMap: Record<string, any> = {
+  Canalizador: Wrench, Eletricista: Zap, Pintor: Paintbrush, Pedreiro: Hammer,
+  Limpeza: Sparkles, "AC": Snowflake, "AC / Refr.": Snowflake, CCTV: Camera,
+  Internet: Wifi, Electrodomésticos: Home, Eletrodomésticos: Home,
+};
+
+const steps = ["Categoria", "Detalhes", "Localização", "Agenda", "Revisão"];
 
 const RequestCreate = () => {
   const navigate = useNavigate();
-  const [services, setServices] = useState<{ label: string; icon: any; est: string }[]>([]);
-  const [service, setService] = useState("");
-  const [title, setTitle] = useState("");
+  const [step, setStep] = useState(0);
+  const [cats, setCats] = useState<{ icon: any; label: string }[]>([]);
+  const [cat, setCat] = useState<string | null>(null);
   const [description, setDescription] = useState("");
+  const [budget, setBudget] = useState("");
   const [location, setLocation] = useState("");
+  const [reference, setReference] = useState("");
+  const [urgent, setUrgent] = useState(false);
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadCat, setLoadCat] = useState(true);
 
@@ -27,33 +34,68 @@ const RequestCreate = () => {
     (async () => {
       try {
         const res = await catalogService.list();
-        if ((res as any).data?.success) {
-          const cats = (res as any).data.data.services as PredefinedService[];
-          const unique = [...new Set(cats.map((s) => s.category))];
-          const mapped = unique.map((c) => ({
+        const data = res as any;
+        if (data?.data?.success) {
+          const services = data.data.data.services as PredefinedService[];
+          const unique = [...new Set(services.map((s) => s.category))];
+          setCats(unique.map((c) => ({
             label: c,
             icon: iconMap[c] ?? Wrench,
-            est: `${Math.min(...cats.filter((s) => s.category === c).map((s) => s.price))?.toLocaleString() ?? "—"} – ${Math.max(...cats.filter((s) => s.category === c).map((s) => s.price))?.toLocaleString() ?? "—"} Kz`,
-          }));
-          setServices(mapped);
-          if (mapped.length) setService(mapped[0].label);
+          })));
+        } else {
+          setCats([
+            { icon: Wrench, label: "Canalizador" },
+            { icon: Zap, label: "Eletricista" },
+            { icon: Paintbrush, label: "Pintor" },
+            { icon: Hammer, label: "Pedreiro" },
+            { icon: Sparkles, label: "Limpeza" },
+            { icon: Snowflake, label: "AC" },
+            { icon: Camera, label: "CCTV" },
+            { icon: Wifi, label: "Internet" },
+            { icon: Home, label: "Electrodomésticos" },
+          ]);
         }
-      } catch { /* ignore */ }
+      } catch {
+        setCats([
+          { icon: Wrench, label: "Canalizador" },
+          { icon: Zap, label: "Eletricista" },
+          { icon: Paintbrush, label: "Pintor" },
+          { icon: Hammer, label: "Pedreiro" },
+          { icon: Sparkles, label: "Limpeza" },
+          { icon: Snowflake, label: "AC" },
+          { icon: Camera, label: "CCTV" },
+          { icon: Wifi, label: "Internet" },
+          { icon: Home, label: "Electrodomésticos" },
+        ]);
+      }
       setLoadCat(false);
     })();
   }, []);
 
-  const current = services.find((s) => s.label === service);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title || !description || !location || !date) {
-      toast.error("Preenche todos os campos obrigatórios.");
-      return;
+  const canContinue = () => {
+    switch (step) {
+      case 0: return !!cat;
+      case 1: return description.trim().length > 0;
+      case 2: return location.trim().length > 0;
+      case 3: return true;
+      case 4: return true;
+      default: return false;
     }
+  };
+
+  const submit = async () => {
+    if (!cat) return;
     setLoading(true);
     try {
-      const res = await serviceRequestService.create({ title, description, location, date });
+      const payload: any = {
+        title: cat,
+        description,
+        location,
+        date: urgent ? new Date().toISOString().split("T")[0] : date || new Date().toISOString().split("T")[0],
+        type: urgent ? "emergency" : "repair",
+      };
+      if (budget) payload.stipulatedPrice = Number(budget.replace(/[^0-9]/g, ""));
+      const res = await serviceRequestService.create(payload);
       if (res.data.success) {
         toast.success("Pedido enviado! À procura de profissionais perto de ti.");
         navigate("/client/requests", { replace: true });
@@ -67,87 +109,159 @@ const RequestCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-12">
-      <main className="container max-w-7xl px-6 lg:px-10">
-        <form onSubmit={submit} className="grid grid-cols-10 gap-6">
-          <div className="col-span-10 lg:col-span-7 space-y-6">
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6 space-y-5">
-              <div>
-                <Label className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Categoria</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  {loadCat ? (
-                    <p className="col-span-3 text-sm text-muted-foreground">A carregar...</p>
-                  ) : services.map((s) => {
-                    const selected = service === s.label;
-                    const Icon = s.icon;
-                    return (
-                      <button type="button" key={s.label} onClick={() => setService(s.label)} className={cn("flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all", selected ? "border-primary bg-blue-50" : "border-slate-200 bg-white hover:border-primary/30")}>
-                        <Icon size={24} weight={selected ? "fill" : "regular"} className={selected ? "text-primary" : "text-slate-500"} />
-                        <span className="text-xs font-bold">{s.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+    <>
+      <PageHeader
+        title="Novo pedido"
+        subtitle="Descreve o que precisas e encontramos o profissional certo."
+      />
 
-              <div className="space-y-1.5">
-                <Label htmlFor="title">Título do Pedido</Label>
-                <Input id="title" required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Cano roto na cozinha" className="rounded-xl h-11" />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="desc">Descreve o teu problema</Label>
-                <Textarea id="desc" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Conta os detalhes para receberes melhores orçamentos…" maxLength={300} className="min-h-[120px] rounded-xl resize-none" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="loc">Localização</Label>
-                  <div className="relative">
-                    <MapPin size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" weight="fill" />
-                    <Input id="loc" value={location} onChange={(e) => setLocation(e.target.value)} className="rounded-xl h-11 pl-9" required />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="date">Data</Label>
-                  <div className="relative">
-                    <Calendar size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <Input id="date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className="h-11 pl-9 rounded-xl" />
-                  </div>
-                </div>
-              </div>
-
-              <Button type="submit" size="lg" disabled={loading} className="rounded-xl w-full">
-                {loading ? "A enviar…" : <><ArrowRight size={18} weight="bold" /> Pedir Biscate</>}
-              </Button>
-            </section>
+      <div className="mb-8 flex items-center gap-2 overflow-x-auto">
+        {steps.map((s, i) => (
+          <div key={s} className="flex items-center gap-2">
+            <div className={cn("flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold transition",
+              i < step ? "bg-success text-success-foreground" : i === step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+            )}>
+              {i < step ? <Check className="h-4 w-4" /> : i + 1}
+            </div>
+            <span className={cn("hidden text-sm font-medium sm:inline", i === step ? "text-ink" : "text-muted-foreground")}>{s}</span>
+            {i < steps.length - 1 && <div className="h-px w-6 bg-border sm:w-10" />}
           </div>
+        ))}
+      </div>
 
-          <aside className="col-span-10 lg:col-span-3 space-y-6">
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Estimativa</p>
-              <p className="mt-2 text-sm font-medium text-foreground">Orçamento estimado:</p>
-              <p className="text-xl font-extrabold text-primary mt-1">{current?.est ?? "—"}</p>
-              <p className="text-xs text-muted-foreground mt-2">para a categoria <span className="font-bold text-foreground">{current?.label ?? "—"}</span></p>
-            </section>
+      <Card>
+        {step === 0 && (
+          <>
+            <h2 className="text-lg font-semibold text-ink">Que serviço precisas?</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Escolhe a categoria mais próxima do teu problema.</p>
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {loadCat ? (
+                <p className="col-span-3 text-sm text-muted-foreground">A carregar categorias...</p>
+              ) : cats.map((c) => (
+                <button key={c.label} type="button" onClick={() => setCat(c.label)} className={cn("flex flex-col items-start gap-4 rounded-xl border p-4 text-left transition", cat === c.label ? "border-primary bg-primary-soft" : "border-border hover:border-primary/40 hover:bg-muted/40")}>
+                  <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl", cat === c.label ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary")}>
+                    <c.icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-sm font-medium text-ink">{c.label}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-            <section className="rounded-2xl bg-blue-50 border border-blue-100 p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-primary/80 flex items-center gap-1 mb-2"><LightbulbIcon size={14} weight="fill" /> Dica</p>
-              <p className="text-sm text-foreground/80 leading-relaxed">Adicionar fotos e descrição detalhada ajuda os profissionais a darem orçamentos mais precisos.</p>
-            </section>
+        {step === 1 && (
+          <>
+            <h2 className="text-lg font-semibold text-ink">Descreve o problema</h2>
+            <div className="mt-6 space-y-4">
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-ink">Descrição</span>
+                <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex: Torneira da cozinha a pingar continuamente..." className="w-full rounded-xl border border-border bg-card p-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" />
+              </label>
+              <div>
+                <span className="mb-1.5 block text-sm font-medium text-ink">Fotos (opcional)</span>
+                <div className="flex flex-wrap gap-3">
+                  {[1, 2, 3].map((i) => (
+                    <button key={i} type="button" className="flex h-24 w-24 flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border bg-muted/40 text-xs text-muted-foreground transition hover:border-primary hover:text-primary">
+                      <Upload className="h-4 w-4" /> Adicionar
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-ink">Orçamento estimado (Kz)</span>
+                <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="Ex: 20.000" className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" />
+              </label>
+            </div>
+          </>
+        )}
 
-            <section className="rounded-2xl bg-white border border-slate-200 shadow-sm p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">Como funciona</p>
-              <ol className="space-y-3 text-sm">
-                <li className="flex gap-2"><span className="font-extrabold text-primary">1.</span> Descreves o pedido</li>
-                <li className="flex gap-2"><span className="font-extrabold text-primary">2.</span> Profissionais aceitam</li>
-                <li className="flex gap-2"><span className="font-extrabold text-primary">3.</span> Escolhes e contratas</li>
-              </ol>
-            </section>
-          </aside>
-        </form>
-      </main>
-    </div>
+        {step === 2 && (
+          <>
+            <h2 className="text-lg font-semibold text-ink">Onde é o serviço?</h2>
+            <div className="mt-6 space-y-4">
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-ink">Morada</span>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Rua, número, bairro..." className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" />
+                </div>
+              </label>
+              <div className="flex h-56 items-center justify-center rounded-xl border border-dashed border-border bg-muted/40 text-sm text-muted-foreground">
+                <MapPin className="mr-2 h-4 w-4" /> Mapa (placeholder)
+              </div>
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-medium text-ink">Referência (opcional)</span>
+                <input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="Ex: Próximo ao Kero" className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none focus:border-primary" />
+              </label>
+            </div>
+          </>
+        )}
+
+        {step === 3 && (
+          <>
+            <h2 className="text-lg font-semibold text-ink">Quando precisas?</h2>
+            <div className="mt-6 space-y-4">
+              <button type="button" onClick={() => setUrgent(!urgent)} className={cn("flex w-full items-center gap-3 rounded-xl border p-4 text-left transition", urgent ? "border-danger bg-danger-soft" : "border-border hover:border-danger/40")}>
+                <span className={cn("flex h-10 w-10 items-center justify-center rounded-xl", urgent ? "bg-danger text-danger-foreground" : "bg-danger-soft text-danger")}>
+                  <Emergency className="h-5 w-5" />
+                </span>
+                <div className="flex-1">
+                  <p className="font-medium text-ink">Emergência</p>
+                  <p className="text-xs text-muted-foreground">Preciso de alguém agora — resposta em minutos.</p>
+                </div>
+                <span className={cn("h-5 w-5 rounded-full border-2", urgent ? "border-danger bg-danger" : "border-border")}>
+                  {urgent && <Check className="h-4 w-4 text-white" />}
+                </span>
+              </button>
+              {!urgent && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-ink">Data</span>
+                    <div className="relative">
+                      <Calendar className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-card pl-10 pr-4 text-sm outline-none focus:border-primary" />
+                    </div>
+                  </label>
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-ink">Hora</span>
+                    <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none focus:border-primary" />
+                  </label>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
+        {step === 4 && (
+          <>
+            <h2 className="text-lg font-semibold text-ink">Revê o teu pedido</h2>
+            <div className="mt-6 space-y-3 rounded-xl border border-border bg-muted/30 p-5 text-sm">
+              <div className="flex justify-between"><span className="text-muted-foreground">Categoria</span><span className="font-medium text-ink">{cat ?? "—"}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Descrição</span><span className="font-medium text-ink max-w-[60%] text-right">{description}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Urgência</span><span className="font-medium text-ink">{urgent ? "Emergência" : "Agendado"}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Morada</span><span className="font-medium text-ink">{location}</span></div>
+              {budget && <div className="flex justify-between"><span className="text-muted-foreground">Orçamento</span><span className="font-medium text-ink">≈ {Number(budget).toLocaleString()} Kz</span></div>}
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground">Ao submeter, profissionais próximos irão receber o teu pedido.</p>
+          </>
+        )}
+
+        <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
+          <button type="button" onClick={() => setStep(Math.max(0, step - 1))} disabled={step === 0} className="inline-flex items-center gap-1 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-medium text-ink transition hover:border-ink disabled:opacity-40">
+            <ChevronLeft className="h-4 w-4" /> Voltar
+          </button>
+          {step < steps.length - 1 ? (
+            <button type="button" onClick={() => setStep(step + 1)} disabled={!canContinue()} className="inline-flex items-center gap-1 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0">
+              Continuar <ChevronRight className="h-4 w-4" />
+            </button>
+          ) : (
+            <button type="button" onClick={submit} disabled={loading} className="inline-flex items-center gap-1 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50">
+              {loading ? "A enviar..." : "Submeter pedido"}
+            </button>
+          )}
+        </div>
+      </Card>
+    </>
   );
 };
 
