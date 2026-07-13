@@ -14,7 +14,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "https://api-bt.bisc8.digital",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api(\/v1)?/, "/api/v1"),
       },
