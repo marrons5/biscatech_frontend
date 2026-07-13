@@ -7,14 +7,12 @@ import * as z from "zod";
 import { authService } from "@/services/authService";
 import { setPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 const registerSchema = z.object({
   nome: z.string().min(2, "O nome é obrigatório"),
   apelido: z.string().min(2, "O apelido é obrigatório"),
   email: z.string().email("Insere um e-mail válido"),
   telefone: z.string().min(7, "Insere um telefone válido"),
-  categoria: z.string().optional(),
   password: z.string().min(8, "Mínimo 8 caracteres"),
 });
 
@@ -23,7 +21,6 @@ type RegisterForm = z.infer<typeof registerSchema>;
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [role, setRole] = useState<"customer" | "provider">("customer");
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -58,22 +55,6 @@ const Register = () => {
       subtitle="Leva menos de 2 minutos. Sem cartão de crédito."
       footer={<>J&aacute; tens conta? <Link to="/auth/login" className="font-medium text-primary hover:underline">Entrar</Link></>}
     >
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1">
-        {(["customer", "provider"] as const).map((r) => (
-          <button
-            key={r}
-            type="button"
-            onClick={() => setRole(r)}
-            className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium transition",
-              role === r ? "bg-card text-ink shadow-sm" : "text-muted-foreground hover:text-ink"
-            )}
-          >
-            {r === "customer" ? "Sou cliente" : "Sou profissional"}
-          </button>
-        ))}
-      </div>
-
       <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
@@ -117,17 +98,6 @@ const Register = () => {
           />
           {form.formState.errors.telefone && <p className="mt-1 text-xs text-destructive">{form.formState.errors.telefone.message}</p>}
         </label>
-
-        {role === "provider" && (
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-ink">Categoria principal</span>
-            <input
-              {...form.register("categoria")}
-              placeholder="Ex: Canalizador"
-              className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
-            />
-          </label>
-        )}
 
         <label className="block">
           <span className="mb-1.5 block text-sm font-medium text-ink">Palavra-passe</span>

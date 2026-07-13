@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Bell, Search, Menu, X, LayoutDashboard, PlusCircle, ClipboardList, Settings, Wallet, History, Star, User, MapPin, LifeBuoy, TrendingUp, Clock, LogOut } from "lucide-react";
+import { Bell, Search, Menu, X, LayoutDashboard, PlusCircle, ClipboardList, Settings, Wallet, History, Star, User, MapPin, LifeBuoy, TrendingUp, Clock, LogOut, BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ComponentType } from "react";
 import { AuthContext } from "@/context/authContext";
@@ -23,6 +23,7 @@ const clientNav: NavItem[] = [
   { to: "/client/profile", label: "Perfil", icon: User },
   { to: "/client/addresses", label: "Endereços", icon: MapPin },
 
+  { to: "/client/become-provider", label: "Torna-te Pro", icon: BadgeCheck },
   { to: "/client/support", label: "Suporte", icon: LifeBuoy },
 ];
 

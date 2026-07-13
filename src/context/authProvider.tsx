@@ -15,6 +15,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // ignore
     }
     setLoading(false);
+
+    const onAuthCleared = () => {
+      setUser(null);
+      localStorage.removeItem(STORAGE_KEY);
+    };
+    window.addEventListener("auth:cleared", onAuthCleared);
+    return () => window.removeEventListener("auth:cleared", onAuthCleared);
   }, []);
 
   const persist = (u: AuthUser | null) => {

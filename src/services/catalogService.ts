@@ -69,6 +69,7 @@ export const catalogService = {
                     success: true,
                     data: {
                         services: flattenCatalog(response.data.data),
+                        categories: response.data.data.map(c => ({ id: c.id, name: c.name, slug: c.slug, description: c.description })),
                     },
                 },
                 status: response.status,

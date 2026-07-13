@@ -16,8 +16,8 @@ export default function AdminProviders() {
         if (res.data.success) {
           const raw = res.data.data;
           const users = Array.isArray(raw) ? raw : raw.users;
-          setPending(users.filter((u: any) => u.role === "provider" && u.status === "pending_verification"));
-          setActive(users.filter((u: any) => u.role === "provider" && u.status === "active"));
+          setPending(users.filter((u: any) => u.role === "provider" && u.providerProfile?.status === "pending_approval"));
+          setActive(users.filter((u: any) => u.role === "provider" && u.providerProfile?.status === "active"));
         }
       } catch { /* ignore */ }
       setLoading(false);

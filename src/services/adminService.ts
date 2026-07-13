@@ -9,6 +9,7 @@ export interface AdminUser {
   role: string;
   status: string;
   createdAt: string;
+  providerProfile: { status: string; verified: boolean } | null;
 }
 
 export interface ListAdminUsersResponse {

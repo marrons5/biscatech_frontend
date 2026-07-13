@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageHeader, Card } from "@/components/custom/primitives";
-import { Wrench, Zap, Paintbrush, Hammer, Sparkles, Snowflake, Camera, Wifi, Home, Upload, MapPin, Calendar, Zap as Emergency, Check, ChevronRight, ChevronLeft } from "lucide-react";
+import { Wrench, Zap, Paintbrush, Sparkles, Snowflake, Upload, MapPin, Calendar, Zap as Emergency, Check, ChevronRight, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { catalogService, type PredefinedService } from "@/services/catalogService";
+import { catalogService } from "@/services/catalogService";
 import { serviceRequestService } from "@/services/serviceRequestService";
 
 const iconMap: Record<string, any> = {
-  Canalizador: Wrench, Eletricista: Zap, Pintor: Paintbrush, Pedreiro: Hammer,
-  Limpeza: Sparkles, "AC": Snowflake, "AC / Refr.": Snowflake, CCTV: Camera,
-  Internet: Wifi, Electrodomésticos: Home, Eletrodomésticos: Home,
+  Canalização: Wrench, Electricidade: Zap, Climatização: Snowflake,
+  Construção: Paintbrush, Limpeza: Sparkles, "Mecânica & Electrónicos": Wrench,
 };
 
 const steps = ["Categoria", "Detalhes", "Localização", "Agenda", "Revisão"];
@@ -36,37 +35,16 @@ const RequestCreate = () => {
         const res = await catalogService.list();
         const data = res as any;
         if (data?.data?.success) {
-          const services = data.data.data.services as PredefinedService[];
-          const unique = [...new Set(services.map((s) => s.category))];
-          setCats(unique.map((c) => ({
-            label: c,
-            icon: iconMap[c] ?? Wrench,
-          })));
-        } else {
-          setCats([
-            { icon: Wrench, label: "Canalizador" },
-            { icon: Zap, label: "Eletricista" },
-            { icon: Paintbrush, label: "Pintor" },
-            { icon: Hammer, label: "Pedreiro" },
-            { icon: Sparkles, label: "Limpeza" },
-            { icon: Snowflake, label: "AC" },
-            { icon: Camera, label: "CCTV" },
-            { icon: Wifi, label: "Internet" },
-            { icon: Home, label: "Electrodomésticos" },
-          ]);
+          const catsData = data.data.data.categories as { id: string; name: string; slug: string; description: string | null }[] | undefined;
+          if (catsData?.length) {
+            setCats(catsData.map(c => ({
+              label: c.name,
+              icon: iconMap[c.name] ?? Wrench,
+            })));
+          }
         }
       } catch {
-        setCats([
-          { icon: Wrench, label: "Canalizador" },
-          { icon: Zap, label: "Eletricista" },
-          { icon: Paintbrush, label: "Pintor" },
-          { icon: Hammer, label: "Pedreiro" },
-          { icon: Sparkles, label: "Limpeza" },
-          { icon: Snowflake, label: "AC" },
-          { icon: Camera, label: "CCTV" },
-          { icon: Wifi, label: "Internet" },
-          { icon: Home, label: "Electrodomésticos" },
-        ]);
+        /* empty */
       }
       setLoadCat(false);
     })();
@@ -75,8 +53,8 @@ const RequestCreate = () => {
   const canContinue = () => {
     switch (step) {
       case 0: return !!cat;
-      case 1: return description.trim().length > 0;
-      case 2: return location.trim().length > 0;
+      case 1: return description.trim().length >= 10;
+      case 2: return location.trim().length >= 3;
       case 3: return true;
       case 4: return true;
       default: return false;
@@ -91,10 +69,11 @@ const RequestCreate = () => {
         title: cat,
         description,
         location,
-        date: urgent ? new Date().toISOString().split("T")[0] : date || new Date().toISOString().split("T")[0],
+        date: urgent ? new Date().toISOString() : date ? new Date(date).toISOString() : new Date().toISOString(),
         type: urgent ? "emergency" : "repair",
+        isCustom: true,
       };
-      if (budget) payload.stipulatedPrice = Number(budget.replace(/[^0-9]/g, ""));
+      if (budget) payload.customerBudget = Number(budget.replace(/[^0-9]/g, ""));
       const res = await serviceRequestService.create(payload);
       if (res.data.success) {
         toast.success("Pedido enviado! À procura de profissionais perto de ti.");
@@ -156,6 +135,7 @@ const RequestCreate = () => {
               <label className="block">
                 <span className="mb-1.5 block text-sm font-medium text-ink">Descrição</span>
                 <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex: Torneira da cozinha a pingar continuamente..." className="w-full rounded-xl border border-border bg-card p-3 text-sm outline-none focus:border-primary focus:ring-4 focus:ring-primary/10" />
+                <p className="mt-1 text-xs text-muted-foreground">{description.length}/10 caracteres mínimos</p>
               </label>
               <div>
                 <span className="mb-1.5 block text-sm font-medium text-ink">Fotos (opcional)</span>

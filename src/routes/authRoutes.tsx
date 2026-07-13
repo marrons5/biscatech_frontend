@@ -8,7 +8,7 @@ import { ProDashboard, ProBalance, ProHistory, ProSettings } from "@/pages/auth/
 import { ClientHistory } from "@/pages/auth/client/clientHistory";
 
 import { ClientHome } from "@/pages/auth/client/clientHome";
-import { RequestCreate, RequestStatus } from "@/pages/auth/client";
+import { RequestCreate, RequestStatus, BecomeProvider } from "@/pages/auth/client";
 import Requests from "@/pages/auth/client/requests";
 
 import Notifications from "@/pages/auth/client/notifications";
@@ -61,6 +61,7 @@ function AuthRoutes() {
           <Route path="/client/profile" element={<Profile />} />
           <Route path="/client/addresses" element={<Addresses />} />
 
+          <Route path="/client/become-provider" element={<BecomeProvider />} />
           <Route path="/client/support" element={<Support />} />
         </Route>
       </Route>

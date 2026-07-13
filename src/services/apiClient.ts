@@ -58,12 +58,8 @@ class ApiClient {
 
     getAuthToken(): string | null {
         const token = localStorage.getItem("auth_token");
-        const expiry = localStorage.getItem("auth_token_exp");
 
-        if (expiry && Date.now() > parseInt(expiry, 10)) {
-            this.clearAuthToken();
-            return null;
-        }
+        if (!token) return null;
 
         return token;
     }
@@ -72,6 +68,8 @@ class ApiClient {
         localStorage.removeItem("auth_token");
         localStorage.removeItem("auth_token_exp");
         localStorage.removeItem("auth_refresh_token");
+        localStorage.removeItem("biscatech:auth");
+        window.dispatchEvent(new Event("auth:cleared"));
     }
 
     private setAuthToken(token: string): void {
@@ -141,12 +139,35 @@ class ApiClient {
         return controller;
     }
 
+    private isJwtExpired(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split(".")[1]));
+            return Date.now() >= payload.exp * 1000;
+        } catch {
+            return true;
+        }
+    }
+
     private async request<T>(
         endpoint: string,
         options: ApiRequestOptions = {},
     ): Promise<{ data: T; status: number }> {
         const controller = this.createAbortController();
         const headers = this.createHeaders(options.headers ?? {});
+
+        const authHeader = headers.Authorization || headers.authorization;
+        if (authHeader?.startsWith("Bearer ")) {
+            const token = authHeader.slice(7);
+            if (this.isJwtExpired(token) && this.getRefreshToken()) {
+                const newToken = await this.tryRefreshToken();
+                if (newToken) {
+                    headers.Authorization = `Bearer ${newToken}`;
+                } else {
+                    this.clearAuthToken();
+                    delete headers.Authorization;
+                }
+            }
+        }
 
         let body: BodyInit | null | undefined = null;
         if (options.body === null) {

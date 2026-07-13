@@ -134,6 +134,10 @@ export const authService = {
         return await apiClient.get<GetMeResponse>("/api/v1/auth/me");
     },
 
+    async becomeProvider(payload: { biNumber?: string; dateOfBirth?: string; placeOfBirth?: string }) {
+        return await apiClient.post<MessageResponse>("/api/v1/auth/become-provider", payload);
+    },
+
     async changePassword(payload: { currentPassword: string; newPassword: string }) {
         return await apiClient.post<MessageResponse>("/api/v1/auth/change-password", payload);
     },
