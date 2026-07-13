@@ -1,11 +1,32 @@
 import { PageHeader, Card } from "@/components/custom/primitives";
-import { Camera, Mail, Phone } from "lucide-react";
+import { Camera, Mail, Phone, Lock } from "lucide-react";
 import { InputField } from "@/components/custom/authShell";
 import { AuthContext } from "@/context/authContext";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { toast } from "sonner";
+import { authService } from "@/services/authService";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Profile() {
   const { user } = useContext(AuthContext)!;
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  const changePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      toast.error("Preencha ambos os campos.");
+      return;
+    }
+    try {
+      await authService.changePassword({ currentPassword, newPassword });
+      toast.success("Palavra-passe alterada!");
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch {
+      toast.error("Erro ao alterar palavra-passe.");
+    }
+  };
 
   return (
     <>
@@ -25,18 +46,31 @@ export default function Profile() {
             <li className="flex items-center gap-2"><Phone className="h-4 w-4" /> {user?.phone ?? "—"}</li>
           </ul>
         </Card>
-        <Card className="lg:col-span-2">
-          <h2 className="text-lg font-semibold text-ink">Informação pessoal</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <InputField label="Nome" defaultValue={user?.name ?? ""} />
-            <InputField label="Email" type="email" defaultValue={user?.email ?? ""} />
-            <InputField label="Telemóvel" type="tel" defaultValue={user?.phone ?? ""} />
-          </div>
-          <div className="mt-8 flex justify-end gap-2">
-            <button className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">Cancelar</button>
-            <button className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-lg">Guardar alterações</button>
-          </div>
-        </Card>
+        <div className="space-y-6">
+          <Card>
+            <h2 className="text-lg font-semibold text-ink">Informação pessoal</h2>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <InputField label="Nome" defaultValue={user?.name ?? ""} />
+              <InputField label="Email" type="email" defaultValue={user?.email ?? ""} />
+              <InputField label="Telemóvel" type="tel" defaultValue={user?.phone ?? ""} />
+            </div>
+            <div className="mt-8 flex justify-end gap-2">
+              <button className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-ink hover:bg-muted">Cancelar</button>
+              <button className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-lg">Guardar alterações</button>
+            </div>
+          </Card>
+
+          <Card>
+            <h2 className="text-lg font-semibold text-ink flex items-center gap-2"><Lock className="h-4 w-4" /> Palavra-passe</h2>
+            <div className="mt-6 space-y-4">
+              <Input type="password" placeholder="Palavra-passe actual" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="rounded-xl" />
+              <Input type="password" placeholder="Nova palavra-passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="rounded-xl" />
+              <div className="flex justify-end">
+                <Button className="rounded-xl" onClick={changePassword}>Alterar password</Button>
+              </div>
+            </div>
+          </Card>
+        </div>
       </div>
     </>
   );

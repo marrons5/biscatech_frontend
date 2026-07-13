@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { serviceRequestService, type IServiceRequest } from "@/services/serviceRequestService";
 
-const iconMap: Record<string, typeof Wrench> = { Reparo: Wrench, Instalação: Zap, Manutenção: Sparkles, Emergência: Snowflake };
+const iconMap: Record<string, typeof Wrench> = { repair: Wrench, installation: Zap, maintenance: Sparkles, emergency: Snowflake };
 
 export default function AvailableJobs() {
   const [list, setList] = useState<IServiceRequest[]>([]);
@@ -68,7 +68,7 @@ export default function AvailableJobs() {
                   <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
                     <div className="flex items-center gap-1.5 text-muted-foreground"><MapPin className="h-3.5 w-3.5 text-primary" />{r.location}</div>
                     <div className="flex items-center gap-1.5 text-muted-foreground"><Clock className="h-3.5 w-3.5 text-primary" />{new Date(r.date).toLocaleDateString("pt-AO")}</div>
-                    <div className="flex items-center gap-1.5 font-medium text-ink"><Wallet className="h-3.5 w-3.5 text-success" />{r.price ? `${Number(r.price).toLocaleString()} Kz` : "—"}</div>
+                    <div className="flex items-center gap-1.5 font-medium text-ink"><Wallet className="h-3.5 w-3.5 text-success" />{(r.proposedValue ?? r.price) ? `${Number(r.proposedValue ?? r.price).toLocaleString()} Kz` : "—"}</div>
                   </div>
                   <div className="mt-4 flex gap-2">
                     <button className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl border border-border py-2 text-sm font-medium text-muted-foreground hover:border-danger hover:text-danger">

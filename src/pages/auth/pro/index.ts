@@ -2,6 +2,7 @@ export { ProDashboard } from "./proDashboard";
 export { ProBalance } from "./proBalance";
 export { ProHistory } from "./proHistory";
 export { ProSettings } from "./proSettings";
+export { ProRequestStatus } from "./proRequestStatus";
 export { default as AvailableJobs } from "./jobs";
 export { default as Services } from "./services";
 export { default as Stats } from "./stats";

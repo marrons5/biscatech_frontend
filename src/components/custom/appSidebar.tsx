@@ -30,7 +30,7 @@ import { getRefreshToken, clearAuthToken } from "@/utils/auth/session";
 
 const clientSidebarItems = [
   { to: "/client/dashboard", label: "Home", icon: HouseIcon },
-  { to: "/client/history", label: "History", icon: BriefcaseIcon },
+  { to: "/client/reviews", label: "Reviews", icon: BriefcaseIcon },
 
 ];
 

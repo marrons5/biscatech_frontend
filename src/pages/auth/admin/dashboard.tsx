@@ -1,6 +1,7 @@
 import { PageHeader, StatCard, Card, Badge } from "@/components/custom/primitives";
 import { Users, ShieldCheck, ClipboardList, TrendingUp, Wrench, Zap, Sparkles, Star } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { adminService } from "@/services/adminService";
 
 export default function AdminDashboard() {
@@ -60,7 +61,7 @@ export default function AdminDashboard() {
                   <li key={p.id} className="flex items-center gap-3 rounded-xl border border-border p-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-xs font-semibold text-primary">{p.name?.split(" ").map((x: string) => x[0]).join("")}</div>
                     <div className="flex-1 min-w-0"><p className="truncate text-sm font-medium text-ink">{p.name}</p><p className="text-xs text-muted-foreground">{p.role}</p></div>
-                    <button className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">Rever</button>
+                    <Link to="/admin/providers" className="rounded-lg bg-primary px-3 py-1 text-xs font-medium text-primary-foreground">Rever</Link>
                   </li>
                 ))}
           </ul>

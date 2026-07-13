@@ -4,11 +4,11 @@ import { PrivateAppLayout } from "@/layout/privateAppLayout";
 import { AdminAppLayout } from "@/layout/adminAppLayout";
 import { AuthContext } from "@/context/authContext";
 
-import { ProDashboard, ProBalance, ProHistory, ProSettings } from "@/pages/auth/pro";
-import { ClientHistory } from "@/pages/auth/client/clientHistory";
+import { ProDashboard, ProBalance, ProHistory, ProSettings, ProRequestStatus } from "@/pages/auth/pro";
+import { Avaliacoes } from "@/pages/auth/client";
 
 import { ClientHome } from "@/pages/auth/client/clientHome";
-import { RequestCreate, RequestStatus, BecomeProvider } from "@/pages/auth/client";
+import { RequestCreate, RequestStatus, BecomeProvider, Rate } from "@/pages/auth/client";
 import Requests from "@/pages/auth/client/requests";
 
 import Notifications from "@/pages/auth/client/notifications";
@@ -57,12 +57,13 @@ function AuthRoutes() {
           <Route path="/client/request/:id" element={<RequestStatus />} />
 
           <Route path="/client/notifications" element={<Notifications />} />
-          <Route path="/client/reviews" element={<ClientHistory />} />
+          <Route path="/client/reviews" element={<Avaliacoes />} />
           <Route path="/client/profile" element={<Profile />} />
           <Route path="/client/addresses" element={<Addresses />} />
 
           <Route path="/client/become-provider" element={<BecomeProvider />} />
           <Route path="/client/support" element={<Support />} />
+          <Route path="/client/rate/:id" element={<Rate />} />
         </Route>
       </Route>
 
@@ -80,6 +81,7 @@ function AuthRoutes() {
           <Route path="/pro/profile" element={<ProProfile />} />
           <Route path="/pro/availability" element={<Availability />} />
           <Route path="/pro/settings" element={<ProSettings />} />
+          <Route path="/pro/request/:id" element={<ProRequestStatus />} />
           <Route path="/pro/support" element={<ProSupport />} />
         </Route>
       </Route>

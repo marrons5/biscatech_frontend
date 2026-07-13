@@ -55,7 +55,7 @@ const ClientHome = () => {
           <Card>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold text-ink">Pedidos recentes</h2>
-              <Link to="/client/history" className="text-sm font-medium text-primary hover:underline">Ver todos</Link>
+              <Link to="/client/requests" className="text-sm font-medium text-primary hover:underline">Ver todos</Link>
             </div>
             {loading ? (
               <p className="text-sm text-muted-foreground">A carregar...</p>

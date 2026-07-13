@@ -43,7 +43,7 @@ export function AppHeader() {
   const selectPageHeader = () => {
     switch (location.pathname) {
       case "/client/dashboard": return { title: "Dashboard", description: "What's up?" };
-      case "/client/history": return { title: "History", description: "Your past requests" };
+      case "/client/reviews": return { title: "Reviews", description: "Your past requests" };
 
       case "/client/request/create": return { title: "New Request", description: "Describe your problem" };
       case "/pro/dashboard": return { title: "Dashboard", description: "Available requests" };

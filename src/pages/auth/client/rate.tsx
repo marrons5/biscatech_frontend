@@ -33,7 +33,7 @@ const Rate = () => {
       const res = await reviewService.create(id, { rating, tags: chosen, comment: comment || undefined });
       if (res.data.success) {
         toast.success("Obrigado! A tua avaliação ajuda a comunidade.");
-        navigate("/client/history", { replace: true });
+        navigate("/client/reviews", { replace: true });
       } else {
         toast.error("Erro ao enviar avaliação.");
       }

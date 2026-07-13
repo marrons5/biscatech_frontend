@@ -110,6 +110,31 @@ export interface UpdateSettingsResponse {
   data: { message: string };
 }
 
+export interface AdminServicePayload {
+  categoryId: string;
+  name: string;
+  slug: string;
+  description?: string;
+  type?: "REPAIR" | "INSTALLATION" | "MAINTENANCE" | "EMERGENCY";
+  priceMin?: number;
+  priceMax?: number;
+}
+
+export interface UpdateAdminServicePayload {
+  name?: string;
+  slug?: string;
+  description?: string;
+  type?: "REPAIR" | "INSTALLATION" | "MAINTENANCE" | "EMERGENCY";
+  priceMin?: number;
+  priceMax?: number;
+  isActive?: boolean;
+}
+
+export interface MutateServiceResponse {
+  success: boolean;
+  data: { message: string };
+}
+
 export const adminService = {
   // Users
   async listUsers() {
@@ -134,6 +159,14 @@ export const adminService = {
   },
   async deleteCategory(id: string) {
     return await apiClient.delete<DeleteCategoryResponse>(`/api/v1/admin/categories/${id}`);
+  },
+
+  // Services
+  async createService(payload: AdminServicePayload) {
+    return await apiClient.post<MutateServiceResponse>("/api/v1/admin/services", payload as any);
+  },
+  async updateService(id: string, payload: UpdateAdminServicePayload) {
+    return await apiClient.patch<MutateServiceResponse>(`/api/v1/admin/services/${id}`, payload as any);
   },
 
   // Complaints

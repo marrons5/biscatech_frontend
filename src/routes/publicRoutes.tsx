@@ -27,7 +27,7 @@ function PublicRoutes() {
       <Route path="/auth/register" element={<Register />} />
       <Route path="/auth/forgot-password" element={<ForgotPassword />} />
       <Route path="/auth/reset-password" element={<ResetPassword />} />
-      <Route path="services-catalog" element={<ServicesCatalog />} />
+      <Route path="/services-catalog" element={<ServicesCatalog />} />
     </>
   );
 }

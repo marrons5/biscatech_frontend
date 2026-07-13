@@ -45,7 +45,7 @@ export default function Services() {
                     <p className="mt-1 text-sm text-muted-foreground">{r.location} · {new Date(r.date).toLocaleDateString("pt-AO")}</p>
                     <div className="mt-4 flex items-center justify-between">
                       <span className="text-sm font-semibold text-ink">{r.price ? `${Number(r.price).toLocaleString()} Kz` : "—"}</span>
-                      <Link to={`/client/request/${r.id}`} className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary-soft">Detalhes <ArrowRight className="h-3 w-3" /></Link>
+                      <Link to={`/pro/request/${r.id}`} className="inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium text-primary hover:bg-primary-soft">Detalhes <ArrowRight className="h-3 w-3" /></Link>
                     </div>
                   </div>
                 </div>
