@@ -1,0 +1,11 @@
+export { default as AdminDashboard } from "./dashboard";
+export { default as AdminUsers } from "./users";
+export { default as AdminProviders } from "./providers";
+export { default as AdminRequests } from "./requests";
+export { default as AdminCategories } from "./categories";
+export { default as AdminServices } from "./services";
+export { default as AdminReviews } from "./reviews";
+export { default as AdminComplaints } from "./complaints";
+export { default as AdminTickets } from "./tickets";
+export { default as AdminReports } from "./reports";
+export { default as AdminSettings } from "./settings";

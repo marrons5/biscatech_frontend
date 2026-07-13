@@ -1,9 +1,6 @@
-import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRightIcon, GoogleLogoIcon, EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components";
+import { AuthShell, PrimaryButton } from "@/components/custom/authShell";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,20 +8,16 @@ import { authService } from "@/services/authService";
 import { AuthContext } from "@/context/authContext";
 import { setAuthToken, setRefreshToken } from "@/utils/auth/session";
 import { toast } from "sonner";
-import { logger } from "@/utils/logger";
-
-import background from "@/assets/images/auth_background_left.png";
 
 const loginSchema = z.object({
-  email: z.string().email("Check your email."),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.string().email("Insere um e-mail válido"),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
 });
 type LoginForm = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
   const { login: setAuthUser } = useContext(AuthContext)!;
-  const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginForm>({
@@ -37,13 +30,11 @@ const Login = () => {
       const response = await authService.login({ email, password });
 
       if (!response.data.success) {
-        const msg = (response.data as any).error ?? "Login failed";
-        logger.warn("Login", msg, response.data);
+        const msg = (response.data as any).error ?? "Falha ao entrar";
         throw new Error(msg);
       }
 
       const { token, refreshToken, user } = response.data.data;
-
       setAuthToken(token);
       setRefreshToken(refreshToken);
       setAuthUser({
@@ -57,112 +48,66 @@ const Login = () => {
 
       const dashboard = user.role === "provider" ? "/pro/dashboard" : "/client/dashboard";
       navigate(dashboard, { replace: true });
-
-      toast.success("Session started successfully!", {
-        className: "bg-green-500 text-white font-semibold",
-      });
+      toast.success("Sessão iniciada com sucesso!");
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "Invalid email or password.";
-      logger.error("Login", msg, error);
-      toast.error(msg, {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-      console.error("login error:", error);
+      const msg = error instanceof Error ? error.message : "Email ou palavra-passe inválidos.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div
-      className="bg-primary/65 bg-cover bg-no-repeat h-svh w-full flex items-center justify-end py-5 md:px-4 px-2"
-      style={{ backgroundImage: `url(${background})`, backgroundBlendMode: "color-burn" }}
+    <AuthShell
+      title="Bem-vindo de volta"
+      subtitle="Entra na tua conta para gerir pedidos e mensagens."
+      footer={<>Ainda não tens conta? <Link to="/auth/register" className="font-medium text-primary hover:underline">Criar conta</Link></>}
     >
-      <div className="bg-card border border-border/30 shadow-2xl rounded-3xl p-8 lg:p-10 md:w-2/6 w-full animate-in fade-in zoom-in-95 duration-500">
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Email</span>
+          <input
+            {...form.register("email")}
+            type="email"
+            placeholder="tu@exemplo.com"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.email && <p className="mt-1 text-xs text-destructive">{form.formState.errors.email.message}</p>}
+        </label>
 
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Welcome back
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2 mb-6">
-          Sign in to your account to continue.
-        </p>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Palavra-passe</span>
+          <input
+            {...form.register("password")}
+            type="password"
+            placeholder="••••••••"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.password && <p className="mt-1 text-xs text-destructive">{form.formState.errors.password.message}</p>}
+        </label>
 
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className="w-full gap-2.5 rounded-2xl border-2 border-border/40 py-5 text-foreground bg-background hover:bg-muted transition-all duration-200"
-        >
-          <GoogleLogoIcon size={20} weight="bold" />
-          Continue with Google
-        </Button>
-
-        <div className="my-6 flex items-center gap-3">
-          <div className="flex-1 h-px bg-border/30" />
-          <span className="text-[11px] text-muted-foreground font-bold tracking-wider">
-            OR WITH EMAIL
-          </span>
-          <div className="flex-1 h-px bg-border/30" />
+        <div className="flex items-center justify-between text-sm">
+          <label className="flex items-center gap-2 text-muted-foreground">
+            <input type="checkbox" className="h-4 w-4 rounded border-border text-primary" />
+            Manter sessão iniciada
+          </label>
+          <Link to="/auth/forgot-password" className="font-medium text-primary hover:underline">Esqueci-me</Link>
         </div>
 
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
-          <FieldGroup className="space-y-1.5">
-            <Field>
-              <FieldLabel htmlFor="email-login" className="text-foreground font-semibold">E-mail</FieldLabel>
-              <Input
-                {...form.register("email")}
-                id="email-login"
-                type="email"
-                placeholder="e.g. joao@email.com"
-                className="h-12 rounded-xl border-border focus:border-primary focus:ring-ring/20 transition-all duration-200 bg-background"
-              />
-              {form.formState.errors.email && <p className="text-xs text-destructive mt-1">{form.formState.errors.email.message}</p>}
-            </Field>
+        <PrimaryButton type="submit" className={loading ? "opacity-70" : ""}>
+          {loading ? "A entrar…" : "Entrar"}
+        </PrimaryButton>
 
-            <Field>
-              <FieldLabel htmlFor="password-login" className="text-foreground font-semibold flex justify-between">
-                <span>Password</span>
-                <Link to="/auth/forgot-password" className="text-xs font-bold text-primary hover:underline transition-all">
-                  Forgot it?
-                </Link>
-              </FieldLabel>
-              <div className="relative">
-                <Input
-                  {...form.register("password")}
-                  id="password-login"
-                  type={showPwd ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="h-12 rounded-xl pr-10 border-border focus:border-primary focus:ring-ring/20 transition-all duration-200 bg-background"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPwd(!showPwd)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral hover:text-primary transition-colors cursor-pointer"
-                >
-                  {showPwd ? <EyeIcon size={20} /> : <EyeSlashIcon size={20} />}
-                </button>
-              </div>
-              {form.formState.errors.password && <p className="text-xs text-destructive mt-1">{form.formState.errors.password.message}</p>}
-            </Field>
-          </FieldGroup>
+        <div className="relative py-2 text-center">
+          <span className="absolute left-0 top-1/2 h-px w-full bg-border" />
+          <span className="relative bg-background px-3 text-xs uppercase tracking-widest text-muted-foreground">ou</span>
+        </div>
 
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full text-primary-foreground bg-primary hover:bg-primary/90 rounded-2xl h-14 text-lg font-bold shadow-md cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] mt-2"
-          >
-            {loading ? <span className="animate-pulse">Signing in…</span> : <>Sign in <ArrowRightIcon size={18} weight="bold" /></>}
-          </Button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          Don&apos;t have an account yet?{" "}
-          <Link to="/auth/register" className="font-bold text-primary hover:underline transition-all">
-            Create account
-          </Link>
-        </p>
-      </div>
-    </div>
+        <button type="button" className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 text-sm font-medium text-ink transition hover:border-primary/40 hover:shadow-sm">
+          Continuar com Google
+        </button>
+      </form>
+    </AuthShell>
   );
 };
 

@@ -1,143 +1,154 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRightIcon, GoogleLogoIcon, EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
-import { Button, Input, Checkbox } from "@/components";
-import { Field, FieldGroup, FieldLabel } from "@/components";
+import { AuthShell, PrimaryButton } from "@/components/custom/authShell";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { authService } from "@/services/authService";
 import { setPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
-import { logger } from "@/utils/logger";
-import background from "@/assets/images/auth_background_right.png";
+import { cn } from "@/lib/utils";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "O nome é obrigatório"),
+  nome: z.string().min(2, "O nome é obrigatório"),
+  apelido: z.string().min(2, "O apelido é obrigatório"),
   email: z.string().email("Insere um e-mail válido"),
-  phone: z.string().min(7, "Insere um telefone válido"),
-  password: z
-    .string()
-    .min(8, "Mínimo 8 caracteres")
-    .regex(/[a-zA-Z]/, "Deve conter letras")
-    .regex(/[0-9]/, "Deve conter pelo menos um número"),
-  accept: z.boolean().refine((v) => v === true, "Aceita os termos para continuar"),
+  telefone: z.string().min(7, "Insere um telefone válido"),
+  categoria: z.string().optional(),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
 });
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
 const Register = () => {
   const navigate = useNavigate();
-  const [showPwd, setShowPwd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<"customer" | "provider">("customer");
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", phone: "", password: "", accept: false },
   });
 
-  async function submit({ name, email, phone, password }: RegisterForm) {
+  async function submit({ nome, apelido, email, telefone, password }: RegisterForm) {
     setLoading(true);
     try {
-      const payload = { name, email, phone: `+244${phone.replace(/^\+244/, "")}`, password };
+      const name = `${nome} ${apelido}`;
+      const payload = { name, email, phone: `+244${telefone.replace(/^\+244/, "")}`, password };
       const response = await authService.register(payload);
 
       if (!response.data.success) {
         const msg = (response.data as any).error ?? "Erro ao criar conta";
-        logger.warn("Register", msg, response.data);
         throw new Error(msg);
       }
 
       setPendingEmail(email);
-      toast.success("Conta criada! Verifica o teu email.", {
-        className: "bg-green-500 text-white font-semibold",
-      });
+      toast.success("Conta criada! Verifica o teu email.");
       navigate("/verify", { replace: true });
     } catch (error) {
       const msg = error instanceof Error ? error.message : "Erro ao criar conta. Tenta novamente.";
-      logger.error("Register", msg, error);
-      toast.error(msg, {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-      console.error("register error:", error);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="h-svh w-full bg-primary/65 bg-cover bg-no-repeat bg-background flex items-center py-5 md:px-4 px-2"
-      style={{ backgroundImage: `url(${background})`, backgroundBlendMode: "color-burn" }}
+    <AuthShell
+      title="Cria a tua conta"
+      subtitle="Leva menos de 2 minutos. Sem cartão de crédito."
+      footer={<>J&aacute; tens conta? <Link to="/auth/login" className="font-medium text-primary hover:underline">Entrar</Link></>}
     >
-      <div className="bg-card border border-border/30 shadow-sm rounded-3xl p-8 lg:p-10 h-full overflow-y-auto md:w-2/6 w-full animate-in slide-in-from-right-10 duration-500">
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Criar conta</h1>
-        <p className="text-sm text-muted-foreground mt-2">Cria a tua conta para começar.</p>
+      <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1">
+        {(["customer", "provider"] as const).map((r) => (
+          <button
+            key={r}
+            type="button"
+            onClick={() => setRole(r)}
+            className={cn(
+              "rounded-lg px-3 py-2 text-sm font-medium transition",
+              role === r ? "bg-card text-ink shadow-sm" : "text-muted-foreground hover:text-ink"
+            )}
+          >
+            {r === "customer" ? "Sou cliente" : "Sou profissional"}
+          </button>
+        ))}
+      </div>
 
-        <Button type="button" variant="outline" size="lg" className="w-full mt-5 gap-2.5 rounded-2xl border-2 border-border/40 py-5 bg-background text-foreground hover:bg-muted transition-all duration-200">
-          <GoogleLogoIcon size={20} weight="bold" /> Continuar com Google
-        </Button>
-
-        <div className="my-5 flex items-center gap-3">
-          <div className="flex-1 h-px bg-border/30" />
-          <span className="text-[11px] text-muted-foreground font-semibold">OU</span>
-          <div className="flex-1 h-px bg-border/30" />
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+        <div className="grid grid-cols-2 gap-3">
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Nome</span>
+            <input
+              {...form.register("nome")}
+              placeholder="Ana"
+              className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+            />
+            {form.formState.errors.nome && <p className="mt-1 text-xs text-destructive">{form.formState.errors.nome.message}</p>}
+          </label>
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Apelido</span>
+            <input
+              {...form.register("apelido")}
+              placeholder="Domingos"
+              className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+            />
+            {form.formState.errors.apelido && <p className="mt-1 text-xs text-destructive">{form.formState.errors.apelido.message}</p>}
+          </label>
         </div>
 
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
-          <FieldGroup className="space-y-1.5">
-            <Field>
-              <FieldLabel htmlFor="name" className="text-foreground font-semibold">Nome completo</FieldLabel>
-              <Input {...form.register("name")} id="name" placeholder="O teu nome" className="h-11 border-2 border-border focus:border-primary py-5 rounded-xl bg-background transition-all" />
-              {form.formState.errors.name && <p className="text-xs text-destructive mt-1">{form.formState.errors.name.message}</p>}
-            </Field>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Email</span>
+          <input
+            {...form.register("email")}
+            type="email"
+            placeholder="tu@exemplo.com"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.email && <p className="mt-1 text-xs text-destructive">{form.formState.errors.email.message}</p>}
+        </label>
 
-            <Field>
-              <FieldLabel htmlFor="email" className="text-foreground font-semibold">E-mail</FieldLabel>
-              <Input {...form.register("email")} id="email" type="email" placeholder="tu@exemplo.com" className="h-11 border-2 border-border focus:border-primary py-5 rounded-xl bg-background transition-all" />
-              {form.formState.errors.email && <p className="text-xs text-destructive mt-1">{form.formState.errors.email.message}</p>}
-            </Field>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Telemóvel</span>
+          <input
+            {...form.register("telefone")}
+            type="tel"
+            placeholder="+244 923 000 000"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.telefone && <p className="mt-1 text-xs text-destructive">{form.formState.errors.telefone.message}</p>}
+        </label>
 
-            <Field>
-              <FieldLabel htmlFor="phone" className="text-foreground font-semibold">Telefone</FieldLabel>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-muted-foreground">🇦🇴 +244</span>
-                <Input {...form.register("phone")} id="phone" type="tel" placeholder="923456789" className="h-11 pl-20 border-2 border-border focus:border-primary py-5 rounded-xl bg-background transition-all" />
-              </div>
-              {form.formState.errors.phone && <p className="text-xs text-destructive mt-1">{form.formState.errors.phone.message}</p>}
-            </Field>
+        {role === "provider" && (
+          <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-ink">Categoria principal</span>
+            <input
+              {...form.register("categoria")}
+              placeholder="Ex: Canalizador"
+              className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+            />
+          </label>
+        )}
 
-            <Field>
-              <FieldLabel htmlFor="password" className="text-foreground font-semibold">Palavra-passe</FieldLabel>
-              <div className="relative">
-                <Input {...form.register("password")} id="password" type={showPwd ? "text" : "password"} placeholder="••••••••" className="h-11 border-2 border-border focus:border-primary py-5 rounded-xl bg-background transition-all" />
-                <button type="button" onClick={() => setShowPwd(!showPwd)} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral hover:text-primary transition-colors">
-                  {showPwd ? <EyeIcon size={20} /> : <EyeSlashIcon size={20} />}
-                </button>
-              </div>
-              {form.formState.errors.password && <p className="text-xs text-destructive mt-1">{form.formState.errors.password.message}</p>}
-            </Field>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Palavra-passe</span>
+          <input
+            {...form.register("password")}
+            type="password"
+            placeholder="Mín. 8 caracteres"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.password && <p className="mt-1 text-xs text-destructive">{form.formState.errors.password.message}</p>}
+        </label>
 
-            <Field>
-              <label className="flex items-start gap-2 pt-2 cursor-pointer">
-                <Checkbox checked={form.watch("accept")} onCheckedChange={(v) => form.setValue("accept", v === true)} className="mt-0.5 h-4 w-4 rounded border-border accent-primary" />
-                <span className="text-xs text-muted-foreground">
-                  Aceito os <Link to="#" className="font-bold text-primary hover:underline">termos</Link> e a <Link to="#" className="font-bold text-primary hover:underline">política de privacidade</Link>.
-                </span>
-              </label>
-              {form.formState.errors.accept && <p className="text-xs text-destructive mt-1">{form.formState.errors.accept.message}</p>}
-            </Field>
-          </FieldGroup>
+        <PrimaryButton type="submit" className={loading ? "opacity-70" : ""}>
+          {loading ? "A criar conta…" : "Criar conta"}
+        </PrimaryButton>
 
-          <Button type="submit" size="lg" disabled={loading} className="w-full text-primary-foreground bg-primary hover:bg-primary/90 rounded-2xl h-14 text-lg font-bold shadow-md cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] mt-2">
-            {loading ? <span className="animate-pulse">A criar conta…</span> : <>Criar conta <ArrowRightIcon size={18} weight="bold" /></>}
-          </Button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          Já tens conta? <Link to="/auth/login" className="font-bold text-primary hover:underline">Entrar</Link>
+        <p className="text-center text-xs text-muted-foreground">
+          Ao continuar aceitas os <a href="#" className="underline">Termos</a> e <a href="#" className="underline">Privacidade</a>.
         </p>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   );
 };
 

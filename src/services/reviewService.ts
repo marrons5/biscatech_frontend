@@ -16,7 +16,7 @@ export type Review = {
 
 export const reviewService = {
     async create(orderId: string, payload: CreateReviewPayload) {
-        return await apiClient.post<{ success: boolean; data: Review }>(`/api/reviews/orders/${orderId}`, payload);
+        return await apiClient.post<{ success: boolean; data: Review }>(`/api/v1/reviews/orders/${orderId}`, payload);
     },
 
     async list() {

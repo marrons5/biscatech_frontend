@@ -78,6 +78,6 @@ export const catalogService = {
     },
 
     async getById (id: string) {
-        return await apiClient.get<GetCatalogDetailsResponse>(`/api/services/${id}`);
+        return await apiClient.get<GetCatalogDetailsResponse>(`/api/v1/services/${id}`);
     }
 }

@@ -88,38 +88,38 @@ export const serviceRequestService = {
     },
 
     async getById(id: string) {
-        return await apiClient.get<SingleRequestResponse>(`/api/service-requests/${id}`);
+        return await apiClient.get<SingleRequestResponse>(`/api/v1/service-requests/${id}`);
     },
 
     async update(id: string, payload: UpdateServiceRequestPayload) {
-        return await apiClient.patch<SingleRequestResponse>(`/api/service-requests/${id}`, payload);
+        return await apiClient.patch<SingleRequestResponse>(`/api/v1/service-requests/${id}`, payload);
     },
 
     async reactivate(id: string) {
-        return await apiClient.post<SingleRequestResponse>(`/api/service-requests/${id}/reactivate`);
+        return await apiClient.post<SingleRequestResponse>(`/api/v1/service-requests/${id}/reactivate`);
     },
 
     async accept(id: string, payload: AcceptServiceRequestPayload) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/accept`, payload);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/accept`, payload);
     },
 
     async start(id: string) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/start`);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/start`);
     },
 
     async markCompleted(id: string) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/mark-completed`);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/mark-completed`);
     },
 
     async confirm(id: string) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/confirm`);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/confirm`);
     },
 
     async cancelByPro(id: string) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-pro`);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/cancel-by-pro`);
     },
 
     async cancelByClient(id: string) {
-        return await apiClient.post<StatusUpdateResponse>(`/api/service-requests/${id}/cancel-by-client`);
+        return await apiClient.post<StatusUpdateResponse>(`/api/v1/service-requests/${id}/cancel-by-client`);
     }
 };

@@ -5,7 +5,6 @@ import {
   ClipboardTextIcon,
   WalletIcon,
   SignOutIcon,
-  GearIcon,
 } from "@phosphor-icons/react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { useContext } from "react";
@@ -32,7 +31,7 @@ import { getRefreshToken, clearAuthToken } from "@/utils/auth/session";
 const clientSidebarItems = [
   { to: "/client/dashboard", label: "Home", icon: HouseIcon },
   { to: "/client/history", label: "History", icon: BriefcaseIcon },
-  { to: "/client/settings", label: "Settings", icon: GearIcon },
+
 ];
 
 const proSidebarItems = [

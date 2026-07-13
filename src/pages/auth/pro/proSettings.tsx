@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Gear,
   Moon,
@@ -42,40 +42,119 @@ import {
   MapPinIcon,
   PhoneIcon,
 } from "lucide-react";
+import { AuthContext } from "@/context/authContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { authService } from "@/services/authService";
+import { proService, type ProProfile } from "@/services/proService";
+import { userService } from "@/services/userService";
+import { catalogService } from "@/services/catalogService";
 
 const ProSettings = () => {
-  const categories = [
-    "Canalização",
-    "Eletricidade",
-    "Pintura",
-    "Carpintaria",
-    "Refrigeração",
-    "Construção",
-  ];
-  const [selectedCats, setSelectedCats] = useState<string[]>([
-    "Canalização",
-    "Eletricidade",
-  ]);
+  const { user, logout } = useContext(AuthContext)!;
+  const navigate = useNavigate();
 
-  const toggleCat = (c: string) =>
-    setSelectedCats((s) =>
-      s.includes(c) ? s.filter((x) => x !== c) : [...s, c],
-    );
+  const [profile, setProfile] = useState<ProProfile | null>(null);
+  const [allCategories, setAllCategories] = useState<{ name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [name, setName] = useState(user?.name ?? "");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [bio, setBio] = useState("");
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [proRes, catRes] = await Promise.all([
+          proService.getProfile(),
+          catalogService.list(),
+        ]);
+        if (proRes.data.success) {
+          const p = proRes.data.data;
+          setProfile(p);
+          setBio(p.bio ?? "");
+        }
+        const catData = catRes as any;
+        if (catData?.data?.success && Array.isArray(catData.data.data)) {
+          const cats = catData.data.data as any[];
+          const names = cats.flatMap((c: any) => {
+            if (c.services && Array.isArray(c.services)) return [];
+            return [{ name: c.name }];
+          });
+          if (names.length > 0) setAllCategories(names);
+          else setAllCategories(cats.flatMap((c: any) => (c.services ?? []).map((s: any) => ({ name: s.name ?? s.title }))));
+        }
+      } catch { /* ignore */ }
+      setLoading(false);
+    })();
+  }, []);
+
+  const initials = profile?.user?.initials ?? user?.initials ?? "?";
+  const proName = profile?.user?.name ?? user?.name ?? "Profissional";
+  const proEmail = profile?.user?.email ?? user?.email ?? "";
+  const proPhone = profile?.user?.phone ?? user?.phone ?? "";
+  const proCategory = profile?.skills?.[0]?.name ?? "Profissional";
+  const selectedCats = profile?.skills?.map((s) => s.name) ?? [];
+
+  const toggleCat = (c: string) => {
+    if (!profile) return;
+    const names = selectedCats.includes(c)
+      ? selectedCats.filter((x) => x !== c)
+      : [...selectedCats, c];
+    setProfile({ ...profile, skills: names.map((n) => ({ id: n, name: n })) });
+  };
+
+  const saveProfile = async () => {
+    try {
+      await Promise.all([
+        userService.updateProfile({ name, phone }),
+        proService.updateProfile({ bio } as any),
+      ]);
+      toast.success("Perfil actualizado!");
+    } catch {
+      toast.error("Erro ao guardar perfil.");
+    }
+  };
+
+  const saveServices = async () => {
+    try {
+      await proService.updateProfile({ skills: selectedCats } as any);
+      toast.success("Serviços actualizados!");
+    } catch {
+      toast.error("Erro ao guardar serviços.");
+    }
+  };
+
+  const changePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      toast.error("Preencha ambos os campos.");
+      return;
+    }
+    try {
+      await authService.changePassword({ currentPassword, newPassword });
+      toast.success("Palavra-passe alterada!");
+      setCurrentPassword("");
+      setNewPassword("");
+    } catch {
+      toast.error("Erro ao alterar palavra-passe.");
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  if (loading) return <div className="p-8 text-sm text-muted-foreground">A carregar...</div>;
 
   return (
     <section className="w-full grid grid-cols-10 gap-10 px-10 pb-20">
       <main className="col-span-10 lg:col-span-7 flex flex-col gap-5">
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="services"
-          className="gap-2.5"
-        >
-          {/* 1. PERFIL E DADOS PESSOAIS */}
-          <AccordionItem
-            value="profile"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+        <Accordion type="single" collapsible defaultValue="services" className="gap-2.5">
+          <AccordionItem value="profile" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
               <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                 <UserIcon weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -88,7 +167,7 @@ const ProSettings = () => {
             <AccordionContent className="border-t border-primary/15 flex flex-col justify-center p-5 space-y-5">
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-xl font-extrabold text-primary-foreground">
-                  EF
+                  {initials}
                 </div>
                 <Button type="button" variant="outline" size="sm" className="rounded-xl">
                   Alterar foto
@@ -97,37 +176,28 @@ const ProSettings = () => {
               <div className="grid sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <Label>Nome completo</Label>
-                  <Input defaultValue="Enzo Fernandez" className="rounded-xl" />
+                  <Input value={name} onChange={(e) => setName(e.target.value)} className="rounded-xl" />
                 </div>
                 <div className="space-y-2">
                   <Label>Telefone</Label>
-                  <Input defaultValue="+244 923 456 789" className="rounded-xl" />
+                  <Input value={phone} onChange={(e) => setPhone(e.target.value)} className="rounded-xl" />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Email</Label>
-                  <Input type="email" defaultValue="celso@nema.app" className="rounded-xl" />
+                  <Input type="email" value={proEmail} disabled className="rounded-xl" />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Biografia</Label>
-                  <Textarea
-                    rows={4}
-                    className="rounded-xl"
-                    placeholder="Conte um pouco sobre a sua experiência..."
-                    defaultValue="Canalizador com 8 anos de experiência in Luanda."
-                  />
+                  <Textarea rows={4} className="rounded-xl" placeholder="Conte um pouco sobre a sua experiência..." value={bio} onChange={(e) => setBio(e.target.value)} />
                 </div>
               </div>
               <div className="flex justify-end pt-2">
-                <Button className="rounded-xl">Guardar alterações</Button>
+                <Button className="rounded-xl" onClick={saveProfile}>Guardar alterações</Button>
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          {/* 2. DOCUMENTAÇÃO */}
-          <AccordionItem
-            value="documentation"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+          <AccordionItem value="documentation" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
                 <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                   <FileTextIcon weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -167,11 +237,7 @@ const ProSettings = () => {
             </AccordionContent>
           </AccordionItem>
 
-          {/* 3. SERVIÇOS (ARRANJADO: Apenas Categorias e Tempo) */}
-          <AccordionItem
-            value="services"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+          <AccordionItem value="services" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
                 <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                   <WrenchIcon weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -182,51 +248,36 @@ const ProSettings = () => {
                 </div>
             </AccordionTrigger>
             <AccordionContent className="border-t border-primary/15 flex flex-col justify-center p-5 space-y-4">
-              
               <div className="p-4 rounded-xl border border-slate-200 bg-white">
                 <p className="font-semibold text-sm mb-3 text-[#091B3D]">Categorias de atuação</p>
                 <div className="flex flex-wrap gap-2">
-                  {categories.map((c) => {
-                    const active = selectedCats.includes(c);
-                    return (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => toggleCat(c)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${active ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-slate-200 hover:border-primary/40"}`}
-                      >
-                        {c}
-                      </button>
-                    );
-                  })}
+                  {allCategories.length === 0
+                    ? selectedCats.map((c) => {
+                        const active = selectedCats.includes(c);
+                        return (
+                          <button key={c} type="button" onClick={() => toggleCat(c)} className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${active ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-slate-200 hover:border-primary/40"}`}>
+                            {c}
+                          </button>
+                        );
+                      })
+                    : allCategories.map((c) => {
+                        const active = selectedCats.includes(c.name);
+                        return (
+                          <button key={c.name} type="button" onClick={() => toggleCat(c.name)} className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${active ? "bg-primary text-primary-foreground border-primary" : "bg-white text-foreground border-slate-200 hover:border-primary/40"}`}>
+                            {c.name}
+                          </button>
+                        );
+                      })
+                  }
                 </div>
               </div>
-
-              <div className="p-4 rounded-xl border border-slate-200 bg-white">
-                <p className="font-semibold text-sm mb-3 text-[#091B3D]">Horário de disponibilidade</p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs">Início</Label>
-                    <Input type="time" defaultValue="08:00" className="rounded-xl" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Fim</Label>
-                    <Input type="time" defaultValue="18:00" className="rounded-xl" />
-                  </div>
-                </div>
-              </div>
-
               <div className="flex justify-end pt-2">
-                <Button className="rounded-xl">Guardar alterações</Button>
+                <Button className="rounded-xl" onClick={saveServices}>Guardar alterações</Button>
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          {/* 4. SISTEMA */}
-          <AccordionItem
-            value="system"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+          <AccordionItem value="system" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
                 <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                   <Gear weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -267,27 +318,23 @@ const ProSettings = () => {
               </div>
               <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-3">
                 <p className="font-semibold text-sm text-[#091B3D]">Gestão de conta</p>
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" size="sm" className="rounded-xl">
-                    Alterar password
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-destructive border-destructive/40 hover:bg-destructive/5 rounded-xl"
-                  >
-                    Eliminar conta
-                  </Button>
+                <div className="flex flex-col gap-3">
+                  <Input type="password" placeholder="Palavra-passe actual" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="rounded-xl" />
+                  <Input type="password" placeholder="Nova palavra-passe" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="rounded-xl" />
+                  <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm" className="rounded-xl" onClick={changePassword}>
+                      Alterar password
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-destructive border-destructive/40 hover:bg-destructive/5 rounded-xl">
+                      Eliminar conta
+                    </Button>
+                  </div>
                 </div>
               </div>
             </AccordionContent>
           </AccordionItem>
 
-          {/* 5. NOTIFICAÇÕES */}
-          <AccordionItem
-            value="notifications"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+          <AccordionItem value="notifications" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
                 <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                   <Bell weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -304,10 +351,7 @@ const ProSettings = () => {
                 { t: "Avisos do sistema", d: "Atualizações e manutenções", on: true },
                 { t: "Promoções Biscatech", d: "Campanhas e novidades", on: false },
               ].map((n) => (
-                <div
-                  key={n.t}
-                  className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white"
-                >
+                <div key={n.t} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white">
                   <div>
                     <p className="font-semibold text-sm text-[#091B3D]">{n.t}</p>
                     <p className="text-xs text-muted-foreground">{n.d}</p>
@@ -318,11 +362,7 @@ const ProSettings = () => {
             </AccordionContent>
           </AccordionItem>
 
-          {/* 6. AJUDA E SUPORTE */}
-          <AccordionItem
-            value="help"
-            className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow"
-          >
+          <AccordionItem value="help" className="bg-card border border-primary/20 shadow-sm shadow-primary/20 rounded-xl overflow-hidden data-[state=open]:shadow-md transition-shadow">
             <AccordionTrigger className="bg-card flex items-center gap-2.5 p-5 hover:no-underline">
                 <div className="bg-primary-gradient rounded-full flex items-center justify-center hover:bg-primary/15 transition-colors w-12 aspect-square">
                   <QuestionIcon weight="fill" className="text-primary-foreground h-5 w-5" />
@@ -340,11 +380,7 @@ const ProSettings = () => {
                   { i: WhatsappLogoIcon, t: "WhatsApp", d: "+244 923 000 000" },
                   { i: FileTextIcon, t: "Termos Legais", d: "Política e termos de uso" },
                 ].map((l) => (
-                  <a
-                    key={l.t}
-                    href="#"
-                    className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-primary/40 hover:bg-primary/5 transition-colors"
-                  >
+                  <a key={l.t} href="#" className="flex items-center gap-3 p-4 rounded-xl border border-slate-200 bg-white hover:border-primary/40 hover:bg-primary/5 transition-colors">
                     <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
                       <l.i weight="duotone" className="h-5 w-5" />
                     </div>
@@ -360,35 +396,31 @@ const ProSettings = () => {
         </Accordion>
 
         <div className="pt-2">
-          <Button
-            variant="outline"
-            className="text-destructive border-destructive/40 hover:bg-destructive/5 rounded-xl gap-2"
-          >
+          <Button variant="outline" className="text-destructive border-destructive/40 hover:bg-destructive/5 rounded-xl gap-2" onClick={handleLogout}>
             <SignOutIcon size={18} weight="bold" /> Terminar Sessão
           </Button>
         </div>
       </main>
 
-      {/* COLUNA LATERAL */}
       <aside className="col-span-10 lg:col-span-3 flex flex-col gap-5">
         <Card className="relative overflow-hidden rounded-2xl bg-primary-gradient shadow-sm text-primary-foreground p-6 text-center border-none">
           <CardContent className="relative p-0">
             <div className="mx-auto w-20 aspect-square rounded-full bg-white/20 backdrop-blur border-2 border-white/30 flex items-center justify-center text-3xl font-extrabold">
-              <span className="text-xl">EF</span>
+              <span className="text-xl">{initials}</span>
             </div>
-            <h2 className="mt-4 text-base font-extrabold">Enzo Fernandez</h2>
-            <p className="text-sm opacity-90">Canalizador</p>
-            <span className="inline-flex items-center gap-1 mt-3 text-xs font-bold bg-white/20 px-3 py-1 rounded-full">
-              <PipeWrenchIcon size={14} weight="fill" /> Verificado
-            </span>
+            <h2 className="mt-4 text-base font-extrabold">{proName}</h2>
+            <p className="text-sm opacity-90">{proCategory}</p>
+            {profile?.verified && (
+              <span className="inline-flex items-center gap-1 mt-3 text-xs font-bold bg-white/20 px-3 py-1 rounded-full">
+                <PipeWrenchIcon size={14} weight="fill" /> Verificado
+              </span>
+            )}
           </CardContent>
         </Card>
 
         <Card className="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 *:p-0">
           <CardHeader>
-            <CardTitle>
-              Dados de Contacto
-            </CardTitle>  
+            <CardTitle>Dados de Contacto</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3 text-sm">
@@ -396,23 +428,25 @@ const ProSettings = () => {
                 <EnvelopeIcon size={18} className="text-primary mt-0.5" />
                 <div className="min-w-0">
                   <p className="text-[11px] uppercase font-bold text-muted-foreground">Email</p>
-                  <p className="font-semibold truncate text-[#091B3D]">celso@nema.app</p>
+                  <p className="font-semibold truncate text-[#091B3D]">{proEmail}</p>
                 </div>
               </li>
               <li className="flex items-start gap-3">
                 <PhoneIcon size={18} className="text-primary mt-0.5" />
                 <div>
                   <p className="text-[11px] uppercase font-bold text-muted-foreground">Telefone</p>
-                  <p className="font-semibold text-[#091B3D]">+244 923 456 789</p>
+                  <p className="font-semibold text-[#091B3D]">{proPhone}</p>
                 </div>
               </li>
-              <li className="flex items-start gap-3">
-                <MapPinIcon size={18} className="text-primary mt-0.5" />
-                <div>
-                  <p className="text-[11px] uppercase font-bold text-muted-foreground">Endereço</p>
-                  <p className="font-semibold text-[#091B3D]">Talatona, Luanda</p>
-                </div>
-              </li>
+              {profile?.zones?.[0] && (
+                <li className="flex items-start gap-3">
+                  <MapPinIcon size={18} className="text-primary mt-0.5" />
+                  <div>
+                    <p className="text-[11px] uppercase font-bold text-muted-foreground">Endereço</p>
+                    <p className="font-semibold text-[#091B3D]">{profile.zones.map((z) => z.zone).join(", ")}</p>
+                  </div>
+                </li>
+              )}
             </ul>
           </CardContent>
         </Card>

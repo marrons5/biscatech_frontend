@@ -44,7 +44,7 @@ export function AppHeader() {
     switch (location.pathname) {
       case "/client/dashboard": return { title: "Dashboard", description: "What's up?" };
       case "/client/history": return { title: "History", description: "Your past requests" };
-      case "/client/settings": return { title: "Settings", description: "Manage your account" };
+
       case "/client/request/create": return { title: "New Request", description: "Describe your problem" };
       case "/pro/dashboard": return { title: "Dashboard", description: "Available requests" };
       case "/pro/history": return { title: "History", description: "Your completed services" };
@@ -179,7 +179,7 @@ export function AppHeader() {
 
                 <div className="flex flex-col py-2">
                   <Link
-                    to={`/${user?.role === "provider" ? "pro" : "client"}/settings`}
+                    to={`/${user?.role === "provider" ? "pro/settings" : "client/profile"}`}
                   >
                     <DrawerClose className="text-sm font-medium flex items-center gap-4 py-4 px-6 hover:bg-muted transition-colors text-foreground w-full">
                       <UserGearIcon className="size-5 text-muted-foreground" weight="regular" />

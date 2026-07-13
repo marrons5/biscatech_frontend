@@ -1,163 +1,76 @@
-import { Star, ThumbsUp } from "lucide-react";
-import { PageHeader } from "@/components/custom/pageHeader";
-import { cn } from "@/lib/utils";
+import { PageHeader, Card } from "@/components/custom/primitives";
+import { Star } from "lucide-react";
+import { useEffect, useState } from "react";
+import { reviewService, type Review } from "@/services/reviewService";
 
-interface Review {
-  id: string;
-  pro: string;
-  service: string;
-  initials: string;
-  rating: number;
-  date: string;
-  comment: string;
-  helpful?: number;
+function Stars({ n }: { n: number }) {
+  return (
+    <div className="flex gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star key={i} className={`h-4 w-4 ${i < n ? "fill-primary text-primary" : "text-muted"}`} />
+      ))}
+    </div>
+  );
 }
 
-const myReviews: Review[] = [
-  {
-    id: "1",
-    pro: "João Mateus",
-    service: "Canalizador",
-    initials: "JM",
-    rating: 5,
-    date: "12 Abr 2026",
-    comment:
-      "Excelente trabalho! Chegou a horas, resolveu o problema rapidamente e deixou tudo limpo. Recomendo.",
-    helpful: 8,
-  },
-  {
-    id: "2",
-    pro: "Pedro Cunha",
-    service: "Eletricista",
-    initials: "PC",
-    rating: 4,
-    date: "5 Abr 2026",
-    comment:
-      "Bom serviço, profissional e atencioso. Demorou um pouco mais do que o previsto.",
-    helpful: 3,
-  },
-  {
-    id: "3",
-    pro: "Aline Costa",
-    service: "Eletricista",
-    initials: "AC",
-    rating: 5,
-    date: "28 Mar 2026",
-    comment:
-      "Super profissional, explicou tudo o que estava a fazer. Voltarei a chamar com certeza!",
-    helpful: 12,
-  },
-];
-
-const distribution = [
-  { stars: 5, pct: 78 },
-  { stars: 4, pct: 16 },
-  { stars: 3, pct: 4 },
-  { stars: 2, pct: 1 },
-  { stars: 1, pct: 1 },
-];
-
-const Stars = ({ value, size = 14 }: { value: number; size?: number }) => (
-  <div className="inline-flex items-center gap-0.5">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <Star
-        key={i}
-        style={{ width: size, height: size }}
-        className={cn(
-          i <= value ? "fill-warning text-warning" : "text-muted-foreground/30",
-        )}
-      />
-    ))}
-  </div>
-);
-
 const Avaliacoes = () => {
-  const total = myReviews.length;
-  const avg = (myReviews.reduce((a, r) => a + r.rating, 0) / total).toFixed(1);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await reviewService.list();
+        if (res.data.success) setReviews(res.data.data);
+      } catch { /* ignore */ }
+      setLoading(false);
+    })();
+  }, []);
+
+  const avg = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : 0;
 
   return (
-    <div className="min-h-screen bg-background pb-12">
-      <main className="container max-w-6xl px-4 lg:px-8 pt-6 lg:pt-10">
-        <PageHeader
-          title="Avaliações"
-          subtitle="O que dizem sobre os teus serviços"
-        />
+    <>
+      <PageHeader title="Avaliações" subtitle="Avaliações que deste aos profissionais." />
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <p className="text-sm text-muted-foreground">Média dada</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="text-4xl font-semibold text-ink">{avg.toFixed(1)}</p>
+            <Stars n={Math.round(avg)} />
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">{reviews.length} avaliações</p>
+        </Card>
+        <Card>
+          <p className="text-sm text-muted-foreground">Pendentes</p>
+          <p className="mt-2 text-4xl font-semibold text-ink">{reviews.length > 0 ? "—" : "0"}</p>
+          <p className="mt-1 text-xs text-muted-foreground">Serviços por avaliar</p>
+        </Card>
+      </div>
 
-        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-          <section className="lg:col-span-2">
-            <h2 className="text-sm font-bold mb-4 text-muted-foreground uppercase tracking-wider">
-              Recentes
-            </h2>
-            <div className="space-y-3">
-              {myReviews.map((r) => (
-                <article
-                  key={r.id}
-                  className="rounded-3xl bg-card border border-border/60 shadow-card p-5">
-                  <div className="flex items-start gap-3">
-                    <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-primary-foreground font-bold text-sm shrink-0">
-                      {r.initials}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="font-bold truncate">{r.pro}</p>
-                          <p className="text-[11px] text-muted-foreground">
-                            {r.service} • {r.date}
-                          </p>
-                        </div>
-                        <Stars value={r.rating} />
-                      </div>
-                      <p className="text-sm text-foreground/85 mt-2 leading-relaxed">
-                        {r.comment}
-                      </p>
-                      {r.helpful !== undefined && (
-                        <button className="inline-flex items-center gap-1.5 mt-3 text-[11px] font-semibold text-muted-foreground hover:text-primary transition-colors">
-                          <ThumbsUp className="h-3 w-3" /> Útil ({r.helpful})
-                        </button>
-                      )}
-                    </div>
+      {loading ? (
+        <p className="mt-8 text-sm text-muted-foreground">A carregar...</p>
+      ) : (
+        <div className="mt-8 space-y-3">
+          {reviews.map((r) => (
+            <Card key={r.id}>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary">?</div>
+                  <div>
+                    <p className="font-medium text-ink">Avaliação</p>
+                    <p className="text-xs text-muted-foreground">{new Date(r.date).toLocaleDateString("pt-AO")}</p>
                   </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <aside className="space-y-6">
-            <section className="relative overflow-hidden rounded-3xl bg-primary-gradient p-6 shadow-glow text-primary-foreground">
-              <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-white/15 blur-2xl" />
-              <div className="relative">
-                <p className="text-6xl font-extrabold leading-none">{avg}</p>
-                <Stars value={Math.round(parseFloat(avg))} size={18} />
-                <p className="text-xs text-primary-foreground/85 mt-1">
-                  {total} avaliações
-                </p>
-
-                <div className="mt-5 space-y-1.5">
-                  {distribution.map((d) => (
-                    <div
-                      key={d.stars}
-                      className="flex items-center gap-2 text-[11px]">
-                      <span className="w-3 font-bold">{d.stars}</span>
-                      <Star className="h-3 w-3 fill-current" />
-                      <div className="flex-1 h-1.5 rounded-full bg-white/25 overflow-hidden">
-                        <div
-                          className="h-full bg-white rounded-full"
-                          style={{ width: `${d.pct}%` }}
-                        />
-                      </div>
-                      <span className="w-7 text-right text-primary-foreground/80">
-                        {d.pct}%
-                      </span>
-                    </div>
-                  ))}
                 </div>
+                <Stars n={r.rating} />
               </div>
-            </section>
-          </aside>
+              {r.comment && <p className="mt-4 text-sm text-ink">"{r.comment}"</p>}
+            </Card>
+          ))}
         </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 };
 
-export  {Avaliacoes};
+export { Avaliacoes };

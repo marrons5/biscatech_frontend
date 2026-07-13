@@ -1,172 +1,119 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  MagnifyingGlassIcon,
-  // WrenchIcon,
-  LightningIcon,
-  DropIcon,
-  PaintRollerIcon,
-  HammerIcon,
-  FanIcon,
-  ShieldCheckIcon,
-  InfoIcon,
-  // ArrowRight,
-  BroomIcon
-} from "@phosphor-icons/react";
-import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import { PageHeader, StatCard, Card, Badge } from "@/components/custom/primitives";
+import { ClipboardList, Clock, Star, TrendingUp, PlusCircle, ArrowRight, Wrench, Zap, Sparkles, Calendar } from "lucide-react";
+import { AuthContext } from "@/context/authContext";
+import { useContext, useEffect, useState } from "react";
+import { serviceRequestService, type IServiceRequest } from "@/services/serviceRequestService";
 
-const services = [
-  { label: "Desentupir lavatório ou canos", icon: DropIcon, category: "reparos", price: "A partir de 5.000 Kz" },
-  { label: "Reparar curto-circuito", icon: LightningIcon, category: "emergencia", price: "Urgente" },
-  { label: "Instalar Ar Condicionado", icon: FanIcon, category: "instalacoes", price: "A partir de 15.000 Kz" },
-  { label: "Pintura de paredes (Interior)", icon: PaintRollerIcon, category: "reparos", price: "Sob consulta" },
-  { label: "Montagem de móveis", icon: HammerIcon, category: "instalacoes", price: "A partir de 8.000 Kz" },
-  { label: "Fuga de água urgente", icon: DropIcon, category: "emergencia", price: "Urgente" },
-  { label: "Limpeza de fossa séptica", icon: BroomIcon, category: "manutencao", price: "A partir de 25.000 Kz" },
-  { label: "Manutenção preventiva AC", icon: FanIcon, category: "manutencao", price: "A partir de 10.000 Kz" },
-];
+const iconMap: Record<string, typeof Wrench> = { Canalizador: Wrench, Eletricista: Zap, Limpeza: Sparkles };
 
-const tabs = [
-  { id: "todos", label: "Todos" },
-  { id: "reparos", label: "Reparos" },
-  { id: "instalacoes", label: "Instalações" },
-  { id: "manutencao", label: "Manutenção" },
-  { id: "emergencia", label: "Emergência" },
-];
+const ClientHome = () => {
+  const { user } = useContext(AuthContext)!;
+  const [requests, setRequests] = useState<IServiceRequest[]>([]);
+  const [stats, setStats] = useState({ active: 0, completed: 0, total: 0 });
+  const [loading, setLoading] = useState(true);
 
-// O Neumorfismo exige tons suaves. A cor identifica a categoria nos ícones.
-const getCategoryColor = (category: string) => {
-  switch (category) {
-    case "reparos": return "text-primary";
-    case "instalacoes": return "text-success";
-    case "manutencao": return "text-warning";
-    case "emergencia": return "text-destructive";
-    default: return "text-foreground";
-  }
-};
-
-function ClientHome() {
-  const navigate = useNavigate();
-  const [tab, setTab] = useState("todos");
-  
-  const filtered = tab === "todos" ? services : services.filter((s) => s.category === tab);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await serviceRequestService.list();
+        if (res.data.success) {
+          const all = res.data.data;
+          setRequests(all.slice(0, 3));
+          setStats({
+            active: all.filter((r) => ["pending", "accepted", "in_progress"].includes(r.status)).length,
+            completed: all.filter((r) => r.status === "completed").length,
+            total: all.length,
+          });
+        }
+      } catch { /* ignore */ }
+      setLoading(false);
+    })();
+  }, []);
 
   return (
-    <main className="w-full grid grid-cols-1 lg:grid-cols-10 gap-10 px-4 lg:px-10 py-8 bg-background min-h-svh">
-      
-      <section className="col-span-1 lg:col-span-7 space-y-10">
-        
-        {/* CABEÇALHO E PESQUISA NEUMÓRFICA */}
-        <div className="bg-primary-gradient flex flex-col items-center justify-center p-8 rounded-[2rem] neu-flat animate-in fade-in zoom-in-95 duration-700">
-          <h2 className="text-primary-foreground text-3xl lg:text-4xl font-extrabold text-foreground text-center">
-            Que serviço precisas hoje?
-          </h2>
-          <p className="text-primary-foreground text-sm mt-3 font-medium text-center">
-            Profissionais verificados a poucos minutos de ti.
-          </p>
-          
-          {/* Input com estado 'Pressed' (sombra interior) para sensação tátil */}
-          <div className="mt-8 w-full max-w-2xl relative group flex items-center neu-pressed rounded-2xl p-2">
-            <MagnifyingGlassIcon className="absolute left-6 h-6 w-6 text-neutral" />
-            <input
-              type="text"
-              placeholder="Procurar desentupimento, montagem, limpeza…"
-              onFocus={() => navigate("/client/request/create")}
-              className="w-full h-12 pl-14 pr-4 bg-transparent border-none outline-none text-foreground font-medium placeholder:text-neutral/70"
-            />
-          </div>
-        </div>
+    <>
+      <PageHeader
+        title={`Olá, ${user?.name?.split(" ")[0] ?? "utilizador"} 👋`}
+        subtitle="Aqui está o resumo dos teus serviços."
+        action={
+          <Link to="/client/request/create" className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow-sm shadow-primary/20 transition hover:-translate-y-0.5 hover:shadow-lg">
+            <PlusCircle className="h-4 w-4" /> Novo pedido
+          </Link>
+        }
+      />
 
-        {/* TABS NEUMÓRFICAS */}
-        <div className="flex flex-wrap gap-4 justify-center py-2">
-          {tabs.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              // Tab ativa afunda (neu-pressed), Tab inativa sobressai (neu-flat)
-              className={cn(
-                " rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 outline-none",
-                tab === t.id 
-                  ? "neu-pressed text-primary" 
-                  : "neu-flat text-muted-foreground hover:text-foreground"
-              )}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard icon={ClipboardList} label="Pedidos activos" value={String(stats.active)} change="Em curso" />
+        <StatCard icon={TrendingUp} label="Total concluídos" value={String(stats.completed)} change={stats.total > 0 ? `${stats.total} total` : undefined} />
+        <StatCard icon={Star} label="Avaliação" value={stats.total > 0 ? "4,9" : "—"} tone="warning" />
+        <StatCard icon={Clock} label="Tempo médio resposta" value="—" />
+      </div>
 
-        {/* GRELHA DE SERVIÇOS (CARDS) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8 pt-4">
-          {filtered.map((s, index) => {
-            const iconColor = getCategoryColor(s.category);
-
-            return (
-              <button
-                key={s.label}
-                onClick={() => navigate("/client/request/create", { state: { service: s.label } })}
-                // Os botões afundam fisicamente (active:neu-pressed) ao serem clicados
-                className="group flex flex-col items-center justify-center gap-4 p-8 rounded-[2rem] neu-flat active:neu-pressed transition-all duration-300 text-center animate-in fade-in slide-in-from-bottom-4"
-                style={{ animationDelay: `${index * 50}ms`, animationFillMode: "both" }}
-              >
-                {/* Ícone com sombra interna para contraste tátil */}
-                <div className={cn("h-16 w-16 rounded-full flex items-center justify-center neu-pressed transition-colors duration-300", iconColor)}>
-                  <s.icon weight="duotone" className="h-8 w-8" />
-                </div>
-                
-                <div className="mt-2">
-                  <p className="font-extrabold text-foreground text-lg leading-tight group-hover:text-primary transition-colors">
-                    {s.label}
-                  </p>
-                  <p className="text-sm font-semibold text-muted-foreground mt-2">
-                    {s.price}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* BARRA LATERAL (WIDGETS NEUMÓRFICOS) */}
-      <aside className="col-span-1 lg:col-span-3 space-y-8">
-        <div className="rounded-[2rem] neu-flat p-8 flex flex-col items-center text-center">
-          <div className="h-16 w-16 rounded-full neu-pressed text-success flex items-center justify-center mb-6">
-            <ShieldCheckIcon weight="duotone" className="h-8 w-8" />
-          </div>
-          <h3 className="font-extrabold text-foreground text-xl">Segurança</h3>
-          <p className="text-sm text-muted-foreground mt-3 font-medium">
-            Confirme a identidade do profissional. Todos os Pros possuem o BI verificado pela nossa equipa.
-          </p>
-        </div>
-
-        <div className="rounded-[2rem] neu-flat p-8">
-          <div className="flex flex-col items-center text-center mb-6">
-            <div className="h-16 w-16 rounded-full neu-pressed text-primary flex items-center justify-center mb-4">
-              <InfoIcon weight="duotone" className="h-8 w-8" />
+      <div className="mt-8 grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <Card>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-ink">Pedidos recentes</h2>
+              <Link to="/client/history" className="text-sm font-medium text-primary hover:underline">Ver todos</Link>
             </div>
-            <h3 className="font-extrabold text-foreground text-xl">Como funciona</h3>
-          </div>
-          
-          <ol className="text-sm text-muted-foreground mt-4 space-y-4 font-medium">
-            <li className="flex items-center gap-4">
-              <span className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full neu-pressed text-primary font-bold">1</span>
-              Escolhe o serviço
-            </li>
-            <li className="flex items-center gap-4">
-              <span className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full neu-pressed text-primary font-bold">2</span>
-              Descreve e agenda
-            </li>
-            <li className="flex items-center gap-4">
-              <span className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full neu-pressed text-primary font-bold">3</span>
-              Recebe o Pro
-            </li>
-          </ol>
+            {loading ? (
+              <p className="text-sm text-muted-foreground">A carregar...</p>
+            ) : requests.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Nenhum pedido ainda. <Link to="/client/request/create" className="text-primary">Criar primeiro pedido</Link></p>
+            ) : (
+              <div className="space-y-3">
+                {requests.map((r) => {
+                  const Icon = iconMap[r.title] ?? Wrench;
+                  const s = r.status;
+                  const tone = s === "in_progress" || s === "accepted" ? "primary" : s === "completed" ? "success" : s === "cancelled" || s === "expired" ? "danger" : "warning" as const;
+                  const label = s === "pending" ? "Pendente" : s === "accepted" ? "Aceite" : s === "in_progress" ? "Em andamento" : s === "completed" ? "Concluído" : s === "cancelled" ? "Cancelado" : s;
+                  return (
+                    <div key={r.id} className="flex items-center gap-4 rounded-xl border border-border p-4 transition hover:border-primary/40">
+                      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft text-primary"><Icon className="h-5 w-5" /></span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-ink">{r.title}</p>
+                        <p className="text-xs text-muted-foreground">{r.location} · {new Date(r.date).toLocaleDateString("pt-AO")}</p>
+                      </div>
+                      <Badge tone={tone}>{label}</Badge>
+                      <Link to={`/client/request/${r.id}`} className="rounded-lg p-2 text-muted-foreground hover:bg-muted"><ArrowRight className="h-4 w-4" /></Link>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </Card>
         </div>
-      </aside>
 
-    </main>
+        <div className="space-y-6">
+          <Card>
+            <h2 className="mb-4 text-lg font-semibold text-ink">Acções rápidas</h2>
+            <div className="space-y-2">
+              {[
+                { label: "Canalizador urgente", icon: Wrench },
+                { label: "Eletricista", icon: Zap },
+                { label: "Limpeza semanal", icon: Sparkles },
+              ].map((a) => (
+                <Link key={a.label} to="/client/request/create" className="flex w-full items-center gap-3 rounded-xl border border-border p-3 text-sm transition hover:border-primary hover:bg-primary-soft">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-soft text-primary"><a.icon className="h-4 w-4" /></span>
+                  <span className="flex-1 text-left font-medium text-ink">{a.label}</span>
+                  <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              ))}
+            </div>
+          </Card>
+
+          <Card>
+            <div className="mb-4 flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold text-ink">Notificações</h2>
+            </div>
+            <p className="text-sm text-muted-foreground">As tuas notificações aparecerão aqui.</p>
+          </Card>
+        </div>
+      </div>
+    </>
   );
-}
+};
 
 export { ClientHome };

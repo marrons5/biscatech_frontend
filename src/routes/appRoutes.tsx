@@ -1,8 +1,8 @@
 import React from 'react'
-import { BrowserRouter, Routes } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthRoutes } from './authRoutes';
-// import { PublicRoutes } from './publicRoutes';
 import { PublicRoutes } from './publicRoutes';
+import { NotFound } from "@/pages/errors";
 
 function AppRoutes() {
   return (
@@ -11,6 +11,7 @@ function AppRoutes() {
         <Routes>
           {PublicRoutes()}
           {AuthRoutes()}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </React.Fragment>

@@ -1,117 +1,65 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRightIcon } from "@phosphor-icons/react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components";
-import { Controller, useForm } from "react-hook-form";
+import { AuthShell, PrimaryButton } from "@/components/custom/authShell";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { authService } from "@/services/authService";
 import { setPendingEmail } from "@/utils/auth/session";
 import { toast } from "sonner";
 
-import background from "@/assets/images/auth_background_left.png";
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email format."),
+const forgotSchema = z.object({
+  email: z.string().email("Insere um e-mail válido"),
 });
-
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
+type ForgotForm = z.infer<typeof forgotSchema>;
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const form = useForm<ForgotPasswordForm>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: {
-      email: ""
-    }
+  const form = useForm<ForgotForm>({
+    resolver: zodResolver(forgotSchema),
   });
 
-  async function submit({ email }: ForgotPasswordForm) {
+  async function submit({ email }: ForgotForm) {
     setLoading(true);
     try {
       const response = await authService.forgotPassword({ email });
-
       if (!response.data.success) {
-        throw new Error((response.data as any).error ?? "Request failed");
+        throw new Error((response.data as any).error ?? "Falha ao recuperar");
       }
-
       setPendingEmail(email);
-      toast.success("If the email exists, you will receive a recovery code.", {
-        className: "bg-green-500 text-white font-semibold",
-      });
-      navigate("/auth/verify");
+      toast.success("Se o email existir, receberás um código de recuperação.");
+      navigate("/verify?mode=reset");
     } catch (error) {
-      toast.error("Something went wrong. Try again.", {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-      console.error("forgot-password error:", error);
+      toast.error("Algo correu mal. Tenta novamente.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div
-      className="bg-primary/65 bg-cover bg-no-repeat h-svh w-full flex items-center justify-end py-5 md:px-4 px-2"
-      style={{ backgroundImage: `url(${background})`, backgroundBlendMode: "color-burn" }}
+    <AuthShell
+      title="Recuperar acesso"
+      subtitle="Enviamos-te um link para redefinires a palavra-passe."
+      footer={<Link to="/auth/login" className="text-muted-foreground hover:text-ink">← Voltar ao início de sessão</Link>}
     >
-      <div className="bg-card border border-border/30 shadow-2xl rounded-3xl p-8 lg:p-10 md:w-2/6 w-full animate-in fade-in zoom-in-95 duration-500">
-
-        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
-          Recover password
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2 mb-6">
-          Enter your email to receive recovery instructions.
-        </p>
-
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
-          <FieldGroup className="space-y-1.5">
-            <Controller
-              name="email"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="email-forgot" className="text-foreground font-semibold">
-                    E-mail
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="email-forgot"
-                    type="email"
-                    placeholder="exemplo@gmail.com"
-                    className="h-12 rounded-xl border-border focus:border-primary focus:ring-ring/20 transition-all duration-200 bg-background"
-                  />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </FieldGroup>
-
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full text-primary-foreground bg-primary hover:bg-primary/90 rounded-2xl h-14 text-lg font-bold shadow-md cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 active:scale-[0.98] mt-2 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <span className="animate-pulse">Sending…</span>
-            ) : (
-              <>Send email <ArrowRightIcon size={18} weight="bold" /></>
-            )}
-          </Button>
-        </form>
-
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          Remembered your password?{" "}
-          <Link to="/auth/login" className="font-bold text-primary hover:underline transition-all">
-            Back to Login
-          </Link>
-        </p>
-      </div>
-    </div>
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Email</span>
+          <input
+            {...form.register("email")}
+            type="email"
+            placeholder="tu@exemplo.com"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.email && <p className="mt-1 text-xs text-destructive">{form.formState.errors.email.message}</p>}
+        </label>
+        <PrimaryButton type="submit" className={loading ? "opacity-70" : ""}>
+          {loading ? "A enviar…" : "Enviar link"}
+        </PrimaryButton>
+      </form>
+    </AuthShell>
   );
 };
 

@@ -34,7 +34,7 @@ export const notificationService = {
     },
 
     async markAsRead(id: string) {
-        return await apiClient.patch<MessageResponse>(`/api/notifications/${id}/read`);
+        return await apiClient.patch<MessageResponse>(`/api/v1/notifications/${id}/read`);
     },
 
     async markAllAsRead() {

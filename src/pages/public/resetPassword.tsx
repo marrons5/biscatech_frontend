@@ -1,8 +1,6 @@
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { AuthShell, PrimaryButton } from "@/components/custom/authShell";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Field, FieldGroup, FieldLabel } from "@/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -10,14 +8,10 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner";
 
 const resetSchema = z.object({
-  password: z
-    .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-zA-Z]/, "Must contain letters")
-    .regex(/[0-9]/, "Must contain at least one number"),
+  password: z.string().min(8, "Mínimo 8 caracteres"),
   confirmPassword: z.string().min(8),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: "As passwords não coincidem",
   path: ["confirmPassword"],
 });
 
@@ -38,80 +32,50 @@ const ResetPassword = () => {
     setLoading(true);
     try {
       const response = await authService.resetPassword({ email, code, password });
-
       if (!response.data.success) {
-        throw new Error((response.data as any).error ?? "Reset failed");
+        throw new Error((response.data as any).error ?? "Falha ao redefinir");
       }
-
-      toast.success("Password updated successfully!", {
-        className: "bg-green-500 text-white font-semibold",
-      });
+      toast.success("Password actualizada com sucesso!");
       navigate("/auth/login", { replace: true });
     } catch (error) {
-      toast.error("Invalid or expired code. Try again.", {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-      console.error("reset error:", error);
+      toast.error("Código inválido ou expirado. Tenta novamente.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="bg-background h-svh flex items-center justify-center">
-      <div className="max-w-md w-full px-6 py-8 bg-card rounded-3xl shadow-lg border border-border/30">
-        <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-          Reset password
-        </h1>
-        <p className="text-sm text-muted-foreground mt-2 mb-6">
-          Enter your new password.
-        </p>
-
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
-          <FieldGroup className="space-y-1.5">
-            <Field>
-              <FieldLabel htmlFor="password" className="text-foreground font-semibold">
-                New password
-              </FieldLabel>
-              <Input
-                {...form.register("password")}
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="h-12 rounded-xl border-border bg-background"
-              />
-              {form.formState.errors.password && (
-                <p className="text-xs text-destructive mt-1">{form.formState.errors.password.message}</p>
-              )}
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="confirmPassword" className="text-foreground font-semibold">
-                Confirm new password
-              </FieldLabel>
-              <Input
-                {...form.register("confirmPassword")}
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                className="h-12 rounded-xl border-border bg-background"
-              />
-              {form.formState.errors.confirmPassword && (
-                <p className="text-xs text-destructive mt-1">{form.formState.errors.confirmPassword.message}</p>
-              )}
-            </Field>
-          </FieldGroup>
-
-          <Button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-primary-foreground rounded-2xl h-14 text-lg font-bold"
-          >
-            {loading ? "Updating…" : "Update password"}
-          </Button>
-        </form>
-      </div>
-    </div>
+    <AuthShell
+      title="Nova palavra-passe"
+      subtitle="Escolhe uma palavra-passe segura, mínimo 8 caracteres."
+      footer={<Link to="/auth/login" className="text-muted-foreground hover:text-ink">← Voltar</Link>}
+    >
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Nova palavra-passe</span>
+          <input
+            {...form.register("password")}
+            type="password"
+            placeholder="••••••••"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.password && <p className="mt-1 text-xs text-destructive">{form.formState.errors.password.message}</p>}
+        </label>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-medium text-ink">Confirmar palavra-passe</span>
+          <input
+            {...form.register("confirmPassword")}
+            type="password"
+            placeholder="••••••••"
+            className="h-11 w-full rounded-xl border border-border bg-card px-4 text-sm outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/10"
+          />
+          {form.formState.errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{form.formState.errors.confirmPassword.message}</p>}
+        </label>
+        <PrimaryButton type="submit" className={loading ? "opacity-70" : ""}>
+          {loading ? "A guardar…" : "Guardar palavra-passe"}
+        </PrimaryButton>
+      </form>
+    </AuthShell>
   );
 };
 
